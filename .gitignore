@@ -1,0 +1,13 @@
+
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+
+# Node Mods
+/node_modules/
+
+# Environment secrets ;)
+/server/config/environment/
