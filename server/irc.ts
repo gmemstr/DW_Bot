@@ -1,30 +1,11 @@
 import {error} from 'util';
 import conf from './config/environment';
 var irc = require('tmi.js');
-//var options = {
-//    options: {
-//        debug: true,
-//    },
-//    connection: {
-//        random: 'chat',
-//        reconnect: true
-//    },
-//    identity: {
-//        username: 'DDon_Bot',
-//        password: 'oauth:1232d9a4ox2b00fzcmygg40xn1m7r5'
-//    },
-//    channels: ['#Divine_Don'],
-//    bot: {
-//        commandCharacteracter: '!'
-//    }
-//};
 
 class Bot {
-    irc: any;
+    client: any;
     _config: any;
     commands: Object;
-    client: any;
-    commandCharacter: string;
 
     constructor(config) {
         this.client = new irc.client(config);
@@ -74,7 +55,7 @@ class Bot {
         }
     }
 
-    tryCommand(from, text, params=[]) {
+    tryCommand(from: String, text: String, params: any=[]) {
         if (text.length > this._config.commandCharacter.length && text[0] == this._config.commandCharacter) {
             let command = text.slice(this._config.commandCharacter.length).split(/\s+/g)[0].toLowerCase();
             let o = {from: from, text: text, rest: null, args: null, params: params};
@@ -90,13 +71,13 @@ class Bot {
         }
     }
 
-    doCommand(command, callback, o) {
+    doCommand(command: String, callback: Function, o: Object) {
         if (typeof command === 'string' && typeof callback === 'function') {
             callback.call(this, o);
         }
     }
 
-    selfCommand(text, ...params) { //this only used for the bot to tell itself to do a command.
+    selfCommand(text: String, ...params) { //this only used for the bot to tell itself to do a command.
         return this.tryCommand(this._config.identity.username, text, params);
     }
 
