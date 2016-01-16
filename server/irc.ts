@@ -1,55 +1,45 @@
-import {error} from "util";
+import {error} from 'util';
+import conf from './config/environment';
 var irc = require('tmi.js');
-var options = {
-    options: {
-        debug: true,
-    },
-    connection: {
-        random: 'chat',
-        reconnect: true
-    },
-    identity: {
-        username: 'DDon_Bot',
-        password: 'oauth:1232d9a4ox2b00fzcmygg40xn1m7r5'
-    },
-    channels: ['#Divine_Don'],
-    bot: {
-        commandCharacter: '!'
-    }
-};
+//var options = {
+//    options: {
+//        debug: true,
+//    },
+//    connection: {
+//        random: 'chat',
+//        reconnect: true
+//    },
+//    identity: {
+//        username: 'DDon_Bot',
+//        password: 'oauth:1232d9a4ox2b00fzcmygg40xn1m7r5'
+//    },
+//    channels: ['#Divine_Don'],
+//    bot: {
+//        commandCharacteracter: '!'
+//    }
+//};
 
-class bot {
+class Bot {
     irc: any;
     _config: any;
     commands: Object;
     client: any;
-    commandChar: string;
+    commandCharacter: string;
 
     constructor(config) {
         this.client = new irc.client(config);
-        this.client.connect();
-        this.client.addListener('chat', this.chat.bind(this));
         this._config = config;
         this.commands = {};
-        this.commandChar = '!';
     }
 
     chat(channel, user, message, bot, action) {
-        this.commandChar = options.bot.commandCharacter;
-        console.log("ircUser", user);
-        console.log(`
-            channel: ${channel}
-            message: ${message}
-            bot: ${bot}
-            action: ${action}
-        `);
-        if (message[0] == this.commandChar) {
+        if (message[0] == this._config.commandCharacter) {
             this.tryCommand(user.username, message)
         }
     }
 
     say(text: String, cb: Function=() => {}) {
-        this.client.say(this._config.channels[0], text);
+        this.client.say(this._config.channel, text);
         return cb();
     }
 
@@ -59,9 +49,6 @@ class bot {
     
     isMod(name: String, cb: Function) {
         this.Mods.then((res) => {
-            console.log("res", res);
-            console.log("res.indexOf(name)", res.indexOf(name));
-            //return cb(res.indexOf(name) ? true : false);
             if (res.indexOf(name) !== -1) {
                 return cb(true);
             }
@@ -78,20 +65,20 @@ class bot {
                 free = true;
                 this.commands[command.toLowerCase()] = {command: command.toLowerCase(), ret: callback, free: free};
             }
-            else if (command[0] === '%') { //Only mods can use
+            //TODO: add $ for subscriptions.
+            else if (command[0] === '@') { //Only mods can use
                 command = command.slice(1);
                 this.commands[command.toLowerCase()] = {command: command.toLowerCase(), ret: callback, free: free}
             }
-            else throw error('command does not have an Identifier. *, %, etc...');
+            else throw error('command does not have an Identifier. *, @, etc...');
         }
     }
 
     tryCommand(from, text, params=[]) {
-        console.log(this.commandChar);
-        if (text.length > this.commandChar.length && text[0] == this.commandChar) {
-            let command = text.slice(this.commandChar.length).split(/\s+/g)[0].toLowerCase();
+        if (text.length > this._config.commandCharacter.length && text[0] == this._config.commandCharacter) {
+            let command = text.slice(this._config.commandCharacter.length).split(/\s+/g)[0].toLowerCase();
             let o = {from: from, text: text, rest: null, args: null, params: params};
-            console.log("command:", command);
+
             if (typeof command === 'string' && this.commands[command]) {
                 o.rest = text.slice(command.length+1).trim();
                 o.args = o.rest.split(/\s+/g).map(function(x) {var t = +x; return isNaN(t)? x: t});
@@ -120,11 +107,16 @@ class bot {
     set config(newConfig) {
         this._config = newConfig
     }
+
+    run() {
+        this.client.connect();
+        this.client.addListener('chat', this.chat.bind(this));
+    }
     
 }
 
 //var client = new irc.client(options);
-var test = new bot(options);
+var test = new Bot(conf.bot);
 test.addCommand('*hey', function (o) {
     console.log("got your command", o);
     test.say('got command yo', () => {
@@ -139,4 +131,6 @@ test.addCommand('*mods', function () {
 });
 
 test.selfCommand('!hey something else bro');
+
+test.run();
 

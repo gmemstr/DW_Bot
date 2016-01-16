@@ -1,62 +1,38 @@
-var util_1 = require("util");
+var util_1 = require('util');
+var environment_1 = require('./config/environment');
 var irc = require('tmi.js');
-var options = {
-    options: {
-        debug: true,
-    },
-    connection: {
-        random: 'chat',
-        reconnect: true
-    },
-    identity: {
-        username: 'DDon_Bot',
-        password: 'oauth:1232d9a4ox2b00fzcmygg40xn1m7r5'
-    },
-    channels: ['#Divine_Don'],
-    bot: {
-        commandCharacter: '!'
-    }
-};
-var bot = (function () {
-    function bot(config) {
+var Bot = (function () {
+    function Bot(config) {
         this.client = new irc.client(config);
-        this.client.connect();
-        this.client.addListener('chat', this.chat.bind(this));
         this._config = config;
         this.commands = {};
-        this.commandChar = '!';
     }
-    bot.prototype.chat = function (channel, user, message, bot, action) {
-        this.commandChar = options.bot.commandCharacter;
-        console.log("ircUser", user);
-        console.log("\n            channel: " + channel + "\n            message: " + message + "\n            bot: " + bot + "\n            action: " + action + "\n        ");
-        if (message[0] == this.commandChar) {
+    Bot.prototype.chat = function (channel, user, message, bot, action) {
+        if (message[0] == this._config.commandCharacter) {
             this.tryCommand(user.username, message);
         }
     };
-    bot.prototype.say = function (text, cb) {
+    Bot.prototype.say = function (text, cb) {
         if (cb === void 0) { cb = function () { }; }
-        this.client.say(this._config.channels[0], text);
+        this.client.say(this._config.channel, text);
         return cb();
     };
-    Object.defineProperty(bot.prototype, "Mods", {
+    Object.defineProperty(Bot.prototype, "Mods", {
         get: function () {
             return this.client.mods(this._config.channels[0]);
         },
         enumerable: true,
         configurable: true
     });
-    bot.prototype.isMod = function (name, cb) {
+    Bot.prototype.isMod = function (name, cb) {
         this.Mods.then(function (res) {
-            console.log("res", res);
-            console.log("res.indexOf(name)", res.indexOf(name));
             if (res.indexOf(name) !== -1) {
                 return cb(true);
             }
             return cb(false);
         });
     };
-    bot.prototype.addCommand = function (command, callback) {
+    Bot.prototype.addCommand = function (command, callback) {
         if (typeof command === 'string') {
             var free = false;
             if (command[0] === '*') {
@@ -64,21 +40,19 @@ var bot = (function () {
                 free = true;
                 this.commands[command.toLowerCase()] = { command: command.toLowerCase(), ret: callback, free: free };
             }
-            else if (command[0] === '%') {
+            else if (command[0] === '@') {
                 command = command.slice(1);
                 this.commands[command.toLowerCase()] = { command: command.toLowerCase(), ret: callback, free: free };
             }
             else
-                throw util_1.error('command does not have an Identifier. *, %, etc...');
+                throw util_1.error('command does not have an Identifier. *, @, etc...');
         }
     };
-    bot.prototype.tryCommand = function (from, text, params) {
+    Bot.prototype.tryCommand = function (from, text, params) {
         if (params === void 0) { params = []; }
-        console.log(this.commandChar);
-        if (text.length > this.commandChar.length && text[0] == this.commandChar) {
-            var command = text.slice(this.commandChar.length).split(/\s+/g)[0].toLowerCase();
+        if (text.length > this._config.commandCharacter.length && text[0] == this._config.commandCharacter) {
+            var command = text.slice(this._config.commandCharacter.length).split(/\s+/g)[0].toLowerCase();
             var o = { from: from, text: text, rest: null, args: null, params: params };
-            console.log("command:", command);
             if (typeof command === 'string' && this.commands[command]) {
                 o.rest = text.slice(command.length + 1).trim();
                 o.args = o.rest.split(/\s+/g).map(function (x) { var t = +x; return isNaN(t) ? x : t; });
@@ -89,19 +63,19 @@ var bot = (function () {
             }
         }
     };
-    bot.prototype.doCommand = function (command, callback, o) {
+    Bot.prototype.doCommand = function (command, callback, o) {
         if (typeof command === 'string' && typeof callback === 'function') {
             callback.call(this, o);
         }
     };
-    bot.prototype.selfCommand = function (text) {
+    Bot.prototype.selfCommand = function (text) {
         var params = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             params[_i - 1] = arguments[_i];
         }
         return this.tryCommand(this._config.identity.username, text, params);
     };
-    Object.defineProperty(bot.prototype, "config", {
+    Object.defineProperty(Bot.prototype, "config", {
         get: function () {
             return this._config;
         },
@@ -111,9 +85,13 @@ var bot = (function () {
         enumerable: true,
         configurable: true
     });
-    return bot;
+    Bot.prototype.run = function () {
+        this.client.connect();
+        this.client.addListener('chat', this.chat.bind(this));
+    };
+    return Bot;
 })();
-var test = new bot(options);
+var test = new Bot(environment_1.default.bot);
 test.addCommand('*hey', function (o) {
     console.log("got your command", o);
     test.say('got command yo', function () {
@@ -126,4 +104,5 @@ test.addCommand('*mods', function () {
     });
 });
 test.selfCommand('!hey something else bro');
+test.run();
 //# sourceMappingURL=irc.js.map

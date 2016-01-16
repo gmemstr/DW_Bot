@@ -9,6 +9,7 @@ var socketio = socket(server, {
     path: '/socket.io-client'
 });
 function startServer() {
+    console.log("config", environment_1.default);
     app.dwBotServer = server.listen(environment_1.default.port, environment_1.default.ip, function () {
         console.log('Express server listening:', environment_1.default.port, app.get('env'));
     });
