@@ -1,8 +1,7 @@
 import {error} from 'util';
-import conf from './config/environment';
 var irc = require('tmi.js');
 
-class Bot {
+export class Bot {
     client: any;
     _config: any;
     commands: Object;
@@ -95,23 +94,4 @@ class Bot {
     }
     
 }
-
-//var client = new irc.client(options);
-var test = new Bot(conf.bot);
-test.addCommand('*hey', function (o) {
-    console.log("got your command", o);
-    test.say('got command yo', () => {
-        console.log('got callback!');
-    });
-});
-
-test.addCommand('*mods', function () {
-    test.isMod('b3zman41', boolean => {
-        console.log("is mod:", boolean);
-    })
-});
-
-test.selfCommand('!hey something else bro');
-
-test.run();
 

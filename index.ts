@@ -8,5 +8,4 @@ if (env === 'development' || env === 'test') {
 }
 
 exports = module.exports = require('./server/app.js');
-exports = module.exports = require('./server/irc.js');
 

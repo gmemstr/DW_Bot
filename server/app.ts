@@ -2,6 +2,7 @@ import * as express from 'express';
 import config from './config/environment';
 import * as http from 'http';
 import * as socket from 'socket.io';
+import {Bot} from './bot/twitch-bot'
 
 // Setup server
 let app = express();
@@ -23,7 +24,14 @@ function startServer() {
     })
 }
 
+// Start bot
+function startBot() {
+    app.twitchBot = new Bot(config.bot);
+    app.twitchBot.run();
+}
+
 setImmediate(startServer);
+setImmediate(startBot);
 
 // Expose app
 export default app;

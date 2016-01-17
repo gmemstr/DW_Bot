@@ -1052,6 +1052,7 @@ declare module "express" {
         }
 
         interface Express extends Application {
+            twitchBot: any;
             dwBotServer: any;
             /**
              * Framework version.

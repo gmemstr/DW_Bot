@@ -1,5 +1,4 @@
 var util_1 = require('util');
-var environment_1 = require('./config/environment');
 var irc = require('tmi.js');
 var Bot = (function () {
     function Bot(config) {
@@ -91,18 +90,5 @@ var Bot = (function () {
     };
     return Bot;
 })();
-var test = new Bot(environment_1.default.bot);
-test.addCommand('*hey', function (o) {
-    console.log("got your command", o);
-    test.say('got command yo', function () {
-        console.log('got callback!');
-    });
-});
-test.addCommand('*mods', function () {
-    test.isMod('b3zman41', function (boolean) {
-        console.log("is mod:", boolean);
-    });
-});
-test.selfCommand('!hey something else bro');
-test.run();
-//# sourceMappingURL=irc.js.map
+exports.Bot = Bot;
+//# sourceMappingURL=twitch-bot.js.map
