@@ -28,6 +28,7 @@ function startServer() {
 function startBot() {
     app.twitchBot = new Bot(config.bot);
     app.twitchBot.run();
+    //app.twitchBot.whisper('divine_don', 'test');
 }
 
 setImmediate(startServer);

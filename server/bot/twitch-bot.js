@@ -7,6 +7,7 @@ var Bot = (function () {
         this.commands = {};
     }
     Bot.prototype.chat = function (channel, user, message, bot, action) {
+        console.log("message", message);
         if (message[0] == this._config.commandCharacter) {
             this.tryCommand(user.username, message);
         }
@@ -15,6 +16,9 @@ var Bot = (function () {
         if (cb === void 0) { cb = function () { }; }
         this.client.say(this._config.channel, text);
         return cb();
+    };
+    Bot.connectWhisper = function (config) {
+        new irc.client(config);
     };
     Object.defineProperty(Bot.prototype, "Mods", {
         get: function () {
@@ -74,6 +78,10 @@ var Bot = (function () {
         }
         return this.tryCommand(this._config.identity.username, text, params);
     };
+    Bot.prototype.whisper = function (from, message) {
+        console.log("from", from);
+        console.log("message", message);
+    };
     Object.defineProperty(Bot.prototype, "config", {
         get: function () {
             return this._config;
@@ -87,6 +95,15 @@ var Bot = (function () {
     Bot.prototype.run = function () {
         this.client.connect();
         this.client.addListener('chat', this.chat.bind(this));
+        var whisperConfig = this._config;
+        whisperConfig.connection = {
+            server: 'group.tmi.twitch.tv',
+            port: 80,
+            reconnect: true
+        };
+        var whisperBot = new irc.client(whisperConfig);
+        whisperBot.connect();
+        whisperBot.addListener('whisper', this.whisper.bind(this));
     };
     return Bot;
 })();

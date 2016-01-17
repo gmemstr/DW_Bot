@@ -3,6 +3,7 @@ var irc = require('tmi.js');
 
 export class Bot {
     client: any;
+    whisperClient: any;
     _config: any;
     commands: Object;
 
@@ -10,9 +11,20 @@ export class Bot {
         this.client = new irc.client(config);
         this._config = config;
         this.commands = {};
+
+        //whisper connection
+        //let whisperConfig = this._config;
+        //whisperConfig.connection = {
+        //    server: 'group.tmi.twitch.tv',
+        //    port: 80,
+        //    reconnect: true
+        //};
+        //console.log("whisperConfig", whisperConfig);
+        //this.whisperClient = new irc.client(whisperConfig);
     }
 
     chat(channel, user, message, bot, action) {
+        console.log("message", message);
         if (message[0] == this._config.commandCharacter) {
             this.tryCommand(user.username, message)
         }
@@ -23,10 +35,14 @@ export class Bot {
         return cb();
     }
 
+    static connectWhisper(config) {
+        new irc.client(config);
+    }
+
     get Mods() {
         return this.client.mods(this._config.channels[0]);
     }
-    
+
     isMod(name: String, cb: Function) {
         this.Mods.then((res) => {
             if (res.indexOf(name) !== -1) {
@@ -80,6 +96,11 @@ export class Bot {
         return this.tryCommand(this._config.identity.username, text, params);
     }
 
+    whisper(from, message) {
+        console.log("from", from);
+        console.log("message", message);
+    }
+
     get config() {
         return this._config;
     }
@@ -89,9 +110,22 @@ export class Bot {
     }
 
     run() {
+
         this.client.connect();
         this.client.addListener('chat', this.chat.bind(this));
+
+        // Connect whisper server
+        let whisperConfig = this._config;
+        whisperConfig.connection = {
+            server: 'group.tmi.twitch.tv',
+            port: 80,
+            reconnect: true
+        };
+        var whisperBot = new irc.client(whisperConfig);
+        whisperBot.connect();
+        whisperBot.addListener('whisper', this.whisper.bind(this));
+
     }
-    
+
 }
 
