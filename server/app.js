@@ -3,7 +3,7 @@ var environment_1 = require('./config/environment');
 var http = require('http');
 var socket = require('socket.io');
 var twitch_bot_1 = require('./bot/twitch-bot');
-var basic_1 = require('./bot/basic/basic');
+var plugins_1 = require('./bot/plugins');
 var app = express();
 var server = http.createServer(app);
 var socketio = socket(server, {
@@ -18,7 +18,7 @@ function startServer() {
 function startBot() {
     app.twitchBot = new twitch_bot_1.Bot(environment_1.default.bot);
     app.twitchBot.run();
-    basic_1.default(app.twitchBot);
+    plugins_1.default(app.twitchBot);
 }
 setImmediate(startServer);
 setImmediate(startBot);

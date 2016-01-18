@@ -1,8 +1,7 @@
+var betting_1 = require('./betting/betting');
 function default_1(bot) {
-    bot.addCommand('*h', function (o) {
-        bot.say('hey h comand');
-    });
+    betting_1.default(bot);
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = default_1;
-//# sourceMappingURL=basic.js.map
+//# sourceMappingURL=index.js.map

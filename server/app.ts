@@ -1,10 +1,9 @@
-///<reference path="bot/basic/basic.ts"/>
 import * as express from 'express';
 import config from './config/environment';
 import * as http from 'http';
 import * as socket from 'socket.io';
 import {Bot} from './bot/twitch-bot';
-import Basic from './bot/basic/basic';
+import Plugins from './bot/plugins';
 
 // Setup server
 let app = express();
@@ -29,7 +28,7 @@ function startServer() {
 function startBot() {
     app.twitchBot = new Bot(config.bot);
     app.twitchBot.run();
-    Basic(app.twitchBot);
+    Plugins(app.twitchBot);
 }
 
 setImmediate(startServer);
