@@ -2,19 +2,24 @@ var util_1 = require('util');
 var irc = require('tmi.js');
 var Bot = (function () {
     function Bot(config) {
+        if (config === void 0) { config = {}; }
         this.client = new irc.client(config);
         this._config = config;
         this.commands = {};
     }
     Bot.prototype.chat = function (channel, user, message, bot, action) {
-        console.log("message", message);
-        if (message[0] == this._config.commandCharacter) {
+        if (message[0] === this._config.commandCharacter) {
             this.tryCommand(user.username, message);
+        }
+    };
+    Bot.prototype.whisper = function (from, message) {
+        if (message[0] === this._config.commandCharacter) {
+            this.tryCommand(from, message);
         }
     };
     Bot.prototype.say = function (text, cb) {
         if (cb === void 0) { cb = function () { }; }
-        this.client.say(this._config.channel, text);
+        this.client.say(this._config.channels[0], text);
         return cb();
     };
     Bot.connectWhisper = function (config) {
@@ -36,6 +41,7 @@ var Bot = (function () {
         });
     };
     Bot.prototype.addCommand = function (command, callback) {
+        console.log("adding command:", command);
         if (typeof command === 'string') {
             var free = false;
             if (command[0] === '*') {
@@ -77,10 +83,6 @@ var Bot = (function () {
             params[_i - 1] = arguments[_i];
         }
         return this.tryCommand(this._config.identity.username, text, params);
-    };
-    Bot.prototype.whisper = function (from, message) {
-        console.log("from", from);
-        console.log("message", message);
     };
     Object.defineProperty(Bot.prototype, "config", {
         get: function () {

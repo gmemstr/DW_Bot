@@ -7,7 +7,7 @@ export class Bot {
     _config: any;
     commands: Object;
 
-    constructor(config) {
+    constructor(config={}) {
         this.client = new irc.client(config);
         this._config = config;
         this.commands = {};
@@ -24,14 +24,19 @@ export class Bot {
     }
 
     chat(channel, user, message, bot, action) {
-        console.log("message", message);
-        if (message[0] == this._config.commandCharacter) {
+        if (message[0] === this._config.commandCharacter) {
             this.tryCommand(user.username, message)
         }
     }
 
+    whisper(from, message) {
+        if (message[0] === this._config.commandCharacter) {
+            this.tryCommand(from, message)
+        }
+    }
+
     say(text: String, cb: Function=() => {}) {
-        this.client.say(this._config.channel, text);
+        this.client.say(this._config.channels[0], text);
         return cb();
     }
 
@@ -53,7 +58,8 @@ export class Bot {
 
     }
 
-    addCommand(command, callback) {
+    addCommand(command: String, callback: Function) {
+        console.log("adding command:", command);
         if (typeof command === 'string') {
             let free = false;
             if (command[0] === '*') { //Everyone can use.
@@ -96,11 +102,6 @@ export class Bot {
         return this.tryCommand(this._config.identity.username, text, params);
     }
 
-    whisper(from, message) {
-        console.log("from", from);
-        console.log("message", message);
-    }
-
     get config() {
         return this._config;
     }
@@ -126,6 +127,5 @@ export class Bot {
         whisperBot.addListener('whisper', this.whisper.bind(this));
 
     }
-
 }
 

@@ -1,8 +1,10 @@
+///<reference path="bot/basic/basic.ts"/>
 import * as express from 'express';
 import config from './config/environment';
 import * as http from 'http';
 import * as socket from 'socket.io';
-import {Bot} from './bot/twitch-bot'
+import {Bot} from './bot/twitch-bot';
+import Basic from './bot/basic/basic';
 
 // Setup server
 let app = express();
@@ -18,7 +20,6 @@ var socketio = socket(server, {
 
 // Start server
 function startServer() {
-    console.log("config", config);
     app.dwBotServer = server.listen(config.port, config.ip, () => {
         console.log('Express server listening:', config.port, app.get('env'));
     })
@@ -28,7 +29,7 @@ function startServer() {
 function startBot() {
     app.twitchBot = new Bot(config.bot);
     app.twitchBot.run();
-    //app.twitchBot.whisper('divine_don', 'test');
+    Basic(app.twitchBot);
 }
 
 setImmediate(startServer);
@@ -36,4 +37,3 @@ setImmediate(startBot);
 
 // Expose app
 export default app;
-
