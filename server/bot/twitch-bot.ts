@@ -6,11 +6,13 @@ export class Bot {
     whisperClient: any;
     _config: any;
     commands: Object;
+    userGroups: String[];
 
     constructor(config={}) {
         this.client = new irc.client(config);
         this._config = config;
         this.commands = {};
+        this.userGroups = ['*', '$', '@'];
 
         //whisper connection
         //let whisperConfig = this._config;
@@ -49,7 +51,9 @@ export class Bot {
     }
 
     isMod(name: String, cb: Function) {
+        if (name === this._config.channels[0].slice(1)) return cb(true);
         this.Mods.then((res) => {
+            console.log("res", res);
             if (res.indexOf(name) !== -1) {
                 return cb(true);
             }
@@ -61,22 +65,15 @@ export class Bot {
     addCommand(command: String, response: Function) {
         console.log("adding command:", command);
         if (typeof command === 'string') {
-            let free = false;
-            if (command[0] === '*') { //Everyone can use.
-                command = command.slice(1);
-                free = true;
-                this.commands[command.toLowerCase()] = {command: command.toLowerCase(), response: response, free: free};
+            if (command[0] === '*' || command[0] === '$' || command[0] === '@') {
+                this.commands[command.slice(1).toLowerCase()] = {command: command.slice(1).toLowerCase(), response: response, rights: this.userGroups.indexOf(command[0])}
             }
-            //TODO: add $ for subscriptions.
-            else if (command[0] === '@') { //Only mods can use
-                command = command.slice(1);
-                this.commands[command.toLowerCase()] = {command: command.toLowerCase(), response: response, free: free}
-            }
-            else throw error('command does not have an Identifier. *, @, etc...');
+            else throw error('command does not have an Identifier. *, $, or @!');
         }
     }
 
     tryCommand(from: String, text: String, params: any=[]) {
+        console.log("from", from);
         if (text.length > this._config.commandCharacter.length && text[0] == this._config.commandCharacter) {
             let command = text.slice(this._config.commandCharacter.length).split(/\s+/g)[0].toLowerCase();
             let o = {from: from, text: text, rest: null, args: null, params: params};
@@ -85,8 +82,12 @@ export class Bot {
                 o.rest = text.slice(command.length+1).trim();
                 o.args = o.rest.split(/\s+/g).map(function(x) {var t = +x; return isNaN(t)? x: t});
                 let obj = this.commands[command];
-                if (obj.free) {//TODO: add mod if statement later.
+                console.log("obj", obj);
+                if (obj.rights === 0) {//TODO: add mod if statement later.
                     this.doCommand(command, obj.response, o)
+                }
+                else if (obj.rights === 2) {
+                    this.isMod(from, res => { if (res) this.doCommand(command, obj.response, o) } );
                 }
             }
         }

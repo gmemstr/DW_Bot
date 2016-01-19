@@ -6,6 +6,7 @@ var Bot = (function () {
         this.client = new irc.client(config);
         this._config = config;
         this.commands = {};
+        this.userGroups = ['*', '$', '@'];
     }
     Bot.prototype.chat = function (channel, user, message, bot, action) {
         if (message[0] === this._config.commandCharacter) {
@@ -33,7 +34,10 @@ var Bot = (function () {
         configurable: true
     });
     Bot.prototype.isMod = function (name, cb) {
+        if (name === this._config.channels[0].slice(1))
+            return cb(true);
         this.Mods.then(function (res) {
+            console.log("res", res);
             if (res.indexOf(name) !== -1) {
                 return cb(true);
             }
@@ -43,22 +47,17 @@ var Bot = (function () {
     Bot.prototype.addCommand = function (command, response) {
         console.log("adding command:", command);
         if (typeof command === 'string') {
-            var free = false;
-            if (command[0] === '*') {
-                command = command.slice(1);
-                free = true;
-                this.commands[command.toLowerCase()] = { command: command.toLowerCase(), response: response, free: free };
-            }
-            else if (command[0] === '@') {
-                command = command.slice(1);
-                this.commands[command.toLowerCase()] = { command: command.toLowerCase(), response: response, free: free };
+            if (command[0] === '*' || command[0] === '$' || command[0] === '@') {
+                this.commands[command.slice(1).toLowerCase()] = { command: command.slice(1).toLowerCase(), response: response, rights: this.userGroups.indexOf(command[0]) };
             }
             else
-                throw util_1.error('command does not have an Identifier. *, @, etc...');
+                throw util_1.error('command does not have an Identifier. *, $, or @!');
         }
     };
     Bot.prototype.tryCommand = function (from, text, params) {
+        var _this = this;
         if (params === void 0) { params = []; }
+        console.log("from", from);
         if (text.length > this._config.commandCharacter.length && text[0] == this._config.commandCharacter) {
             var command = text.slice(this._config.commandCharacter.length).split(/\s+/g)[0].toLowerCase();
             var o = { from: from, text: text, rest: null, args: null, params: params };
@@ -66,8 +65,13 @@ var Bot = (function () {
                 o.rest = text.slice(command.length + 1).trim();
                 o.args = o.rest.split(/\s+/g).map(function (x) { var t = +x; return isNaN(t) ? x : t; });
                 var obj = this.commands[command];
-                if (obj.free) {
+                console.log("obj", obj);
+                if (obj.rights === 0) {
                     this.doCommand(command, obj.response, o);
+                }
+                else if (obj.rights === 2) {
+                    this.isMod(from, function (res) { if (res)
+                        _this.doCommand(command, obj.response, o); });
                 }
             }
         }
