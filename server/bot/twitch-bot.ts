@@ -58,19 +58,19 @@ export class Bot {
 
     }
 
-    addCommand(command: String, callback: Function) {
+    addCommand(command: String, response: Function) {
         console.log("adding command:", command);
         if (typeof command === 'string') {
             let free = false;
             if (command[0] === '*') { //Everyone can use.
                 command = command.slice(1);
                 free = true;
-                this.commands[command.toLowerCase()] = {command: command.toLowerCase(), ret: callback, free: free};
+                this.commands[command.toLowerCase()] = {command: command.toLowerCase(), response: response, free: free};
             }
             //TODO: add $ for subscriptions.
             else if (command[0] === '@') { //Only mods can use
                 command = command.slice(1);
-                this.commands[command.toLowerCase()] = {command: command.toLowerCase(), ret: callback, free: free}
+                this.commands[command.toLowerCase()] = {command: command.toLowerCase(), response: response, free: free}
             }
             else throw error('command does not have an Identifier. *, @, etc...');
         }
@@ -86,7 +86,7 @@ export class Bot {
                 o.args = o.rest.split(/\s+/g).map(function(x) {var t = +x; return isNaN(t)? x: t});
                 let obj = this.commands[command];
                 if (obj.free) {//TODO: add mod if statement later.
-                    this.doCommand(command, obj.ret, o)
+                    this.doCommand(command, obj.response, o)
                 }
             }
         }

@@ -40,18 +40,18 @@ var Bot = (function () {
             return cb(false);
         });
     };
-    Bot.prototype.addCommand = function (command, callback) {
+    Bot.prototype.addCommand = function (command, response) {
         console.log("adding command:", command);
         if (typeof command === 'string') {
             var free = false;
             if (command[0] === '*') {
                 command = command.slice(1);
                 free = true;
-                this.commands[command.toLowerCase()] = { command: command.toLowerCase(), ret: callback, free: free };
+                this.commands[command.toLowerCase()] = { command: command.toLowerCase(), response: response, free: free };
             }
             else if (command[0] === '@') {
                 command = command.slice(1);
-                this.commands[command.toLowerCase()] = { command: command.toLowerCase(), ret: callback, free: free };
+                this.commands[command.toLowerCase()] = { command: command.toLowerCase(), response: response, free: free };
             }
             else
                 throw util_1.error('command does not have an Identifier. *, @, etc...');
@@ -67,7 +67,7 @@ var Bot = (function () {
                 o.args = o.rest.split(/\s+/g).map(function (x) { var t = +x; return isNaN(t) ? x : t; });
                 var obj = this.commands[command];
                 if (obj.free) {
-                    this.doCommand(command, obj.ret, o);
+                    this.doCommand(command, obj.response, o);
                 }
             }
         }
