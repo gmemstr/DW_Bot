@@ -4,12 +4,14 @@ var http = require('http');
 var socket = require('socket.io');
 var twitch_bot_1 = require('./bot/twitch-bot');
 var plugins_1 = require('./bot/plugins');
+var express_1 = require('./config/express');
 var app = express();
 var server = http.createServer(app);
 var socketio = socket(server, {
     serveClient: false,
     path: '/socket.io-client'
 });
+express_1.default(app);
 function startServer() {
     app.dwBotServer = server.listen(environment_1.default.port, environment_1.default.ip, function () {
         console.log('Express server listening:', environment_1.default.port, app.get('env'));

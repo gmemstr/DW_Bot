@@ -4,16 +4,16 @@ import * as http from 'http';
 import * as socket from 'socket.io';
 import {Bot} from './bot/twitch-bot';
 import Plugins from './bot/plugins';
+import expresInit from './config/express';
 
 // Setup server
-let app = express();
+var app = express();
 var server = http.createServer(app);
-
-// Setup socketio
 var socketio = socket(server, {
     serveClient: false,
     path: '/socket.io-client'
 });
+expresInit(app);
 
 // Insert socket configs/routes
 
