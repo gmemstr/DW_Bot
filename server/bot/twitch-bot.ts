@@ -1,5 +1,5 @@
 import {error} from 'util';
-var irc = require('tmi.js');
+const irc = require('tmi.js');
 
 export class Bot {
     client: any;
@@ -123,7 +123,7 @@ export class Bot {
             port: 80,
             reconnect: true
         };
-        var whisperBot = new irc.client(whisperConfig);
+        let whisperBot = new irc.client(whisperConfig);
         whisperBot.connect();
         whisperBot.addListener('whisper', this.whisper.bind(this));
 
