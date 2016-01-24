@@ -14,3 +14,9 @@ gen
 
 # Test route
 /server/api/test/
+
+# Javascript files
+*.js
+
+# Map files
+*.map
