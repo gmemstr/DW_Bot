@@ -13,16 +13,6 @@ export class Bot {
         this._config = config;
         this.commands = {};
         this.userGroups = ['*', '$', '@'];
-
-        //whisper connection
-        //let whisperConfig = this._config;
-        //whisperConfig.connection = {
-        //    server: 'group.tmi.twitch.tv',
-        //    port: 80,
-        //    reconnect: true
-        //};
-        //console.log("whisperConfig", whisperConfig);
-        //this.whisperClient = new irc.client(whisperConfig);
     }
 
     chat(channel, user, message, bot, action) {
@@ -31,7 +21,7 @@ export class Bot {
         }
     }
 
-    whisper(from, message) {
+    whisper(from: String, message: String) {
         if (message[0] === this._config.commandCharacter) {
             this.tryCommand(from, message)
         }
