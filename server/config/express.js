@@ -10,8 +10,8 @@ var mongoStorage = connectMongo(session);
 function default_1(app) {
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
-    app.use(methodOverride);
-    app.use(cookieParser);
+    app.use(methodOverride());
+    app.use(cookieParser());
     app.use(session({
         secret: environment_1.default.secrets.session,
         saveUninitialized: true,

@@ -11,3 +11,6 @@ gen
 
 # Environment secrets ;)
 /server/config/environment/
+
+# Test route
+/server/api/test/
