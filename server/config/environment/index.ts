@@ -24,6 +24,17 @@ var all = {
     }
   },
 
+  bot: {
+    options: {
+      debug: true,
+    },
+    connection: {
+      random: 'chat',
+      reconnect: true
+    },
+    commandCharacter: '!',
+  }
+
 };
 
 
