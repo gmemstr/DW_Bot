@@ -1,0 +1,22 @@
+
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+
+# Node Mods
+/node_modules/
+
+# Environment secrets ;)
+/server/config/environment/
+
+# Test route
+/server/api/test/
+
+# Javascript files
+*.js
+
+# Map files
+*.map
