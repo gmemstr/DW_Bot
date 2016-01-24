@@ -1,7 +1,7 @@
 import * as request from 'request';
-import config from '../../../config/environment';
-import {create as createTest} from '../../../api/test/test.controller';
-import Test from '../../../api/test/test.model';
+import config from '../../config/environment';
+import {create as createTest} from '../../api/test/test.controller.ts';
+import Test from '../../api/test/test.model.ts';
 
 export default function(bot) {
     bot.addCommand('*bet', function () {

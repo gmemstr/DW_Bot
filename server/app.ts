@@ -9,39 +9,43 @@ import Plugins from './bot/plugins';
 import expresInit from './config/express';
 import routesInit from './routes';
 
-mongoose.connect(config.mongo.uri, config.mongo.options);
-mongoose.connection.on('error', function(err) {
-    console.error('MongoDB connection error: ' + err);
-    process.exit(-1);
-});
 
 // Setup server
-var app = express();
-var server = http.createServer(app);
-var socketio = socket(server, {
+const app = express();
+const server = http.createServer(app);
+const socketio = socket(server, {
     serveClient: false,
     path: '/socket.io-client'
 });
 expresInit(app);
 routesInit(app);
 
+// Start mongodb
+function dbInit() {
+  mongoose.connect(config.mongo.uri, config.mongo.options);
+  mongoose.connection.on('error', function(err) {
+    console.error('MongoDB connection error: ' + err);
+    process.exit(-1);
+  });
+}
 
 // Start server
-function startServer() {
+function serverInit() {
     app.dwBotServer = server.listen(config.port, config.ip, () => {
         console.log('Express server listening:', config.port, app.get('env'));
     })
 }
 
 // Start bot
-function startBot() {
+function botInit() {
     app.twitchBot = new Bot(config.bot);
     app.twitchBot.run();
     Plugins(app.twitchBot);
 }
 
-setImmediate(startServer);
-setImmediate(startBot);
+setImmediate(dbInit);
+setImmediate(serverInit);
+setImmediate(botInit);
 
 // Expose app
 export default app;
