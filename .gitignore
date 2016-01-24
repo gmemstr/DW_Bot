@@ -10,7 +10,9 @@ gen
 /node_modules/
 
 # Environment secrets ;)
-/server/config/environment/
+/server/config/environment/production.ts
+/server/config/environment/development.ts
+/server/config/environment/shared.ts
 
 # Test route
 /server/api/test/
