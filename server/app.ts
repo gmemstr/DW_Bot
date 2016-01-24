@@ -14,8 +14,8 @@ import routesInit from './routes';
 const app = express();
 const server = http.createServer(app);
 const socketio = socket(server, {
-    serveClient: false,
-    path: '/socket.io-client'
+  serveClient: false,
+  path: '/socket.io-client'
 });
 expresInit(app);
 routesInit(app);
@@ -23,7 +23,7 @@ routesInit(app);
 // Start mongodb
 function dbInit() {
   mongoose.connect(config.mongo.uri, config.mongo.options);
-  mongoose.connection.on('error', function(err) {
+  mongoose.connection.on('error', function (err) {
     console.error('MongoDB connection error: ' + err);
     process.exit(-1);
   });
@@ -31,16 +31,16 @@ function dbInit() {
 
 // Start server
 function serverInit() {
-    app.dwBotServer = server.listen(config.port, config.ip, () => {
-        console.log('Express server listening:', config.port, app.get('env'));
-    })
+  app.dwBotServer = server.listen(config.port, config.ip, () => {
+    console.log('Express server listening:', config.port, app.get('env'));
+  })
 }
 
 // Start bot
 function botInit() {
-    app.twitchBot = new Bot(config.bot);
-    app.twitchBot.run();
-    Plugins(app.twitchBot);
+  app.twitchBot = new Bot(config.bot);
+  app.twitchBot.run();
+  Plugins(app.twitchBot);
 }
 
 setImmediate(dbInit);

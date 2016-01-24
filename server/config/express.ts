@@ -11,21 +11,21 @@ import config from './environment';
 
 var mongoStorage = connectMongo(session);
 
-export default function(app) {
-    app.use(bodyParser.urlencoded({extended:false}));
-    app.use(bodyParser.json());
-    app.use(methodOverride());
-    app.use(cookieParser());
+export default function (app) {
+  app.use(bodyParser.urlencoded({extended: false}));
+  app.use(bodyParser.json());
+  app.use(methodOverride());
+  app.use(cookieParser());
 
 
-    app.use(session({
-        secret: config.secrets.session,
-        saveUninitialized: true,
-        resave: false,
-        store: new mongoStorage({
-            mongooseConnection: mongoose.connection,
-            db: 'dw-bot-server'
-        })
-    }))
+  app.use(session({
+    secret: config.secrets.session,
+    saveUninitialized: true,
+    resave: false,
+    store: new mongoStorage({
+      mongooseConnection: mongoose.connection,
+      db: 'dw-bot-server'
+    })
+  }))
 
 }
