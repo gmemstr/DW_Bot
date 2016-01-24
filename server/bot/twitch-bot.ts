@@ -27,8 +27,7 @@ export class Bot {
     }
   }
 
-  say(text:String, cb:Function = () => {
-  }) {
+  say(text:String, cb:Function = () => {}) {
     this.client.say(this._config.channels[0], text);
     return cb();
   }

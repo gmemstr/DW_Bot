@@ -6,7 +6,7 @@ import * as http from 'http';
 import * as socket from 'socket.io';
 import {Bot} from './bot/twitch-bot';
 import Plugins from './bot/plugins';
-import expresInit from './config/express';
+import expressInit from './config/express';
 import routesInit from './routes';
 
 
@@ -17,7 +17,7 @@ const socketio = socket(server, {
   serveClient: false,
   path: '/socket.io-client'
 });
-expresInit(app);
+expressInit(app);
 routesInit(app);
 
 // Start mongodb
