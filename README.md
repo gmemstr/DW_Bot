@@ -1,5 +1,5 @@
-# DevWars Twitch Bot
-<img align="right" src="logo.png">
+# DevWars Twitch Bot <img align="right" src="logo.png">
+
 *Official Twitch bot for [Devwars.tv](http://devwars.tv/)* 
 
 ---
