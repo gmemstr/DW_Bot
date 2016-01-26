@@ -22,3 +22,6 @@ gen
 
 # Map files
 *.map
+
+# Log files
+*.log

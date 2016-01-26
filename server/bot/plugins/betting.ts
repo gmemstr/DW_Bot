@@ -2,6 +2,7 @@ import * as request from 'request';
 import config from '../../config/environment';
 import {create as createTest} from '../../api/test/test.controller.ts';
 import Test from '../../api/test/test.model.ts';
+import * as gameService from '../../services/game.service'
 
 export default function (bot) {
   bot.addCommand('*bet', function () {
@@ -12,18 +13,9 @@ export default function (bot) {
     bot.say('we got your MOD bet');
   });
 
-  bot.addCommand('@testapi', function () {
-    let obj = {
-      name: 'don',
-      number: 1,
-      active: true
-    };
+  bot.addCommand('@test', function () {
+    gameService.getCurrentGame((gameInfo, err) => {
 
-    //createTest(obj, (err, body, res) => {
-    //    console.log(body);
-    //    console.log(res);
-    //})
-
-    //Test.create(obj);
+    })
   });
 }
