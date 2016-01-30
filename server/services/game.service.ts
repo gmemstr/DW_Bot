@@ -1,7 +1,5 @@
 import * as request from 'request';
 import config from '../config/environment';
-import * as promise from 'bluebird';
-
 
 const url = config.dwServer.url;
 const key = config.dwServer.key;
