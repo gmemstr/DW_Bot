@@ -14,9 +14,9 @@ export function getCurrentGame(cb: Function) {
   })
 }
 
-export function getCurrentGameId() {
+export function getCurrentGameId(cb: Function = () => {}) {
   getCurrentGame((game) => {
-    return game.id;
+    return cb(game.id);
   });
 }
 
