@@ -19,3 +19,8 @@ export function getCurrentGameId() {
     return game.id;
   });
 }
+
+export function earnedBets(winnings: Array<Object>) {
+  request.post(`${url}/v1/devbits/earnedbets?key=${key}`)
+    .form({bets: JSON.stringify(winnings)});
+}
