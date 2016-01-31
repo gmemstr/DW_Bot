@@ -31,10 +31,22 @@ export default function (bot) {
   class Pool implements Betting {
     constructor(public gameId:Number, public bets:Array<Better>) {}
 
+    clearBet(name: String) {
+      let person = _.find(this.bets, function(o) { return o.name === name; });
+      userService.putDevbits(name, person.amount, res => {
+        if (res) {
+          console.log("person", person);
+          bot.whisper(person.name, `Your bet of ${person.amount} on ${person.team} team has been returned.`);
+          return delete this.bets[_.findIndex(this.bets, {name: name})];
+        }
+      });
+    }
+
     set better(person: Better) {
       const {name, tier, team, amount} = person;
       if (_.find(this.bets, {name: name})) {
-        console.log("found better");
+        console.log("found better", _.findIndex(this.bets, {name: name}));
+        //replacing bet: return original bet and then take away
       } else {
         console.log("didn't find better");
         userService.putDevbits(name, -amount, () => {
@@ -77,11 +89,15 @@ export default function (bot) {
       amount >= minBet &&
       amount <= maxBet) {
 
-      bettingPool.better = {name: from, tier: tier, team: team, amount: amount};
+      if (_.find(bettingPool.bets, {name: from})) {
+        console.log('CLEAR BET: ', from);
+        bettingPool.clearBet(from);
+      }
 
-
-      console.log("bettingPool.bets", bettingPool);
-
+      userService.hasDevbits(from, amount, status => {
+        if (status) return bettingPool.better = {name: from, tier: tier, team: team, amount: amount};
+        else if (!status) return bot.whisper(from, `You don't have the devbits!`);
+      });
 
     }
   })

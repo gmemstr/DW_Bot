@@ -9,5 +9,9 @@ export default function (bot) {
   //Basic commands:
   bot.addCommand('*devbits', function(o) {
     userService.getDevbits(o.from, bits => bot.say(`${o.from}: ${bits} Devbits.`))
-  })
+  });
+
+  bot.addCommand('@whispertest', function(o) {
+    bot.whisper(o.from, 'whisper test') //TODO: whispers are broken?
+  });
 }

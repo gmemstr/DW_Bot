@@ -18,3 +18,11 @@ export function getDevbits (user: String, cb: Function = () => {}) {
     else return cb(false);
   })
 }
+
+
+export function hasDevbits (user: String, request: Number, cb: Function = () => {}) {
+  getDevbits(user, dbAmount => {
+    if (dbAmount < request) return cb(false);
+    else if (dbAmount >= request) return cb(true);
+  })
+}
