@@ -8,6 +8,6 @@ export default function (bot) {
 
   //Basic commands:
   bot.addCommand('*devbits', function(o) {
-    userService.getDevbits(o.from, bits => bot.say(`${o.from}, you have ${bits} Devbits.`))
+    userService.getDevbits(o.from, bits => bot.say(`${o.from}: ${bits} Devbits.`))
   })
 }
