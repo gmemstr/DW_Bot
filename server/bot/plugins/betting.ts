@@ -2,7 +2,8 @@ import * as request from 'request';
 import config from '../../config/environment';
 import {create as createTest} from '../../api/test/test.controller.ts';
 import Test from '../../api/test/test.model.ts';
-import * as gameService from '../../services/game.service'
+import * as gameService from '../../services/game.service';
+import * as userService from '../../services/user.service';
 import * as _ from 'lodash';
 
 interface Better {
@@ -17,20 +18,6 @@ interface Betting {
   bets: Array<Better>;
 }
 
-class Pool implements Betting {
-  constructor(public gameId:Number, public bets:Array<Better>) {}
-
-  set better(person: Better) {
-    const {name, tier, team, amount} = person;
-    if (_.find(this.bets, {name: name})) {
-      console.log("found better");
-    } else {
-      console.log("didn't find better");
-
-      this.bets.push(person);
-    }
-  }
-}
 
 const bettingTeams = ['blue', 'red'];
 const bettingTiers = [1, 2, 3, 4, 5, 'tie'];
@@ -40,6 +27,26 @@ const minBet = 10;
 const maxBet = 10000;
 
 export default function (bot) {
+
+  class Pool implements Betting {
+    constructor(public gameId:Number, public bets:Array<Better>) {}
+
+    set better(person: Better) {
+      const {name, tier, team, amount} = person;
+      if (_.find(this.bets, {name: name})) {
+        console.log("found better");
+      } else {
+        console.log("didn't find better");
+        userService.putDevbits(name, -amount, () => {
+          this.bets.push(person);
+          bot.whisper(name, `We got your bet of ${amount} on ${team} team.`);
+
+        });
+      }
+    }
+  }
+
+
   var bettingPool = null;
   bot.addCommand('*bet', function () {
     bot.say('we got your bet.');

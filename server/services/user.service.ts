@@ -14,7 +14,7 @@ export function putDevbits (user: String, amount: Number, cb: Function = () => {
 
 export function getDevbits (user: String, cb: Function = () => {}) {
   request(`${url}/v1/devbits/${user}/?key=${key}`, (err, res, body) => {
-    if (!err && res.statusCode === 200) return cb(body);
+    if (!err && res.statusCode === 200) return cb(parseInt(body));
     else return cb(false);
   })
 }
