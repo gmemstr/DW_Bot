@@ -7,12 +7,32 @@ export class Bot {
   _config:any;
   commands:Object;
   userGroups:String[];
+  whisperConfig:any;
 
   constructor(config = {}) {
-    this.client = new irc.client(config);
     this._config = config;
+    this.client = new irc.client(config);
+    this.whisperConfig = config;
+    this.whisperClient = null;
+
     this.commands = {};
     this.userGroups = ['*', '$', '@'];
+
+
+
+  }
+
+  startupWhispers(config) {
+    config.connection = {
+      server: 'group.tmi.twitch.tv',
+      port: 80,
+      reconnect: true
+    };
+
+    this.whisperClient = new irc.client(config);
+
+    this.whisperClient.connect();
+    this.whisperClient.addListener('whisper', this.receiveWhisper.bind(this));
   }
 
   chat(channel, user, message, bot, action) {
@@ -21,20 +41,25 @@ export class Bot {
     }
   }
 
-  whisper(from:String, message:String) {
+  receiveWhisper(from: String, message: String) {
+    console.log(`got whisper from ${from}`);
     if (message[0] === this._config.commandCharacter) {
       this.tryCommand(from, message)
     }
   }
 
-  say(text:String, cb:Function = () => {}) {
+  whisper(user: String, message: String) {
+    this.whisperClient.say(this._config.channels[0], `/w ${user} ${message}`);
+  }
+
+  say(text: String, cb: Function = () => {}) {
     this.client.say(this._config.channels[0], text);
     return cb();
   }
 
-  static connectWhisper(config) {
-    new irc.client(config);
-  }
+  //static connectWhisper(config) {
+  //  new irc.client(config);
+  //}
 
   get Mods() {
     return this.client.mods(this._config.channels[0]);
@@ -115,16 +140,7 @@ export class Bot {
     this.client.connect();
     this.client.addListener('chat', this.chat.bind(this));
 
-    // Connect whisper server
-    let whisperConfig = this._config;
-    whisperConfig.connection = {
-      server: 'group.tmi.twitch.tv',
-      port: 80,
-      reconnect: true
-    };
-    let whisperBot = new irc.client(whisperConfig);
-    whisperBot.connect();
-    whisperBot.addListener('whisper', this.whisper.bind(this));
+    this.startupWhispers(this._config);
 
   }
 }
