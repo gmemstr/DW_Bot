@@ -60,9 +60,6 @@ export default function (bot) {
 
 
   var bettingPool = null;
-  bot.addCommand('*bet', function () {
-    bot.say('we got your bet.');
-  });
 
   bot.addCommand('@openbets', function (o) {
 
