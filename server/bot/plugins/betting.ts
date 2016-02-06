@@ -64,7 +64,13 @@ export default function (bot) {
     bot.say('we got your bet.');
   });
 
-  bot.addCommand('@openbets', function () {
+  bot.addCommand('@openbets', function (o) {
+
+    if (o.args[0]) { //TODO: remove this later.
+      bot.say(`Betting is now open for game #${o.args[0]}`);
+      return bettingPool = new Pool(o.args[0], [])
+    }
+
     if (bettingPool) {
       return bot.say('Betting already in progress')
     } else {
