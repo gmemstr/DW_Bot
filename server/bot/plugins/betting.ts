@@ -61,16 +61,32 @@ export default function (bot) {
   }
 
   var bettingPool = null;
+  var betStatus = false;
 
 
   function startTimer() {
     let timerInt = setInterval(() => {
       bettingDuration = moment.duration(bettingDuration.asMinutes() - 1, 'minutes');
-      console.log("bettingDuration", bettingDuration);
+      console.log("bettingDuration", bettingDuration.asMinutes());
+
+      if (bettingDuration.asMinutes() <= 0 || !betStatus) {
+        console.log('clearInterval');
+        clearInterval(timerInt);
+        betStatus = false;
+      }
+
+      else if (bettingDuration.asMinutes() <= 3) {
+        if (bettingDuration.asMinutes() === 1) {
+          bot.say(`${bettingDuration.asMinutes()} minute left to bet!`);
+        }
+        bot.say(`${bettingDuration.asMinutes()} minutes left to bet!`);
+      }
+
     }, 60000)
   }
 
   bot.addCommand('@starttimer', function (o) { //TODO: remove this command.
+    betStatus = true;
     startTimer();
   });
 
