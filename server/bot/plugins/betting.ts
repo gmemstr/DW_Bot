@@ -5,6 +5,7 @@ import Test from '../../api/test/test.model.ts';
 import * as gameService from '../../services/game.service';
 import * as userService from '../../services/user.service';
 import * as _ from 'lodash';
+import * as moment from 'moment';
 
 interface Better {
   name: String;
@@ -18,6 +19,7 @@ interface Betting {
   bets: Array<Better>;
 }
 
+var bettingDuration = moment.duration(10, 'minutes');
 
 const bettingTeams = ['blue', 'red'];
 const bettingTiers = [1, 2, 3, 4, 5, 'tie'];
@@ -58,8 +60,20 @@ export default function (bot) {
     }
   }
 
-
   var bettingPool = null;
+
+
+  function startTimer() {
+    let timerInt = setInterval(() => {
+      bettingDuration = moment.duration(bettingDuration.asMinutes() - 1, 'minutes');
+      console.log("bettingDuration", bettingDuration);
+    }, 60000)
+  }
+
+  bot.addCommand('@starttimer', function (o) { //TODO: remove this command.
+    startTimer();
+  });
+
 
   bot.addCommand('@openbets', function (o) {
 
