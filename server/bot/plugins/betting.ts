@@ -1,7 +1,5 @@
 import * as request from 'request';
 import config from '../../config/environment';
-import {create as createTest} from '../../api/test/test.controller.ts';
-import Test from '../../api/test/test.model.ts';
 import * as gameService from '../../services/game.service';
 import * as userService from '../../services/user.service';
 import * as _ from 'lodash';
