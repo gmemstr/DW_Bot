@@ -4,6 +4,7 @@
   "description": "Twitch bot for Devwars",
   "main": "server/app.js",
   "dependencies": {
+    "bluebird": "^3.3.1",
     "body-parser": "^1.13.3",
     "composable-middleware": "^0.3.0",
     "compression": "^1.5.2",
