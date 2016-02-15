@@ -42,6 +42,10 @@ export default function (bot) {
       });
     }
 
+    calcWinnings(redObj: Number, blueObj: Number, winningTeam: String = 'tie') {
+
+    }
+
     set better(person: Better) {
       const {name, tier, team, amount} = person;
       if (_.find(this.bets, {name: name})) {
