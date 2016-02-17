@@ -1,4 +1,5 @@
 import {error} from 'util';
+import {isArray} from "util";
 const irc = require('tmi.js');
 
 export class Bot {
@@ -65,13 +66,13 @@ export class Bot {
   sendWhisperQ() { // send first whisper.
     console.log('sendWhisperQ', this.whisperArray);
     this.whisperCycle = true;
-    let whisper = this.whisperArray[0];
+    let w = this.whisperArray[0];
 
-    this.whisper(whisper.user, whisper.message);
+    if (w) this.whisper(w.user, w.message);
 
     if (this.whisperArray.length > 0) {
       this.whisperArray.shift();
-      setTimeout(this.sendWhisperQ, 600);
+      setTimeout(() => this.sendWhisperQ(), 600);
     } else {
       this.whisperCycle = false;
     }

@@ -17,7 +17,10 @@ export default function (bot) {
 
   bot.addCommand('@spamwhisper', function(o) {
     for (let i = 0; i < 30; i++) {
+      console.log('i ', i);
       bot.whisperQ(o.from, `Spam Whisper #${i}`)
     }
+
+
   })
 }
