@@ -14,4 +14,10 @@ export default function (bot) {
   bot.addCommand('@whispertest', function(o) {
     bot.whisper(o.from, 'whisper test') //TODO: whispers are broken?
   });
+
+  bot.addCommand('@spamwhisper', function(o) {
+    for (let i = 0; i < 30; i++) {
+      bot.whisperQ(o.from, `Spam Whisper #${i}`)
+    }
+  })
 }

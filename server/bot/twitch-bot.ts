@@ -8,12 +8,16 @@ export class Bot {
   commands:Object;
   userGroups:String[];
   whisperConfig:any;
+  whisperArray:any;
+  whisperCycle:Boolean;
 
   constructor(config = {}) {
     this._config = config;
     this.client = new irc.client(config);
     this.whisperConfig = config;
     this.whisperClient = null;
+    this.whisperArray = [];
+    this.whisperCycle = false;
 
     this.commands = {};
     this.userGroups = ['*', '$', '@'];
@@ -48,9 +52,32 @@ export class Bot {
     }
   }
 
-  whisper(user: String, message: String) {
+  whisper(user: String, message: String, cb: Function = () => {}) {
+    if (!user || !message) return;
     this.whisperClient.say(this._config.channels[0], `/w ${user} ${message}`);
   }
+
+  whisperQ(user: String, message: String) {
+    this.whisperArray.push({user: user, message: message});
+    if (!this.whisperCycle) this.sendWhisperQ();
+  }
+
+  sendWhisperQ() { // send first whisper.
+    console.log('sendWhisperQ', this.whisperArray);
+    this.whisperCycle = true;
+    let whisper = this.whisperArray[0];
+
+    this.whisper(whisper.user, whisper.message);
+
+    if (this.whisperArray.length > 0) {
+      this.whisperArray.shift();
+      setTimeout(this.sendWhisperQ, 600);
+    } else {
+      this.whisperCycle = false;
+    }
+  }
+
+
 
   say(text: String, cb: Function = () => {}) {
     this.client.say(this._config.channels[0], text);
