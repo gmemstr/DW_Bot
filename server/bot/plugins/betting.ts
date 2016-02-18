@@ -26,6 +26,13 @@ const bettingOdds = [(2 / 7), (1 / 10), (2 / 10), (5 / 10), (1 / 1), (2 / 1)];
 const minBet = 10;
 const maxBet = 10000;
 
+//TODO: testing only.
+const ghostBetters: Array<Better> = [
+  {name: 'Gastly', tier: 3, team: 'blue', amount: 300},
+  {name: 'Haunter', tier: 4, team: 'tie', amount: 300},
+  {name: 'Gengar', tier: 5, team: 'red', amount: 300},
+];
+
 export default function (bot) {
 
   class Pool implements Betting {
@@ -97,7 +104,7 @@ export default function (bot) {
 
     if (o.args[0]) { //TODO: remove this later.
       bot.say(`Betting is now open for game #${o.args[0]}`);
-      return bettingPool = new Pool(o.args[0], [])
+      return bettingPool = new Pool(o.args[0], ghostBetters);
     }
 
     if (bettingPool) {
@@ -110,6 +117,11 @@ export default function (bot) {
         bot.say(`Betting is now open for game #${id}`);
       })
     }
+  });
+
+  bot.addCommand('@betwinner', function(o) {
+    const [winningTeam, objectives] = o.args;
+
   });
 
 
