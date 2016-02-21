@@ -17,3 +17,8 @@ export function getStreamStatus(cb: Function) {
   })
 }
 
+export function getChatData(cb: Function) {
+  request.get(`http://tmi.twitch.tv/group/user/${channel}/chatters`, (error, res, body) => {
+    return !error && res.statusCode === 200 ? cb(JSON.parse(body)) : cb(false);
+  })
+}
