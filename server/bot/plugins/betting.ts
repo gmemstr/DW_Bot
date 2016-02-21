@@ -51,19 +51,15 @@ export default function (bot) {
     }
 
 
-    set better(person: Better) {
+    set better(person:Better) {
       const {name, tier, team, amount, winnings} = person;
-      if (_.find(this.bets, {name: name})) {
-        console.log("found better", _.findIndex(this.bets, {name: name}));
-        //TODO: replacing bet: return original bet and then take away
-      } else {
-        console.log("didn't find better");
-        userService.putDevbits(name, -amount, () => {
-          this.bets.push(person);
-          //bot.whisper(name, `We got your bet of ${amount} on ${team} team. Potential winnings of ${winnings}`);
-          console.log(`We got your bet of ${amount} on ${team} team. Potential winnings of ${winnings}`);
-        });
-      }
+
+      userService.putDevbits(name, -amount, () => {
+        this.bets.push(person);
+        //bot.whisper(name, `We got your bet of ${amount} on ${team} team. Potential winnings of ${winnings}`);
+        console.log(`We got your bet of ${amount} on ${team} team. Potential winnings of ${winnings}`);
+      });
+
     }
   }
 
@@ -150,6 +146,13 @@ export default function (bot) {
         else if (!status) return bot.whisper(from, `You don't have the devbits!`);
       });
 
+    }
+  });
+
+  bot.addCommand('*clearbet', function(o) {
+    if (!bettingPool) return bot.say('Betting is closed.');
+    if (_.findIndex(this.bets, {name: name})) {
+      bettingPool.clearBet(o.from);
     }
   })
 
