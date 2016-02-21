@@ -117,11 +117,15 @@ export default function (bot) {
     const [winningTeam, objectives] = o.args;
     if (~bettingTeams.indexOf(winningTeam) && !isNaN(objectives) && bettingPool != null) {
       console.log('sending bets.');
-
-
+      for (let i = 0; i < bettingPool.bets.length; i++) {
+        var user = bettingPool.bets[i];
+        if (user.team === winningTeam && user.tier === objectives) {
+          userService.putDevbits(user.name, (user.amount + user.winnings), () => bot.whisperQ(user.name, `You won ${user.amount + user.winnings} devbits!`));
+        } else {
+          bot.whisperQ(user.name, `You lost ${user.amount}.`);
+        }
+      }
     }
-
-
   });
 
 
