@@ -10,6 +10,7 @@ interface Better {
   tier: Number;
   team: String;
   amount: Number;
+  winnings: Number
 }
 
 interface Betting {
@@ -28,9 +29,9 @@ const maxBet = 10000;
 
 //TODO: testing only.
 const ghostBetters: Array<Better> = [
-  {name: 'Gastly', tier: 3, team: 'blue', amount: 300},
-  {name: 'Haunter', tier: 4, team: 'tie', amount: 300},
-  {name: 'Gengar', tier: 5, team: 'red', amount: 300},
+  {name: 'Gastly', tier: 3, team: 'blue', amount: 300, winnings: 0},
+  {name: 'Haunter', tier: 4, team: 'tie', amount: 300, winnings: 0},
+  {name: 'Gengar', tier: 5, team: 'red', amount: 300, winnings: 0},
 ];
 
 export default function (bot) {
@@ -49,21 +50,18 @@ export default function (bot) {
       });
     }
 
-    calcWinnings(redObj: Number, blueObj: Number, winningTeam: String = 'tie') {
-
-    }
 
     set better(person: Better) {
-      const {name, tier, team, amount} = person;
+      const {name, tier, team, amount, winnings} = person;
       if (_.find(this.bets, {name: name})) {
         console.log("found better", _.findIndex(this.bets, {name: name}));
-        //replacing bet: return original bet and then take away
+        //TODO: replacing bet: return original bet and then take away
       } else {
         console.log("didn't find better");
         userService.putDevbits(name, -amount, () => {
           this.bets.push(person);
-          bot.whisper(name, `We got your bet of ${amount} on ${team} team.`);
-
+          //bot.whisper(name, `We got your bet of ${amount} on ${team} team. Potential winnings of ${winnings}`);
+          console.log(`We got your bet of ${amount} on ${team} team. Potential winnings of ${winnings}`);
         });
       }
     }
@@ -121,6 +119,12 @@ export default function (bot) {
 
   bot.addCommand('@betwinner', function(o) {
     const [winningTeam, objectives] = o.args;
+    if (~bettingTeams.indexOf(winningTeam) && !isNaN(objectives) && bettingPool != null) {
+      console.log('sending bets.');
+
+
+    }
+
 
   });
 
@@ -142,7 +146,7 @@ export default function (bot) {
       }
 
       userService.hasDevbits(from, amount, status => {
-        if (status) return bettingPool.better = {name: from, tier: tier, team: team, amount: amount};
+        if (status) return bettingPool.better = {name: from, tier: tier, team: team, amount: amount, winnings: (amount * bettingOdds[bettingTiers.indexOf(tier)])};
         else if (!status) return bot.whisper(from, `You don't have the devbits!`);
       });
 
