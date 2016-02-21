@@ -4,7 +4,7 @@ import config from '../config/environment';
 const channel = config.bot.channels[0];
 
 export function getStreamData(cb: Function) {
-  request.get(`http://api.twitch/kraken/streams/${channel}`, (error, res, body) => {
+  request.get(`http://api.twitch.tv/kraken/streams/${channel}`, (error, res, body) => {
     if (!error && res.statusCode === 200) {
       return cb(JSON.parse(body));
     }
