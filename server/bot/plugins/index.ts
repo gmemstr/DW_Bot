@@ -3,6 +3,7 @@
  */
 import betting from './betting';
 import * as userService from '../../services/user.service';
+import {getChatters} from '../../services/twitch.service';
 export default function (bot) {
   betting(bot);
 
@@ -20,7 +21,9 @@ export default function (bot) {
       console.log('i ', i);
       bot.whisperQ(o.from, `Spam Whisper #${i}`)
     }
+  });
 
-
-  })
+  bot.addCommand('@chatters', function(o) {
+    getChatters(chat => console.log('chat ', chat))
+  });
 }
