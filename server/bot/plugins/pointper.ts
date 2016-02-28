@@ -5,6 +5,7 @@ import * as moment from 'moment';
 
 const offline: number = 10;
 const online: number = 25;
+const interval = moment.duration(15, 'minutes');
 
 export default function (bot) {
   function sendPoints() {
@@ -16,9 +17,12 @@ export default function (bot) {
         if (status) userService.putDevbits(viewers.join(), online, () =>
           bot.say(`Thanks for watching DevWars! You've been awarded ${online} bits.`));
         else userService.putDevbits(viewers.join(), offline, () =>
-          bot.say(`You've earned ${offline} bits! You'll earn ${offline} bits every 15minutes whilst the stream is offline.`));
+          bot.say(`You've earned ${offline} bits! You'll earn ${offline} bits every 15 minutes whilst the stream is offline.`));
       })
 
     })
   }
+
+  setInterval(sendPoints, interval);
+
 }
