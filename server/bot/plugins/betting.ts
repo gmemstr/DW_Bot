@@ -21,8 +21,8 @@ interface Betting {
 var bettingDuration = moment.duration(10, 'minutes');
 
 const bettingTeams = ['blue', 'red'];
-const bettingTiers = [1, 2, 3, 4, 5, 'tie'];
-const bettingOdds = [(2 / 7), (1 / 10), (2 / 10), (5 / 10), (1 / 1), (2 / 1)];
+const bettingTiers = ['tie', 1, 2, 3, 4, 5];
+const bettingOdds = [(2 / 1), (2 / 7), (1 / 10), (2 / 10), (5 / 10), (1 / 1)];
 
 const minBet = 10;
 const maxBet = 10000;
@@ -118,7 +118,7 @@ export default function (bot) {
       console.log('sending bets.');
       for (let i = 0; i < bettingPool.bets.length; i++) {
         var user = bettingPool.bets[i];
-        if (user.team === winningTeam && user.tier === objectives) {
+        if (user.team === winningTeam && user.tier >= objectives) {
           userService.putDevbits(user.name, (user.amount + user.winnings), () => bot.whisperQ(user.name, `You won ${user.amount + user.winnings} devbits!`));
         } else {
           bot.whisperQ(user.name, `You lost ${user.amount} devbits.`);
