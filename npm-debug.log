@@ -1,33 +1,33 @@
 0 info it worked if it ends with ok
 1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'start' ]
-2 info using npm@3.6.0
-3 info using node@v5.6.0
+2 info using npm@3.7.3
+3 info using node@v5.8.0
 4 verbose run-script [ 'prestart', 'start', 'poststart' ]
 5 info lifecycle dw_bot@0.0.1~prestart: dw_bot@0.0.1
 6 silly lifecycle dw_bot@0.0.1~prestart: no script for prestart, continuing
 7 info lifecycle dw_bot@0.0.1~start: dw_bot@0.0.1
 8 verbose lifecycle dw_bot@0.0.1~start: unsafe-perm in lifecycle true
-9 verbose lifecycle dw_bot@0.0.1~start: PATH: /usr/local/lib/node_modules/npm/bin/node-gyp-bin:/Users/donald/Documents/DW_Folder/DW_Bot/node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin
+9 verbose lifecycle dw_bot@0.0.1~start: PATH: /usr/local/lib/node_modules/npm/bin/node-gyp-bin:/Users/donald/Documents/DW_Folder/DW_Bot/node_modules/.bin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin
 10 verbose lifecycle dw_bot@0.0.1~start: CWD: /Users/donald/Documents/DW_Folder/DW_Bot
 11 silly lifecycle dw_bot@0.0.1~start: Args: [ '-c', 'node index' ]
 12 silly lifecycle dw_bot@0.0.1~start: Returned: code: 255  signal: null
 13 info lifecycle dw_bot@0.0.1~start: Failed to exec start script
 14 verbose stack Error: dw_bot@0.0.1 start: `node index`
 14 verbose stack Exit status 255
-14 verbose stack     at EventEmitter.<anonymous> (/usr/local/lib/node_modules/npm/lib/utils/lifecycle.js:232:16)
+14 verbose stack     at EventEmitter.<anonymous> (/usr/local/lib/node_modules/npm/lib/utils/lifecycle.js:239:16)
 14 verbose stack     at emitTwo (events.js:100:13)
 14 verbose stack     at EventEmitter.emit (events.js:185:7)
 14 verbose stack     at ChildProcess.<anonymous> (/usr/local/lib/node_modules/npm/lib/utils/spawn.js:24:14)
 14 verbose stack     at emitTwo (events.js:100:13)
 14 verbose stack     at ChildProcess.emit (events.js:185:7)
-14 verbose stack     at maybeClose (internal/child_process.js:827:16)
-14 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:211:5)
+14 verbose stack     at maybeClose (internal/child_process.js:850:16)
+14 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:215:5)
 15 verbose pkgid dw_bot@0.0.1
 16 verbose cwd /Users/donald/Documents/DW_Folder/DW_Bot
 17 error Darwin 15.3.0
 18 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "start"
-19 error node v5.6.0
-20 error npm  v3.6.0
+19 error node v5.8.0
+20 error npm  v3.7.3
 21 error code ELIFECYCLE
 22 error dw_bot@0.0.1 start: `node index`
 22 error Exit status 255

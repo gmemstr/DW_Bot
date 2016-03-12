@@ -36,6 +36,9 @@ const ghostBetters: Array<Better> = [
 
 export default function (bot) {
 
+  var bettingPool = null;
+  var betStatus = false;
+
   class Pool implements Betting {
     constructor(public gameId:Number, public bets:Array<Better>) {}
 
@@ -60,10 +63,13 @@ export default function (bot) {
       });
 
     }
-  }
 
-  var bettingPool = null;
-  var betStatus = false;
+    reset() {
+      this.bets = [];
+      bettingPool = null;
+      betStatus = false;
+    }
+  }
 
 
   function startTimer() {
@@ -123,8 +129,8 @@ export default function (bot) {
         } else {
           bot.whisperQ(user.name, `You lost ${user.amount} devbits.`);
         }
+        if (i === bettingPool.length) bettingPool.reset();
       }
-      if (i === bettingPool.length) console.log("last one");
     }
   });
 
