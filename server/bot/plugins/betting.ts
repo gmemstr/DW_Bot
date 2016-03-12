@@ -56,8 +56,7 @@ export default function (bot) {
 
       userService.putDevbits(name, -amount, () => {
         this.bets.push(person);
-        //bot.whisper(name, `We got your bet of ${amount} on ${team} team. Potential winnings of ${winnings}`);
-        console.log(`We got your bet of ${amount} on ${team} team. Potential winnings of ${winnings}`);
+        bot.whisper(name, `We got your bet of ${amount} on ${team} team. Potential winnings of ${Math.round(winnings)}`);
       });
 
     }
@@ -122,7 +121,7 @@ export default function (bot) {
         if (user.team === winningTeam && user.tier === objectives) {
           userService.putDevbits(user.name, (user.amount + user.winnings), () => bot.whisperQ(user.name, `You won ${user.amount + user.winnings} devbits!`));
         } else {
-          bot.whisperQ(user.name, `You lost ${user.amount}.`);
+          bot.whisperQ(user.name, `You lost ${user.amount} devbits.`);
         }
       }
     }
