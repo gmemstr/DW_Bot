@@ -13,7 +13,7 @@ export default function (bot) {
 
   //Basic commands:
   bot.addCommand('*devbits', function(o) {
-    userService.getDevbits(o.from, bits => bot.say(`${o.from}: ${bits} Devbits.`))
+    userService.getDevbits(o.from, bits =>  bits ? bot.say(`${o.from}: ${bits} Devbits.`) : bot.say(`error connecting to database.`))
   });
 
   bot.addCommand('@whispertest', function(o) {
