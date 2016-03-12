@@ -10,7 +10,7 @@ interface Better {
   tier: Number;
   team: String;
   amount: Number;
-  winnings: Number
+  winnings: number
 }
 
 interface Betting {
@@ -124,6 +124,7 @@ export default function (bot) {
           bot.whisperQ(user.name, `You lost ${user.amount} devbits.`);
         }
       }
+      if (i === bettingPool.length) console.log("last one");
     }
   });
 
