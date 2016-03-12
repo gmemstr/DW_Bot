@@ -2,10 +2,14 @@
  * Plugin Index.
  */
 import betting from './betting';
+import voting from './voting';
+
 import * as userService from '../../services/user.service';
 import {getChatters} from '../../services/twitch.service';
 export default function (bot) {
   betting(bot);
+  voting(bot);
+
 
   //Basic commands:
   bot.addCommand('*devbits', function(o) {
