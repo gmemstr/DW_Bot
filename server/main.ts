@@ -8,6 +8,7 @@ import {Bot} from './bot/twitch-bot';
 import Plugins from './bot/plugins';
 import expressInit from './config/express';
 import routesInit from './routes';
+import * as Firebase from 'firebase';
 
 
 // Setup server
@@ -44,9 +45,20 @@ function botInit() {
   Plugins(app.twitchBot);
 }
 
+
+// Firebase handshake
+function fbInit() {
+  const {url, key} = config.firebase;
+  const ref = new Firebase(url);
+  ref.authWithCustomToken(key, (error, authData) => {
+    error ? console.log('Firebase FAILED to connect') : console.log('Firebase Connected!', authData);
+  })
+}
+
 setImmediate(dbInit);
 setImmediate(serverInit);
 setImmediate(botInit);
+setImmediate(fbInit);
 
 // Expose app
 export default app;
