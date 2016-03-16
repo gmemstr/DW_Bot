@@ -49,8 +49,8 @@ function botInit() {
 // Firebase handshake
 function fbInit() {
   const {url, key} = config.firebase;
-  const ref = new Firebase(url);
-  ref.authWithCustomToken(key, (error, authData) => {
+  app.firebase = new Firebase(url);
+  app.firebase.authWithCustomToken(key, (error, authData) => {
     error ? console.log('Firebase FAILED to connect') : console.log('Firebase Connected!', authData);
   })
 }

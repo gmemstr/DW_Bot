@@ -1054,6 +1054,7 @@ declare module "express" {
         interface Express extends Application {
             twitchBot: any;
             dwBotServer: any;
+            firebase: any;
             /**
              * Framework version.
              */
