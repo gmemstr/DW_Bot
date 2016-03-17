@@ -9,6 +9,7 @@ import Plugins from './bot/plugins';
 import expressInit from './config/express';
 import routesInit from './routes';
 import * as Firebase from 'firebase';
+import FbService from './services/firebase.service';
 
 
 // Setup server
@@ -51,7 +52,7 @@ function fbInit() {
   const {url, key} = config.firebase;
   app.firebase = new Firebase(url);
   app.firebase.authWithCustomToken(key, (error, authData) => {
-    error ? console.log('Firebase FAILED to connect') : console.log('Firebase Connected!', authData);
+    error ? console.log('Firebase FAILED to connect') : FbService(app.firebase, authData);
   })
 }
 
