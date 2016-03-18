@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 var ref = null;
 
 export enum Stages { objective, betting, voting }
@@ -10,8 +11,8 @@ interface FirebaseFrame {
   currentGameId?: number,
   game?: any,
   lastUpdate?: number,
-  liveVoting?: {votingOn?: string},
-  stage?: string,
+  liveVoting?: {votingOn?: 'design' | 'func' | 'tiebreaker'},
+  stage?: 'objective' | 'betting' | 'voting',
   timer?: number
 }
 
@@ -21,39 +22,24 @@ export default function(firebase, authData) {
 }
 
 
-export function test() {
-  ref.once('value', snap => console.log('snap ', snap))
-}
-
-export function changeStage(stage: Stages, cb: Function = () => {}) {
-  const newStage = Stages[stage];
-  ref.child('stage').set(newStage);
-}
-
 export function addVote(color: string, category: VoteCategories, count: number = 1, cb: Function = () => {}) {
   const cat = VoteCategories[category];
   ref.child('liveVoting').child(cat).child(color).transaction(currentNum => currentNum + count)
 }
 
-export function changeVoteCat(category: VoteCategories, title?: string, cb: Function = () => {}) {
-  const cat = VoteCategories[category];
-  const voteRef = ref.child('liveVoting').child('votingOn');
-  title ? voteRef.set(`${cat}:${title}`) : voteRef.set(cat);
-}
 
 
-export function updateGame(gameData) {
-  //if no game data is provided it will reset the values.
-  ref.child('frame').update({
+export function resetFrame() {
+  ref.update({
     lastUpdated: Firebase.ServerValue.TIMESTAMP,
-    currentGameId: gameData.id,
+    currentGameId: 0,
     timer: Firebase.ServerValue.TIMESTAMP,
     stage: 'objective',
-    game: gameData,
+    game: false,
 
     liveVoting: {
 
-      votingOn: false,
+      votingOn: 'design',
 
       design: {
         red: 0,
@@ -75,6 +61,13 @@ export function updateGame(gameData) {
       highestBetter: false
     }
   });
+}
+
+
+export function updateFrame(newData: FirebaseFrame) {
+  ref.once('value', dataSnap => {
+    ref.update(_.merge(dataSnap.val(), newData));
+  }, err => console.log('err ', err));
 }
 
 

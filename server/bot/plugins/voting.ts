@@ -1,8 +1,9 @@
-import {Stages, changeStage} from "../../services/firebase.service";
+import {updateFrame, resetFrame} from "../../services/firebase.service";
 
 export default function (bot) {
   bot.addCommand('@firebase', function(o) {
-    changeStage(Stages.objective);
+    // resetFrame();
+    updateFrame({liveVoting: {votingOn: 'func'}});
   });
 }
 
