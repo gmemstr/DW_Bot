@@ -10,7 +10,11 @@ interface FirebaseFrame {
   currentGameId?: number,
   game?: any,
   lastUpdate?: number,
-  liveVoting?: {votingOn?: 'design' | 'func' | 'tiebreaker'},
+  liveVoting?: {votingOn?: 'design' | 'func' | 'tiebreaker',
+    design?: {red?: number, blue?: number},
+    func?: {red?: number, blue?: number},
+    tiebreaker?: {red?: number, blue?: number},
+  },
   stage?: 'objective' | 'betting' | 'voting',
   timer?: number
 }
@@ -21,9 +25,8 @@ export default function(firebase, authData) {
 }
 
 
-export function addVote(color: string, category: VoteCategories, count: number = 1, cb: Function = () => {}) {
-  const cat = VoteCategories[category];
-  ref.child('liveVoting').child(cat).child(color).transaction(currentNum => currentNum + count)
+export function addVoteOnFrame(color: string, category: VoteCategories, count: number = 1, cb: Function = () => {}) {
+  ref.child('liveVoting').child(category).child(color).transaction(currentNum => currentNum + count)
 }
 
 
@@ -63,9 +66,10 @@ export function resetFrame() {
 }
 
 
-export function updateFrame(newData: FirebaseFrame) {
+export function updateFrame(newData: FirebaseFrame, cb: Function = () => {}) {
   ref.once('value', dataSnap => {
     ref.update(_.merge(dataSnap.val(), newData));
+    cb(true);
   }, err => console.log('err ', err));
 }
 
