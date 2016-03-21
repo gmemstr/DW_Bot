@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 var ref = null;
 
-export enum Stages { objective, betting, voting }
 
 export enum VoteCategories { design, func, tiebreaker }
 
