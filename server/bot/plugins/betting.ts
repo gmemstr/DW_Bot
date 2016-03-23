@@ -79,8 +79,8 @@ export default function (bot) {
 
       if (bettingDuration.asMinutes() <= 0 || !betStatus) {
         console.log('clearInterval');
-        clearInterval(timerInt);
         betStatus = false;
+        clearInterval(timerInt);
       }
 
       else if (bettingDuration.asMinutes() <= 3) {

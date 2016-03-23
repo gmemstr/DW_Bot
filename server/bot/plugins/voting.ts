@@ -1,9 +1,12 @@
 import {updateFrame, resetFrame, VoteCategories, addVoteOnFrame} from "../../services/firebase.service";
-import * as _ from 'lodash';
+import * as moment from 'moment';
+
 
 enum VoteCategoriesShortHand { d, f, t }
 var voting = undefined;
 var voters = [];
+
+var votingDuration = moment.duration(3, 'minutes');
 
 export default function (bot) {
 
@@ -16,8 +19,27 @@ export default function (bot) {
       blue: 0
     };
     updateFrame({ liveVoting: voting });
-
     bot.say(`Voting is now open for ${cat}. Use '!red' or '!blue' to vote.`);
+  }
+
+  function endVote() {
+    //TODO: send results to server.
+  }
+
+  function startTimer() {
+    let timerInit = setInterval(() => {
+      votingDuration = moment.duration(votingDuration.asMinutes() - 1, 'minutes');
+
+      if (votingDuration.asMinutes() <= 0 || !voting) {
+        endVote();
+        clearInterval(timerInit)
+      }
+
+      else if(votingDuration.asMinutes() === 1) {
+        bot.say(`${votingDuration.asMinutes()} minute left to vote !red or !blue.`)
+      }
+
+    }, 60000)
   }
 
   function addVote(user: string, color: string, cat = '') {
