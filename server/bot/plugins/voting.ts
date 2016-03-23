@@ -8,6 +8,10 @@ var voters = [];
 
 var votingDuration = moment.duration(3, 'minutes');
 
+function getPercentage(teamCount: number) {
+  return Math.round((teamCount / voters.length) * 100)
+}
+
 export default function (bot) {
 
   function startVote(cat: string) {
@@ -23,6 +27,7 @@ export default function (bot) {
   }
 
   function endVote() {
+    bot.say(`Blue: ${getPercentage(voting[voting.votingOn].blue)}% || ${getPercentage(voting[voting.votingOn].red)}% :Red`);
     //TODO: send results to server.
   }
 
