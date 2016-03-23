@@ -24,3 +24,8 @@ export function earnedBets(winnings: Array<Object>) {
   request.post(`${url}/v1/devbits/earnedbets?key=${key}`)
     .form({bets: JSON.stringify(winnings)});
 }
+
+export function postVotes(category: string, count: number, gameId: number, teamId: number, cb?: Function) {
+  request(`${url}/v1/game/${gameId}/team/${teamId}/addVotes?key=${key}&${category}=${count}`, 
+    (err, res, body) => !err && res.statusCode === 200 ? cb(true) : cb(false) )
+}
