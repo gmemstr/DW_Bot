@@ -3,7 +3,6 @@
  */
 import betting from './betting';
 import voting from './voting';
-
 import * as userService from '../../services/user.service';
 import {getChatters} from '../../services/twitch.service';
 export default function (bot) {
