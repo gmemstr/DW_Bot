@@ -1,6 +1,8 @@
 import * as mongoose from 'mongoose';
 
-const TestSchema = new mongoose.Schema({
+const TestSchema: any = new mongoose.Schema({
+  name: String,
+  info: String,
   active: Boolean
 });
 

@@ -1,6 +1,8 @@
 import * as request from 'request';
 import config from '../config/environment';
 
+const botUrl = `http://${config.ip}:${config.port}`;
+
 const url = config.dwServer.url;
 const key = config.dwServer.key;
 
@@ -26,6 +28,13 @@ export function earnedBets(winnings: Array<Object>) {
 }
 
 export function postVotes(category: string, count: number, gameId: number, teamId: number, cb?: Function) {
-  request(`${url}/v1/game/${gameId}/team/${teamId}/addVotes?key=${key}&${category}=${count}`, 
+  request(`${url}/v1/game/${gameId}/team/${teamId}/addVotes?key=${key}&${category}=${count}`,
     (err, res, body) => !err && res.statusCode === 200 ? cb(true) : cb(false) )
+}
+
+export function api(boo: boolean) {
+  // console.log('config ', config);
+  request.post(`${botUrl}/api/test`)
+    .form({name: 'test', info: true, active: false, some: 'thing'})
+    .on('response', res => console.log('res ', res));
 }

@@ -1,6 +1,5 @@
 import * as express from 'express';
 import * as mongoose from 'mongoose';
-mongoose.Promise = require('bluebird');
 import config from './config/environment';
 import * as http from 'http';
 import * as socket from 'socket.io';
@@ -12,13 +11,14 @@ import * as Firebase from 'firebase';
 import FbService from './services/firebase.service';
 
 
+
 // Setup server
 const app = express();
 const server = http.createServer(app);
-const socketio = socket(server, {
-  serveClient: false,
-  path: '/socket.io-client'
-});
+// const socketio = socket(server, {
+//   serveClient: false,
+//   path: '/socket.io-client'
+// });
 expressInit(app);
 routesInit(app);
 
