@@ -6,6 +6,8 @@ import voting from './voting';
 import * as userService from '../../services/user.service';
 import {getChatters} from '../../services/twitch.service';
 import {api} from "../../services/game.service";
+import {create} from '../../api/test/test.controller';
+
 export default function (bot) {
   betting(bot);
   voting(bot);
@@ -31,5 +33,5 @@ export default function (bot) {
     getChatters(chat => console.log('chat ', chat))
   });
 
-  bot.addCommand('@testAPI', o => api(true))
+  bot.addCommand('@create', o => create({name: 'Hey', info: 'A Dude', active: true, something: false}, res => console.log("res", res)))
 }

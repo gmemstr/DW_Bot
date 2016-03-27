@@ -1,5 +1,3 @@
-import * as request from 'request';
-import config from '../../config/environment';
 import * as gameService from '../../services/game.service';
 import * as userService from '../../services/user.service';
 import * as _ from 'lodash';
