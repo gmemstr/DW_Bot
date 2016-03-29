@@ -1,30 +1,20 @@
 import {error} from 'util';
-import {isArray} from "util";
 const irc = require('tmi.js');
 
 export class Bot {
   client:any;
-  whisperClient:any;
+  whisperClient:any = null;
   _config:any;
-  commands:Object;
-  userGroups:String[];
+  commands:Object = {};
+  userGroups:String[] = ['*', '$', '@'];
   whisperConfig:any;
-  whisperArray:any;
-  whisperCycle:Boolean;
+  whisperArray:any = [];
+  whisperCycle:Boolean = false;
 
   constructor(config = {}) {
     this._config = config;
     this.client = new irc.client(config);
     this.whisperConfig = config;
-    this.whisperClient = null;
-    this.whisperArray = [];
-    this.whisperCycle = false;
-
-    this.commands = {};
-    this.userGroups = ['*', '$', '@'];
-
-
-
   }
 
   startupWhispers(config) {
@@ -70,7 +60,7 @@ export class Bot {
 
     if (this.whisperArray.length > 0) {
       this.whisperArray.shift();
-      setTimeout(() => this.sendWhisperQ(), 600);
+      setTimeout(() => this.sendWhisperQ(), 1600);
     } else {
       this.whisperCycle = false;
     }
