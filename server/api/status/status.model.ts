@@ -1,12 +1,13 @@
 import * as mongoose from 'mongoose';
 
 export interface StatusInterface {
-  name: string,
+  module: 'default' | 'betting' | 'pointper' | 'frame' | 'voting' | 'status',
   message: string,
   rank: 'high' | 'normal' | 'low',
   data: any,
   date?: Date;
   timestamp: number;
+  gameId: number;
 }
 
 const StatusSchema = new mongoose.Schema({
@@ -16,7 +17,6 @@ const StatusSchema = new mongoose.Schema({
   data: mongoose.Schema.Types.Mixed,
   date: { type: Date, default: Date.now },
   timestamp: Number,
-
 });
 
 export default mongoose.model('Status', StatusSchema);
