@@ -1,6 +1,8 @@
 import Status, {StatusInterface} from './status.model';
 
 
-export function create(req: StatusInterface, res: Function = () => {}) {
-  
+export function sendStatus(req: StatusInterface, res: Function = () => {}) {
+  Status.create(req, (err, dbStatus) => {
+    err ? res(false) : res(dbStatus);
+  })
 }
