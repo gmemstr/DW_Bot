@@ -3,7 +3,7 @@ import * as mongoose from 'mongoose';
 export interface StatusInterface {
   module: 'other' | 'betting' | 'pointper' | 'frame' | 'voting' | 'game' | 'user' | 'firebase' | 'twitch',
   message?: string,
-  rank: 'high' | 'normal' | 'low',
+  rank: 'success' | 'info' | 'warning' | 'danger',
   timestamp: number;
   gameId?: number;
   data?: any,
