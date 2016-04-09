@@ -3,31 +3,15 @@ const irc = require('tmi.js');
 
 export class Bot {
   client:any;
-  whisperClient:any = null;
   _config:any;
   commands:Object = {};
   userGroups:String[] = ['*', '$', '@'];
-  whisperConfig:any;
   whisperArray:any = [];
   whisperCycle:Boolean = false;
 
   constructor(config = {}) {
     this._config = config;
     this.client = new irc.client(config);
-    this.whisperConfig = config;
-  }
-
-  startupWhispers(config) {
-    config.connection = {
-      server: 'group.tmi.twitch.tv',
-      port: 80,
-      reconnect: true
-    };
-
-    this.whisperClient = new irc.client(config);
-
-    this.whisperClient.connect();
-    this.whisperClient.addListener('whisper', this.receiveWhisper.bind(this));
   }
 
   chat(channel, user, message, bot, action) {
@@ -44,7 +28,7 @@ export class Bot {
 
   whisper(user: String, message: String, cb: Function = () => {}) {
     if (!user || !message) return;
-    this.whisperClient.say(this._config.channels[0], `/w ${user} ${message}`);
+    this.client.say(this._config.channels[0], `/w ${user} ${message}`);
   }
 
   whisperQ(user: String, message: String) {
@@ -108,9 +92,10 @@ export class Bot {
   tryCommand(from:String, text:String, params:any = []) {
     if (text.length > this._config.commandCharacter.length && text[0] == this._config.commandCharacter) {
       let command = text.slice(this._config.commandCharacter.length).split(/\s+/g)[0].toLowerCase();
-      let o = {from: from, text: text, rest: null, args: null, params: params};
+      let o = {from: from, text: text, rest: null, args: null, params: params, start: 0, end: 0};
 
       if (typeof command === 'string' && this.commands[command]) {
+        o.start = new Date().getTime();
         o.rest = text.slice(command.length + 1).trim();
         o.args = o.rest.split(/\s+/g).map(function (x) {
           var t = +x;
@@ -148,12 +133,9 @@ export class Bot {
   }
 
   run() {
-
     this.client.connect();
     this.client.addListener('chat', this.chat.bind(this));
-
-    this.startupWhispers(this._config);
-
+    this.client.addListener('whisper', this.receiveWhisper.bind(this));
   }
 }
 
