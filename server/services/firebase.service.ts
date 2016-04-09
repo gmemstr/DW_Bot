@@ -29,6 +29,17 @@ export function addVoteOnFrame(color: string, category: VoteCategories, count: n
   ref.child('liveVoting').child(category).child(color).transaction(currentNum => currentNum + count)
 }
 
+export function addTime(amount: number, cb: Function = () => {}) {
+  ref.child('timer').transaction((currentTimer) =>  {
+    return currentTimer + (amount * 60 * 1000)
+  })
+}
+
+export function startTimer(cb: Function = () => {}) {
+  ref.child('timer').update({
+    timer: Firebase.ServerValue.TIMESTAMP
+  })
+}
 
 
 export function resetFrame() {
