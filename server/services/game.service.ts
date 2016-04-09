@@ -1,5 +1,6 @@
 import * as request from 'request';
 import config from '../config/environment';
+import {sendStatus} from '../api/status/status.controller';
 
 const botUrl = `http://${config.ip}:${config.port}`;
 
@@ -11,7 +12,16 @@ export function getCurrentGame(cb: Function) {
   request(`${url}/v1/game/currentgame?key=${key}`, (err, res, body) => {
 
     if (!err && res.statusCode === 200) return cb(JSON.parse(body));
-    else return cb(false, body);
+    else if (err) {
+      sendStatus({
+        module: 'game',
+        message: 'Could not get current game',
+        rank: 'high',
+        timestamp: Date.now(),
+        data: {err: err, res: res}
+      });
+      return cb(false, body);
+    }
 
   })
 }
@@ -29,7 +39,20 @@ export function earnedBets(winnings: Array<Object>) {
 
 export function postVotes(category: string, count: number, gameId: number, teamId: number, cb?: Function) {
   request(`${url}/v1/game/${gameId}/team/${teamId}/addVotes?key=${key}&${category}=${count}`,
-    (err, res, body) => !err && res.statusCode === 200 ? cb(true) : cb(false) )
+    (err, res, body) => {
+      //!err && res.statusCode === 200 ? cb(true) : cb(false)
+      if (!err && res.statusCode) cb(true);
+      else if(err) {
+        sendStatus({
+          module: 'voting',
+          message: 'Could not get current game',
+          rank: 'normal',
+          timestamp: Date.now(),
+          data: {err: err, res: res, req: `${url}/v1/game/${gameId}/team/${teamId}/addVotes?key=${key}&${category}=${count}`}
+        });
+        return cb(false)
+      }
+    })
 }
 
 export function api(boo: boolean) {
