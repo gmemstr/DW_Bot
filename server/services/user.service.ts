@@ -14,7 +14,7 @@ export function putDevbits (user: String, amount: Number, cb: Function = () => {
       sendStatus({
         module: 'user',
         message: 'Could not get put devbits',
-        rank: 'high',
+        rank: 'danger',
         timestamp: Date.now(),
         data: {err: err, res: res, req: `${url}/v1/devbits/${user}/${amount}/?key=${key}`}
       });
@@ -30,7 +30,7 @@ export function getDevbits (user: String, cb: Function = () => {}) {
       sendStatus({
         module: 'user',
         message: 'Could not get devbits.',
-        rank: 'low',
+        rank: 'warning',
         timestamp: Date.now(),
         data: {err: err, res: res, req: `${url}/v1/devbits/${user}/?key=${key}`}
       });

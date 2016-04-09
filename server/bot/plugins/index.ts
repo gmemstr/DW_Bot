@@ -3,6 +3,7 @@
  */
 import betting from './betting';
 import voting from './voting';
+import frame from './frame';
 import * as userService from '../../services/user.service';
 import {getChatters} from '../../services/twitch.service';
 import {api} from "../../services/game.service";
@@ -11,6 +12,7 @@ import {create} from '../../api/test/test.controller';
 export default function (bot) {
   betting(bot);
   voting(bot);
+  frame(bot);
 
 
   //Basic commands:

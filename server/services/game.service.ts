@@ -16,7 +16,7 @@ export function getCurrentGame(cb: Function) {
       sendStatus({
         module: 'game',
         message: 'Could not get current game',
-        rank: 'high',
+        rank: 'danger',
         timestamp: Date.now(),
         data: {err: err, res: res}
       });
@@ -46,7 +46,7 @@ export function postVotes(category: string, count: number, gameId: number, teamI
         sendStatus({
           module: 'voting',
           message: 'Could not get current game',
-          rank: 'normal',
+          rank: 'danger',
           timestamp: Date.now(),
           data: {err: err, res: res, req: `${url}/v1/game/${gameId}/team/${teamId}/addVotes?key=${key}&${category}=${count}`}
         });

@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import {sendStatus} from '../api/status/status.controller';
 var ref = null;
 
 
@@ -32,6 +33,20 @@ export function addVoteOnFrame(color: string, category: VoteCategories, count: n
 export function addTime(amount: number, cb: Function = () => {}) {
   ref.child('timer').transaction((currentTimer) =>  {
     return currentTimer + (amount * 60 * 1000)
+  }, (err, committed, snapshot) => {
+    if (err) {
+      sendStatus({
+        module: 'firebase',
+        message: 'Could not make timer transaction',
+        rank: 'warning',
+        timestamp: Date.now(),
+        data: {err: err, snapshot: snapshot.val()}
+      });
+      return cb(false);
+    }
+    else {
+      return cb(amount);
+    }
   })
 }
 
