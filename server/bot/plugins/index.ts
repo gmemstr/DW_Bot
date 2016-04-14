@@ -2,7 +2,7 @@
  * Plugin Index.
  */
 import betting from './betting';
-import voting from './voting';
+import Voting from './voting';
 import frame from './frame';
 import * as userService from '../../services/user.service';
 import {getChatters} from '../../services/twitch.service';
@@ -11,7 +11,7 @@ import {create} from '../../api/test/test.controller';
 
 export default function (bot) {
   betting(bot);
-  voting(bot);
+  new Voting(bot);
   frame(bot);
 
 

@@ -12,70 +12,75 @@ function getPercentage(teamCount: number) {
   return Math.round((teamCount / voters.length) * 100)
 }
 
-export default function (bot) {
 
-  function startVote(cat: string) {
-    voting = {
-      votingOn: cat
-    };
-    voting[cat] = {
-      red: 0,
-      blue: 0
-    };
-    updateFrame({ liveVoting: voting });
-    bot.say(`Voting is now open for ${cat}. Use '!red' or '!blue' to vote.`);
-  }
+export default class Voting {
+  voting: any = undefined;
+  voters: Object[] = [];
 
-  function endVote() {
-    bot.say(`Blue: ${getPercentage(voting[voting.votingOn].blue)}% || ${getPercentage(voting[voting.votingOn].red)}% :Red`);
-    //TODO: send results to server.
-  }
+  constructor(public bot) {
+    bot.addCommand('@startvote', function (o) {
+      let category = o.args[0] || 'x';
+      if (!voting || VoteCategories[VoteCategoriesShortHand[category.charAt(0)]]) {
+        const trueCat = VoteCategories[VoteCategoriesShortHand[category.charAt(0)]];
+        console.log('trueCat ', trueCat);
+        this.startVote(trueCat);
+      }
+    });
 
-  function startTimer() {
+    bot.addCommand('*red', o => this.addVote(o.from, 'red'));
+    bot.addCommand('*blue', o => this.addVote(o.from, 'blue'));
+    bot.addCommand('@votetest', o => bot.say('test voting command'));
+  };
+
+  startVoteTimer() {
     let timerInit = setInterval(() => {
       votingDuration = moment.duration(votingDuration.asMinutes() - 1, 'minutes');
 
-      if (votingDuration.asMinutes() <= 0 || !voting) {
-        endVote();
+      if (votingDuration.asMinutes() <= 0 || !this.voting) {
+        this.endVote();
         clearInterval(timerInit)
       }
 
       else if(votingDuration.asMinutes() === 1) {
-        bot.say(`${votingDuration.asMinutes()} minute left to vote !red or !blue.`)
+        this.bot.say(`${votingDuration.asMinutes()} minute left to vote !red or !blue.`)
       }
 
     }, 60000)
+  };
+
+  startVote(cat: string) {
+    console.log("StartVote in  class!");
+    voting = 'something';
+    this.voting = {
+      votingOn: cat
+    };
+    this.voting[cat] = {
+      red: 0,
+      blue: 0
+    };
+
+    updateFrame({ liveVoting: this.voting });
+    this.bot.say(`Voting is now open for ${cat}. Use "!red" or "!blue" to vote.`);
   }
 
-  function addVote(user: string, color: string, cat = '') {
-    if (!voting) return bot.say('Voting is closed');
 
-    if (voters.indexOf(user) === -1) {
-      voting[voting.votingOn][color] ++;
-      addVoteOnFrame(color, voting.votingOn, 1);
-      voters.push(user);
-      console.log('voting ', voting)
+
+  addVote(user: string, color: string) {
+    if (!this.voting) return this.say('Voting is closed');
+    if (this.voters.indexOf(user) === -1) {
+      this.voting[this.voting.votingOn][color] ++;
+      addVoteOnFrame(color, this.voting.VotingOn, 1);
+      this.voters.push(user);
     } else {
-      bot.whisper(user, 'You can only vote once.');
+      this.bot.whisper(user, 'You can only vote once.');
     }
   }
 
-  bot.addCommand('@firebase', function(o) {
-    // resetFrame();
-    updateFrame({liveVoting: {votingOn: 'func'}});
-  });
 
-  bot.addCommand('@startvote', function(o) {
-    let category = o.args[0] || 'x';
-    if (!voting || VoteCategories[VoteCategoriesShortHand[category.charAt(0)]]) {
-      const trueCat = VoteCategories[VoteCategoriesShortHand[category.charAt(0)]];
-      console.log('trueCat ', trueCat);
-      startVote(trueCat);
-    }
+  endVote() {
+    this.bot.say(`Blue: ${getPercentage(voting[voting.votingOn].blue)}% || ${getPercentage(voting[voting.votingOn].red)}% :Red`);
+    //TODO: send results to server and reset voting.
+  }
 
-  });
-
-  bot.addCommand('*red', o => addVote(o.from, 'red', voting.votingOn));
-  bot.addCommand('*blue', o => addVote(o.from, 'blue'));
-}
+};
 
