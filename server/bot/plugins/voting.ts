@@ -66,7 +66,7 @@ export default class Voting {
 
 
   addVote(user: string, color: string) {
-    if (!this.voting) return this.say('Voting is closed');
+    if (!this.voting) return this.bot.say('Voting is closed');
     if (this.voters.indexOf(user) === -1) {
       this.voting[this.voting.votingOn][color] ++;
       addVoteOnFrame(color, this.voting.VotingOn, 1);

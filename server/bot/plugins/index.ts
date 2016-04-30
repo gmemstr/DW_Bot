@@ -22,7 +22,7 @@ export default function (bot) {
   });
 
   bot.addCommand('@whispertest', function(o) {
-    bot.whisper(o.from, 'whisper test') //TODO: whispers are broken?
+    bot.whisper(o.from, 'whisper test');
   });
 
   bot.addCommand('@spamwhisper', function(o) {
