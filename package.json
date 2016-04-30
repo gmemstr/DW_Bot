@@ -27,8 +27,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
-    "node": "^4.2.3",
-    "npm": "^2.14.7"
+    "node": "^6.0.0",
+    "npm": "^3.8.6"
   },
   "author": "",
   "license": "MIT",
