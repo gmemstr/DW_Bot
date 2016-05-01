@@ -39,12 +39,18 @@ function serverInit() {
 }
 
 // Start bot
-async function botInit() {
-  console.log("config.bot", config.bot);
-  app.twitchBot = await new Bot(config.bot);
-  await app.twitchBot.run();
-  await app.twitchBot._Chat$();
-  await Plugins(app.twitchBot);
+function botInit() {
+  app.twitchBot = new Bot(config.bot);
+  app.twitchBot.run();
+
+  Plugins(app.twitchBot);
+  app.twitchBot._outWhisper$();
+  app.twitchBot._incChat$();
+
+
+
+  console.log("done botInit");
+
 }
 
 

@@ -22,15 +22,22 @@ export default function (bot) {
   });
 
   bot.addCommand('@whispertest', function(o) {
-    bot.whisper(o.from, 'whisper test');
+    console.log("whispertest");
+    for (let i = 0; i < 10; i++) {
+      // console.log('i ', i);
+      // bot.emitter.emit('outWhisper$', {user: o.from, message: `Spam Whisper #${i}`});
+
+      bot.whisper(o.from, `whisper test #${i}`)
+    }
+
   });
 
-  bot.addCommand('@spamwhisper', function(o) {
-    for (let i = 0; i < 30; i++) {
-      console.log('i ', i);
-      bot.whisperQ(o.from, `Spam Whisper #${i}`)
-    }
-  });
+  // bot.addCommand('@spamwhisper', function(o) {
+  //   for (let i = 0; i < 30; i++) {
+  //     console.log('i ', i);
+  //     bot.whisperQ(o.from, `Spam Whisper #${i}`)
+  //   }
+  // });
 
   bot.addCommand('@chatters', function(o) {
     getChatters(chat => console.log('chat ', chat))
