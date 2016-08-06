@@ -1,5 +1,12 @@
 import {error} from 'util';
+import {EventEmitter} from 'events';
 const irc = require('tmi.js');
+
+enum UserType {
+  Normal,
+  Subscriber,
+  Mod
+}
 
 export class Bot {
   client:any;
@@ -9,21 +16,55 @@ export class Bot {
   whisperArray:any = [];
   whisperCycle:Boolean = false;
 
+  botEE = new EventEmitter();
+
   constructor(config = {}) {
     this._config = config;
     this.client = new irc.client(config);
-  }
 
-  chat(channel, user, message, bot, action) {
-    if (message[0] === this._config.commandCharacter) {
-      this.tryCommand(user.username, message)
-    }
+    // Incoming chat stream.
+    this.botEE.on('incChat$', (input) => {
+      input
+        // See if input message begins with command character.
+        .filter(input => input.message[0] === this._config.commandCharacter)
+        // See if input message is longer than command character.
+        .filter(input => input.message.length > this._config.commandCharacter.length)
+        // See if first word in input message is valid command.
+        .filter(input => {
+          if (this.commands[input.message.slice(this._config.commandCharacter.length).split(/\s+/g)[0].toLowerCase()]) return true
+        })
+        // See if User is allowed to execute command.
+        .filter(input => {
+          let inputCommand = input.message.slice(this._config.commandCharacter.length).split(/\s+/g)[0].toLowerCase();
+          switch (this.commands[inputCommand].rights) {
+            case UserType.Normal: return true;
+            case UserType.Subscriber: return input.user.subscriber === true;
+            case UserType.Mod: return input.user.mod === true;
+            default: return false;
+          }
+        })
+        // Format needed information before sending it off to doCommand function.
+        .map(input => {
+          let inputCommand = input.message.slice(this._config.commandCharacter.length).split(/\s+/g)[0].toLowerCase();
+          let output = {from: input.user.username, text: input.message, inputCommand: inputCommand, rest: null, args: null, start: new Date().getTime(), end: -1};
+          output.rest = input.message.slice(inputCommand.length + 1).trim();
+          output.args = output.rest.split(/\s+/g).map(function (x) {
+            var t = +x;
+            return isNaN(t) ? x : t
+          });
+          
+          console.log('good command');
+          console.log('output: ', output);
+
+          return this.doCommand(output.inputCommand, this.commands[output.inputCommand].response, output);
+        })
+
+    })
   }
 
   receiveWhisper(from: String, message: String) {
-    if (message[0] === this._config.commandCharacter) {
-      this.tryCommand(from, message)
-    }
+    //See if whisper message is a command. Disabled for now.
+    //this.botEE.emit('incChat$', [{user: from, message: message}]);
   }
 
   whisper(user: String, message: String, cb: Function = () => {}) {
@@ -89,31 +130,6 @@ export class Bot {
     }
   }
 
-  tryCommand(from:String, text:String, params:any = []) {
-    if (text.length > this._config.commandCharacter.length && text[0] == this._config.commandCharacter) {
-      let command = text.slice(this._config.commandCharacter.length).split(/\s+/g)[0].toLowerCase();
-      let o = {from: from, text: text, rest: null, args: null, params: params, start: 0, end: 0};
-
-      if (typeof command === 'string' && this.commands[command]) {
-        o.start = new Date().getTime();
-        o.rest = text.slice(command.length + 1).trim();
-        o.args = o.rest.split(/\s+/g).map(function (x) {
-          var t = +x;
-          return isNaN(t) ? x : t
-        });
-        let obj = this.commands[command];
-        if (obj.rights === 0) {//TODO: add mod if statement later.
-          this.doCommand(command, obj.response, o)
-        }
-        else if (obj.rights === 2) {
-          this.isMod(from, res => {
-            if (res) this.doCommand(command, obj.response, o)
-          });
-        }
-      }
-    }
-  }
-
   doCommand(command:String, response:Function, o:Object) {
     if (typeof command === 'string' && typeof response === 'function') {
       response.call(this, o);
@@ -121,7 +137,8 @@ export class Bot {
   }
 
   selfCommand(text:String, ...params) { //this only used for the bot to tell itself to do a command.
-    return this.tryCommand(this._config.identity.username, text, params);
+    return this.botEE.emit('incChat$', [{user: this._config.user, message: text}]);
+    // return this.tryCommand(this._config.identity.username, text, params);
   }
 
   get config() {
@@ -134,7 +151,11 @@ export class Bot {
 
   run() {
     this.client.connect();
-    this.client.addListener('chat', this.chat.bind(this));
+    // this.client.addListener('chat', this.chat.bind(this));
+    this.client.addListener('chat', (channel, user, message, self, action) => {
+      this.botEE.emit('incChat$', [{user: user, message: message}]);
+    });
+
     this.client.addListener('whisper', this.receiveWhisper.bind(this));
   }
 }
