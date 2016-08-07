@@ -51,11 +51,11 @@ export default class Betting {
   constructor(bot) {
     const betting = this;
 
-      bot.addCommand('@openbets', function(o) {
+      bot.addCommand('@openbets', async function(o) {
 
       if (betting.checkProgress()) return bot.say('Betting already in progress.');
 
-      const gameId = o.args[0] || gameService.getCurrentGameId();
+      const gameId = o.args[0] || await gameService.getCurrentGameId();
 
       bot.say(`Betting is now open for game #${gameId}!`);
 
