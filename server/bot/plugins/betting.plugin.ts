@@ -12,11 +12,14 @@ interface Better {
 }
 
 interface Pool {
-  open: Boolean; 
+  open: Boolean;
   openTime: Number;
   gameId: Number;
   bets: Array<Better>;
 }
+
+const minBet = 10;
+const maxBet = 10000;
 
 //TODO: testing only.
 const ghostBetters: Array<Better> = [
@@ -27,13 +30,34 @@ const ghostBetters: Array<Better> = [
 
 export default class Betting {
 
+  pool: Pool = {
+    open:false,
+    openTime: null,
+    gameId: null,
+    bets: null
+  };
+
   constructor(bot) {
-    
-    // Command to open bets, 
+
     bot.addCommand('@openbets', async function(o) {
+      // Check if betting in already in progress.
+      if (this.pool.open) return bot.say('Betting already in progress.');
+
       const gameId = o.args[0] || await gameService.getCurrentGameId();
+
+      return this.openBetting(gameId);
     });
-    
+
+    bot.addCommand('')
+
+  }
+
+  openBetting(gameId, betters = []) {
+    this.pool.openTime = Date.now();
+    this.pool.gameId = gameId;
+    this.pool.bets = betters;
+    this.pool.open = true;
+    //TODO: Firebase stuff.
   }
 
 }
