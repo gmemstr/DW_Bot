@@ -1,7 +1,7 @@
 /**
  * Plugin Index.
  */
-import betting from './betting';
+import Betting from './betting.plugin';
 import Voting from './voting';
 import frame from './frame';
 import * as userService from '../../services/user.service';
@@ -10,7 +10,7 @@ import {api} from "../../services/game.service";
 import {create} from '../../api/test/test.controller';
 
 export default function (bot) {
-  betting(bot);
+  new Betting(bot);
   new Voting(bot);
   frame(bot);
 
