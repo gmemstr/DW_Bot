@@ -26,10 +26,13 @@ export function getCurrentGame(cb: Function) {
   })
 }
 
-export function getCurrentGameId(cb: Function = () => {}) {
-  getCurrentGame((game) => {
-    return cb(game.id);
+export function getCurrentGameId() {
+  return new Promise((resolve, reject) => {
+    getCurrentGame((game) => {
+      return resolve(game.id);
+    });
   });
+  
 }
 
 export function earnedBets(winnings: Array<Object>) {
