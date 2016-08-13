@@ -50,9 +50,9 @@ export class Bot {
           output.rest = input.message.slice(inputCommand.length + 1).trim();
           output.args = output.rest.split(/\s+/g).map(function (x) {
             var t = +x;
-            return isNaN(t) ? x : t
+            return isNaN(t) ? x.toLowerCase() : t
           });
-          
+
           console.log('good command');
           console.log('output: ', output);
 
