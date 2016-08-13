@@ -78,39 +78,39 @@ export default class Betting {
      *    !bet tie 100
      **/
     bot.addCommand('*bet', async function(o) {
-      
+
       if (!this.pool.open) return bot.say('Betting is currently closed.');
 
-      // Change tie tier into tier Tie so it can be matched against bettingTiers enum.
-      if (o.args[0].toLowerCase() === 'tie') o.args[0] = "Tie";
-
-      // Make sure tier argument is valid:
-      if (!bettingTiers[o.args[0]]) return bot.say(`${o.from}, invalid betting command.`);
-
-      console.log('bettingTiers[o.args[0]] ', bettingTiers[o.args[0]]);
+      const type = betting.getBettingType(o.args[0], o.args[1], o.args[2]);
+      
+      switch (type) {
+        case betVariation.type1: return betting.placeBet(o.user, o.args[0], undefined, o.args[1]);
+        case betVariation.type2: return betting.placeBet(o.user, o.args[1], o.args[0], o.args[2]);
+        case betVariation.type3: return betting.placeBet(o.user, o.args[0], undefined, o.args[1]);
+        default: return bot.say(`${o.args[0]}, invalid betting format.`)
+      }
 
     })
 
   }
 
   private getBettingType(arg1, arg2, arg3 = false): any {
-    console.log("getBettingTypes:");
 
     // Determine if Type 1.
-    if (betTeams.indexOf(arg1) != -1 && typeof arg2 === 'number') return 'type1';
+    if (betTeams.indexOf(arg1) != -1 && typeof arg2 === 'number') return betVariation.type1;
 
     // Determine if Type 2.
-      else if (arg1 >= 1 && arg1 <=5 && betTeams.indexOf(arg2) != -1 && typeof arg3 === 'number') return 'type2';
+      else if (arg1 >= 1 && arg1 <=5 && betTeams.indexOf(arg2) != -1 && typeof arg3 === 'number') return betVariation.type2;
 
 
     // Determine if Type 3.
-      else if (arg1 === 'tie' && typeof arg2 === 'number') return 'type3';
+      else if (arg1 === 'tie' && typeof arg2 === 'number') return betVariation.type3;
 
       else return false;
-
-
-
-
+  }
+  
+  private placeBet(user, team, tier, amount) {
+    
   }
 
   private checkProgress() {
