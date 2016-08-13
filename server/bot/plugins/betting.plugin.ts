@@ -27,8 +27,10 @@ enum bettingTiers {
   Tie, One, Two, Three, Four, Ace
 }
 
-enum bettingTeams {
-  blue, red
+const betTeams = ['red', 'blue'];
+
+enum betVariation {
+  type1, type2, type3
 }
 
 
@@ -64,15 +66,22 @@ export default class Betting {
 
     /**
      * Different types of bets:
-     * If you are just betting for witch team will win:
-     * //TODO: This type has not been confirmed. No implantation yet.
+     * If you are just betting for witch team will win: (type1)
      *    !bet [team] [betAmount]
-     * If you are betting for a team to get a certain amount of objectives:
+     *    !bet blue 100
+     * If you are betting for a team to get a certain amount of objectives. (type2)
+     * Example: !bet 2 red 100 means you are betting for the red team to get more than 2 obj.
      *    !bet [objectives#1-5] [team] [betAmount]
-     * If you are betting that both team will tie:
+     *    !bet 3 red 100
+     * If you are betting that both team will tie: (type3)
      *    !bet tie [betAmount]
+     *    !bet tie 100
      **/
     bot.addCommand('*bet', async function(o) {
+      // TODO: testing
+      console.log(o.args[0], o.args[1], o.args[2]);
+      return console.log(betting.getBettingType(o.args[0], o.args[1], o.args[2]));
+      /*
       if (!this.pool.open) return bot.say('Betting is currently closed.');
 
       // Change tie tier into tier Tie so it can be matched against bettingTiers enum.
@@ -81,12 +90,29 @@ export default class Betting {
       // Make sure tier argument is valid:
       if (!bettingTiers[o.args[0]]) return bot.say(`${o.from}, invalid betting command.`);
 
-      console.log('bettingTiers[o.args[0]] ', bettingTiers[o.args[0]]);
-
-
-
+      console.log('bettingTiers[o.args[0]] ', bettingTiers[o.args[0]]);*/
 
     })
+
+  }
+
+  private getBettingType(arg1, arg2, arg3 = false): any {
+    console.log("getBettingTypes:");
+
+    // Determine if Type 1.
+    if (betTeams.indexOf(arg1) != -1 && typeof arg2 === 'number') return 'type1';
+
+    // Determine if Type 2.
+      else if (arg1 >= 1 && arg1 <=5 && betTeams.indexOf(arg2) != -1 && typeof arg3 === 'number') return 'type2';
+
+
+    // Determine if Type 3.
+      else if (arg1 === 'tie' && typeof arg2 === 'number') return 'type3';
+
+      else return false;
+
+
+
 
   }
 

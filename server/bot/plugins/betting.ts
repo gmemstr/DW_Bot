@@ -107,12 +107,13 @@ export default function (bot) {
     if (bettingPool) {
       return bot.say('Betting already in progress')
     } else {
-      gameService.getCurrentGameId((id) => {
-        if (!id) return bot.say('error getting current game.');
-
-        bettingPool = new Pool(id, []);
-        bot.say(`Betting is now open for game #${id}`);
-      })
+      //TODO: remove this later.
+      // gameService.getCurrentGameId((id) => {
+      //   if (!id) return bot.say('error getting current game.');
+      //
+      //   bettingPool = new Pool(id, []);
+      //   bot.say(`Betting is now open for game #${id}`);
+      // })
     }
   });
 
