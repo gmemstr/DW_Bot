@@ -50,7 +50,7 @@ export default class Betting {
     bets: []
   };
 
-  constructor(bot) {
+  constructor(public bot) {
     const betting = this;
 
       bot.addCommand('@openbets', async function(o) {
@@ -82,7 +82,7 @@ export default class Betting {
       if (!this.pool.open) return bot.say('Betting is currently closed.');
 
       const type = betting.getBettingType(o.args[0], o.args[1], o.args[2]);
-      
+
       switch (type) {
         case betVariation.type1: return betting.placeBet(o.user, o.args[0], undefined, o.args[1]);
         case betVariation.type2: return betting.placeBet(o.user, o.args[1], o.args[0], o.args[2]);
@@ -107,16 +107,21 @@ export default class Betting {
 
       else return false;
   }
-  
-  private placeBet(user, team, tier, amount) {
+
+  private placeBet(user, team, tier, amount, cb: Function = () => {}) {
     this.removeBet(user); // TODO: maybe move this to the command?
-    
-    userService.hasDevbits(user, amount, (res) => {
+
+    userService.putDevbits(user, -amount, (res) => {
       // TODO: calc winnings before pushing into pool.bets.
-      if (typeof res === 'number') return this.pool.bets.push({name: name, tier: tier, team: team, amount: amount, winnings: 0})
+      if (res) {
+        this.pool.bets.push({name: name, tier: tier, team: team, amount: amount, winnings: 0});
+        return this.bot.whisper(user, `Your bet of ${amount} bits on the ${team} team has been received.`);
+      } else {
+        return cb(false);
+      }
     })
   }
-  
+
   private removeBet(user) {
     const idx = _.findIndex(this.pool.bets, (better) => better.name === user);
     if(idx) {
@@ -128,8 +133,8 @@ export default class Betting {
     } else {
       // TODO: the bot should say something?
     }
-    
-    
+
+
   }
 
   private checkProgress() {
