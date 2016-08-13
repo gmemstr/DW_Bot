@@ -40,9 +40,12 @@ export function getDevbits (user: String, cb: Function = () => {}) {
 }
 
 
-export function hasDevbits (user: String, request: Number, cb: Function = () => {}) {
-  getDevbits(user, dbAmount => {
-    if (dbAmount < request) return cb(false);
-    else if (dbAmount >= request) return cb(true);
+export function hasDevbits (user: String, request: Number) {
+  return Promise((resolve) => {
+    getDevbits(user, dbAmount => {
+      if (dbAmount < request) return resolve(false);
+      else if (dbAmount >= request) return resolve(true);
+    })
   })
+  
 }

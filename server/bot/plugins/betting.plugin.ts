@@ -47,7 +47,7 @@ export default class Betting {
     open: false,
     openTime: null,
     gameId: null,
-    bets: null
+    bets: []
   };
 
   constructor(bot) {
@@ -102,14 +102,26 @@ export default class Betting {
     // Determine if Type 2.
       else if (arg1 >= 1 && arg1 <=5 && betTeams.indexOf(arg2) != -1 && typeof arg3 === 'number') return betVariation.type2;
 
-
     // Determine if Type 3.
       else if (arg1 === 'tie' && typeof arg2 === 'number') return betVariation.type3;
 
       else return false;
   }
   
-  private placeBet(user, team, tier, amount) {
+  private async placeBet(user, team, tier, amount) {
+    // TODO: remove old bet.
+    
+    const hasBits = await userService.hasDevbits(user, amount);
+  }
+  
+  private async removeBet(user) {
+    const idx = _.findIndex(this.pool.bets, (better) => better.name === user);
+    const bet = this.pool.bets[idx];
+    
+    
+    userService.putDevbits(user, bet.amount, (res) => {
+      if (res) return this.pool.bets.splice(idx, 1);
+    })
     
   }
 

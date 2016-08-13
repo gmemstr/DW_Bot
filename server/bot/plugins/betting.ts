@@ -149,11 +149,12 @@ export default function (bot) {
         console.log('CLEAR BET: ', from);
         bettingPool.clearBet(from);
       }
-
-      userService.hasDevbits(from, amount, status => {
-        if (status) return bettingPool.better = {name: from, tier: tier, team: team, amount: amount, winnings: (amount * bettingOdds[bettingTiers.indexOf(tier)])};
-        else if (!status) return bot.whisper(from, `You don't have the devbits!`);
-      });
+      
+      // TODO: remove later
+      // userService.hasDevbits(from, amount, status => {
+      //   if (status) return bettingPool.better = {name: from, tier: tier, team: team, amount: amount, winnings: (amount * bettingOdds[bettingTiers.indexOf(tier)])};
+      //   else if (!status) return bot.whisper(from, `You don't have the devbits!`);
+      // });
 
     }
   });
