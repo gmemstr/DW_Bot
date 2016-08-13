@@ -78,10 +78,7 @@ export default class Betting {
      *    !bet tie 100
      **/
     bot.addCommand('*bet', async function(o) {
-      // TODO: testing
-      console.log(o.args[0], o.args[1], o.args[2]);
-      return console.log(betting.getBettingType(o.args[0], o.args[1], o.args[2]));
-      /*
+      
       if (!this.pool.open) return bot.say('Betting is currently closed.');
 
       // Change tie tier into tier Tie so it can be matched against bettingTiers enum.
@@ -90,7 +87,7 @@ export default class Betting {
       // Make sure tier argument is valid:
       if (!bettingTiers[o.args[0]]) return bot.say(`${o.from}, invalid betting command.`);
 
-      console.log('bettingTiers[o.args[0]] ', bettingTiers[o.args[0]]);*/
+      console.log('bettingTiers[o.args[0]] ', bettingTiers[o.args[0]]);
 
     })
 
