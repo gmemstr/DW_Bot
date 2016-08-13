@@ -108,20 +108,27 @@ export default class Betting {
       else return false;
   }
   
-  private async placeBet(user, team, tier, amount) {
-    // TODO: remove old bet.
+  private placeBet(user, team, tier, amount) {
+    this.removeBet(user); // TODO: maybe move this to the command?
     
-    const hasBits = await userService.hasDevbits(user, amount);
+    userService.hasDevbits(user, amount, (res) => {
+      // TODO: calc winnings before pushing into pool.bets.
+      if (typeof res === 'number') return this.pool.bets.push({name: name, tier: tier, team: team, amount: amount, winnings: 0})
+    })
   }
   
-  private async removeBet(user) {
+  private removeBet(user) {
     const idx = _.findIndex(this.pool.bets, (better) => better.name === user);
-    const bet = this.pool.bets[idx];
+    if(idx) {
+      const bet = this.pool.bets[idx];
+
+      userService.putDevbits(user, bet.amount, (res) => {
+        if (res) return this.pool.bets.splice(idx, 1);
+      })
+    } else {
+      // TODO: the bot should say something?
+    }
     
-    
-    userService.putDevbits(user, bet.amount, (res) => {
-      if (res) return this.pool.bets.splice(idx, 1);
-    })
     
   }
 
