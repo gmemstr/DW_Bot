@@ -2,6 +2,7 @@ import * as gameService from '../../services/game.service';
 import * as userService from '../../services/user.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import {currentGame} from "../../services/game.service";
 
 interface Better {
   name: String;
@@ -91,10 +92,17 @@ export default class Betting {
       }
 
     });
-    
+
     bot.addCommand('*clearbet', function(o) {
       if (!this.pool.open) return bot.say('Betting is currently closed.');
       betting.removeBet(o.user);
+    });
+
+    bot.addCommand('@betwinner', async function(o) {
+      const currentGame = await gameService.currentGame;
+      
+
+
     })
 
   }

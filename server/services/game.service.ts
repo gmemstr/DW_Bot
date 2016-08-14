@@ -26,6 +26,10 @@ export function getCurrentGame(cb: Function) {
   })
 }
 
+export function currentGame() {
+  return new Promise((resolve) => getCurrentGame((res) => resolve(res)))
+}
+
 export function getCurrentGameId() {
   return new Promise((resolve, reject) => {
     getCurrentGame((game) => {
