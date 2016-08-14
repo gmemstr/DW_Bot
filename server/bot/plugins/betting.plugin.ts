@@ -77,7 +77,7 @@ export default class Betting {
      *    !bet tie [betAmount]
      *    !bet tie 100
      **/
-    bot.addCommand('*bet', async function(o) {
+    bot.addCommand('*bet', function(o) {
 
       if (!this.pool.open) return bot.say('Betting is currently closed.');
 
@@ -90,6 +90,11 @@ export default class Betting {
         default: return bot.say(`${o.args[0]}, invalid betting format.`)
       }
 
+    });
+    
+    bot.addCommand('*clearbet', function(o) {
+      if (!this.pool.open) return bot.say('Betting is currently closed.');
+      betting.removeBet(o.user);
     })
 
   }
