@@ -128,7 +128,8 @@ export default class Betting {
       const bet = this.pool.bets[idx];
 
       userService.putDevbits(user, bet.amount, (res) => {
-        if (res) return this.pool.bets.splice(idx, 1);
+        if (res) {this.pool.bets.splice(idx, 1); this.bot.whisper(user, `Your bet for ${bet.amount} bits has been removed.`)}
+        else {this.bot.whisper(user, `Error removing your bet for ${bet.amount} bits.`)}
       })
     } else {
       // TODO: the bot should say something?
