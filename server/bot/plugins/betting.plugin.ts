@@ -108,7 +108,7 @@ export default class Betting {
       else return false;
   }
 
-  private placeBet(user, team, tier, amount, cb: Function = () => {}) {
+  private placeBet(user, team, tier, amount) {
     this.removeBet(user); // TODO: maybe move this to the command?
 
     userService.putDevbits(user, -amount, (res) => {
@@ -117,7 +117,7 @@ export default class Betting {
         this.pool.bets.push({name: name, tier: tier, team: team, amount: amount, winnings: 0});
         return this.bot.whisper(user, `Your bet of ${amount} bits on the ${team} team has been received.`);
       } else {
-        return cb(false);
+        return this.bot.whisper(user, `Error placing your bet for ${amount} bits.`)
       }
     })
   }
