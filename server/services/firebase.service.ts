@@ -22,7 +22,7 @@ interface FirebaseFrame {
 
 export default function(firebase, authData) {
   console.log("Firebase Starting data:", authData);
-  ref = firebase;
+  ref = firebase.database().ref();
 }
 
 
@@ -59,9 +59,9 @@ export function startTimer(cb: Function = () => {}) {
 
 export function resetFrame() {
   ref.update({
-    lastUpdated: Firebase.ServerValue.TIMESTAMP,
+    lastUpdated: false,
     currentGameId: 0,
-    timer: Firebase.ServerValue.TIMESTAMP,
+    timer: false,
     stage: 'objective',
     game: false,
 

@@ -8,6 +8,7 @@ import * as userService from '../../services/user.service';
 import {getChatters} from '../../services/twitch.service';
 import {api} from "../../services/game.service";
 import {create} from '../../api/test/test.controller';
+import {resetFrame} from '../../services/firebase.service'
 
 export default function (bot) {
   new Betting(bot);
@@ -31,6 +32,8 @@ export default function (bot) {
       bot.whisperQ(o.from, `Spam Whisper #${i}`)
     }
   });
+  
+  bot.addCommand('@resetfirebase', (o) => resetFrame());
 
   bot.addCommand('@chatters', function(o) {
     getChatters(chat => console.log('chat ', chat))

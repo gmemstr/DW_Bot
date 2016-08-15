@@ -48,12 +48,14 @@ function botInit() {
 
 
 // Firebase handshake
-function fbInit() {
-  const {url, key} = config.firebase;
-  app.firebase = new Firebase(url);
-  app.firebase.authWithCustomToken(key, (error, authData) => {
-    error ? console.log('Firebase FAILED to connect') : FbService(app.firebase, authData);
-  })
+async function fbInit() {
+  console.log('config.firebase ', config.firebase);
+  app.firebase = await Firebase.initializeApp(config.firebase);
+  FbService(app.firebase, {});
+
+  // app.firebase.authWithCustomToken(config.firebase.apiKey, (error, authData) => {
+  //   error ? console.log('Firebase FAILED to connect') : FbService(app.firebase, authData);
+  // })
 }
 
 setImmediate(dbInit);
