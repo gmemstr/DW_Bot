@@ -21,8 +21,7 @@ interface FirebaseFrame {
 }
 
 export default function(firebase, authData) {
-  console.log("Firebase Starting data:", authData);
-  ref = firebase.database().ref();
+  ref = firebase.database().ref('frame');
 }
 
 
