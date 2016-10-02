@@ -3,7 +3,7 @@
  */
 import Betting from './betting.plugin';
 import Voting from './voting.plugin';
-import frame from './frame';
+import Frame from './frame.plugin';
 import * as userService from '../../services/user.service';
 import {getChatters} from '../../services/twitch.service';
 import {api} from "../../services/game.service";
@@ -13,7 +13,7 @@ import {resetFrame} from '../../services/firebase.service'
 export default function (bot) {
   new Betting(bot);
   new Voting(bot);
-  frame(bot);
+  new Frame(bot);
 
 
   //Basic commands:
