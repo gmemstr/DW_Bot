@@ -1,4 +1,5 @@
 import {updateFrame, resetFrame, VoteCategories, addVoteOnFrame} from "../../services/firebase.service";
+import {postVotes, getCurrentGameId, currentGame} from '../../services/game.service';
 import * as moment from 'moment';
 
 
@@ -77,7 +78,10 @@ export default class Voting {
   }
 
 
-  endVote() {
+  async endVote() {
+    const cat = this.voting.votingOn;
+    const votes = this.voting[cat];
+    const gameId = await currentGame();
     this.bot.say(`Blue: ${getPercentage(voting[voting.votingOn].blue)}% || ${getPercentage(voting[voting.votingOn].red)}% :Red`);
     //TODO: send results to server and reset voting.
   }

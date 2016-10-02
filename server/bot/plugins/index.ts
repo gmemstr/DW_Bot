@@ -2,7 +2,7 @@
  * Plugin Index.
  */
 import Betting from './betting.plugin';
-import Voting from './voting';
+import Voting from './voting.plugin';
 import frame from './frame';
 import * as userService from '../../services/user.service';
 import {getChatters} from '../../services/twitch.service';
@@ -32,7 +32,7 @@ export default function (bot) {
       bot.whisperQ(o.from, `Spam Whisper #${i}`)
     }
   });
-  
+
   bot.addCommand('@resetfirebase', (o) => resetFrame());
 
   bot.addCommand('@chatters', function(o) {
