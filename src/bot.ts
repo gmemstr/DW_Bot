@@ -1,10 +1,10 @@
 export class TwitchBot {
 
-  constructor() {
+  constructor(private config: {[key: string]: any}) {
     console.log(this.greet());
   }
 
   public greet() {
-    return 'HELLO WORLD@@@@@@@@@@@@@@@@@';
+    return console.log(this.config);
   }
 }

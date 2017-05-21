@@ -1,3 +1,4 @@
+import env from './environment';
 import { TwitchBot } from './bot';
 
-new TwitchBot();
+new TwitchBot(env.bot);

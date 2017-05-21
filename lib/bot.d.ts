@@ -1,4 +1,7 @@
 export declare class TwitchBot {
-    constructor();
-    greet(): string;
+    private config;
+    constructor(config: {
+        [key: string]: any;
+    });
+    greet(): void;
 }

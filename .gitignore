@@ -3,3 +3,8 @@ node_modules/
 npm-debug.log
 .nyc_output
 .idea/
+src/environment/*
+!src/environment/index.ts
+lib/
+
+
