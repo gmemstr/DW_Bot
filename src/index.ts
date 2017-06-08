@@ -1,4 +1,4 @@
-import env from './environment';
+import environment from './environment';
 import { TwitchBot } from './bot';
 
-new TwitchBot(env.bot);
+new TwitchBot(environment.bot);
