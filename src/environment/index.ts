@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Public server configurations will extend these options
-let all = {
+const all = {
   env: process.env.NODE_ENV,
 
   // Root path of server
@@ -21,9 +21,9 @@ let all = {
   mongo: {
     options: {
       db: {
-        safe: true
-      }
-    }
+        safe: true,
+      },
+    },
   },
 
   bot: {
@@ -33,10 +33,10 @@ let all = {
     },
     connection: {
       random: 'chat',
-      reconnect: true
+      reconnect: true,
     },
     commandCharacter: '!',
-  }
+  },
 
 };
 
