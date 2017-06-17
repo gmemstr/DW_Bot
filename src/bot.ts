@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import * as Rx from '@reactivex/rxjs';
 const irc = require('tmi.js');
 
 export enum UserType {
@@ -8,10 +9,10 @@ export enum UserType {
 }
 
 // Different Streams that are connected to Event Emitters.
-export enum $ {
-  IncChat,
-  OutChat,
-}
+const $ = {
+  IncChat: 'IncChat$',
+  OutChat: 'OutChat$',
+};
 
 export interface IUser {
   badges?: { [key: string]: string; };
@@ -32,9 +33,16 @@ export interface IUser {
 
 export class TwitchBot {
   public client: any;
+  public botEE: EventEmitter;
 
   constructor(private config: {[key: string]: any}) {
+    this.botEE = new EventEmitter();
     this.client = new irc.client(this.config);
+
+    Rx.Observable.fromEvent(this.botEE, $.IncChat, (obj: any) => obj)
+      .do((e: string) => console.log(e))
+      .filter(input => this.isCommand(input.msg))
+      .subscribe((a: any) => console.log(`subscribe: ${a}`));
   }
 
   public async say(message: string) {
@@ -58,9 +66,15 @@ export class TwitchBot {
       self: ${self}
       actions: ${action}
       `);
+      this.botEE.emit($.IncChat, { ch, user, msg, self, action });
 
     });
+  }
 
-    return;
+  public isCommand(message: string): boolean {
+    // See if input message begins with command character &&
+    // See if input message is longer than command character.
+    return message[0] === this.config.commandCharacter &&
+           message.trim().length > this.config.commandCharacter.length;
   }
 }
