@@ -8,13 +8,13 @@ test('isCommand returns true on valid format inputs', t => {
   t.true(bot.isCommand('!h'));
 });
 
-test('isCommand returns false on invalid formatted inputs.', t => {
+test('isCommand returns false if user message does not begin command character', t => {
   t.false(bot.isCommand('/!hello'));
   t.false(bot.isCommand(' !hello'));
-  t.false(bot.isCommand('#hello'))
+  t.false(bot.isCommand('#hello'));
 });
 
 test('isCommand returns false when user only inputs just command character', t => {
   t.false(bot.isCommand('!'));
-  t.false(bot.isCommand('! '))
+  t.false(bot.isCommand('! '));
 });
