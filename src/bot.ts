@@ -1,4 +1,17 @@
+import { EventEmitter } from 'events';
 const irc = require('tmi.js');
+
+export enum UserType {
+  Normal,
+  Subscriber,
+  Mod,
+}
+
+// Different Streams that are connected to Event Emitters.
+export enum $ {
+  IncChat,
+  OutChat,
+}
 
 export interface IUser {
   badges?: { [key: string]: string; };
@@ -25,8 +38,6 @@ export class TwitchBot {
   }
 
   public async say(message: string) {
-    console.log(`this.config.channels[0]`);
-    console.log(this.config.channels[0]);
     await this.client.say(this.config.channels[0], message);
     return;
   }
@@ -37,10 +48,9 @@ export class TwitchBot {
    * @return {Promise<void>}
    */
   public async connect(): Promise<void> {
-    console.log(`run`);
     await this.client.connect();
     this.client.addListener('chat', (
-      ch: string, user: IUser, msg: string, self: string, action: any) => {
+      ch: string, user: IUser, msg: string, self: boolean, action: any) => {
       console.log(`
       user: ${user['display-name']}
       channel: ${ch}
