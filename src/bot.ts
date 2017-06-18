@@ -42,7 +42,7 @@ export interface ICommand {
 export class TwitchBot {
   public client: any;
   public botEE: EventEmitter;
-  public commands: Object = {};
+  public commands: {[key: string]: ICommand} = {};
   public userGroups: [string] = ['*', '$', '@'];
 
   constructor(private config: {[key: string]: any}) {
@@ -55,16 +55,23 @@ export class TwitchBot {
       .subscribe((a: any) => console.log(`subscribe: ${a}`));
   }
 
-  public async addCommand(string: string, action: Function, debounce?: number) {
-    console.log(`add command`);
+  public addCommand(
+    string: string, action: Function, debounce: number = 0) {
     // When adding a command, you can specify what 'kind' of command it is.
     // For example '*' means everyone can use this command,
     // '$' means only subscribers can use it.
     // and '@' is mod only.
     if (this.userGroups.includes(string[0])) {
-
+      const commandString = string.substr(1);
+      console.log(`adding command: ${commandString}`);
+      return this.commands[commandString] = {
+        action,
+        debounce,
+        string: commandString,
+        lastExe: 0,
+      };
     } else {
-      throw error(`command does not have an identifier: ${this.userGroups}`);
+      throw new Error(`command needs an identifier: ${this.userGroups}`);
     }
 
   }
