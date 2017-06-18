@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import * as Rx from '@reactivex/rxjs';
+import { error } from 'util';
 const irc = require('tmi.js');
 
 export enum UserType {
@@ -31,9 +32,18 @@ export interface IUser {
   'message-type': 'chat' | 'whisper';
 }
 
+export interface ICommand {
+  string: string;
+  action: Function;
+  lastExe?: number;
+  debounce?: number;
+}
+
 export class TwitchBot {
   public client: any;
   public botEE: EventEmitter;
+  public commands: Object = {};
+  public userGroups: [string] = ['*', '$', '@'];
 
   constructor(private config: {[key: string]: any}) {
     this.botEE = new EventEmitter();
@@ -43,6 +53,20 @@ export class TwitchBot {
       .do((e: string) => console.log(e))
       .filter(input => this.isCommand(input.msg))
       .subscribe((a: any) => console.log(`subscribe: ${a}`));
+  }
+
+  public async addCommand(string: string, action: Function, debounce?: number) {
+    console.log(`add command`);
+    // When adding a command, you can specify what 'kind' of command it is.
+    // For example '*' means everyone can use this command,
+    // '$' means only subscribers can use it.
+    // and '@' is mod only.
+    if (this.userGroups.includes(string[0])) {
+
+    } else {
+      throw error(`command does not have an identifier: ${this.userGroups}`);
+    }
+
   }
 
   public async say(message: string) {
