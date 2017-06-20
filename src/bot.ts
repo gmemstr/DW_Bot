@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import * as Rx from '@reactivex/rxjs';
 import { error } from 'util';
+import { childOfKind } from 'tslint';
 const irc = require('tmi.js');
 
 export enum UserType {
@@ -50,8 +51,8 @@ export class TwitchBot {
     this.client = new irc.client(this.config);
 
     Rx.Observable.fromEvent(this.botEE, $.IncChat, (obj: any) => obj)
-      .do((e: string) => console.log(e))
       .filter(input => this.isCommand(input.msg))
+      .filter(input => this.checkDebounce(this.normalizeMessage(input.msg)))
       .subscribe((a: any) => console.log(`subscribe: ${a}`));
   }
 
@@ -63,12 +64,11 @@ export class TwitchBot {
     // and '@' is mod only.
     if (this.userGroups.includes(string[0])) {
       const commandString = string.substr(1);
-      console.log(`adding command: ${commandString}`);
       return this.commands[commandString] = {
         action,
         debounce,
         string: commandString,
-        lastExe: 0,
+        lastExe: Date.now(),
       };
     } else {
       throw new Error(`command needs an identifier: ${this.userGroups}`);
@@ -102,10 +102,39 @@ export class TwitchBot {
     });
   }
 
-  public isCommand(message: string): boolean {
+  public checkDebounce(command: string): boolean {
+    console.log(command.substr(1));
+    try {
+      const string = command.substr(1);
+      if (!this.commands[string].action) return false;
+      const currentTime = Date.now();
+      const debounce = this.commands[string].debounce || 0;
+      const timePastSinceLastExe = currentTime - this.commands[string].lastExe;
+      return timePastSinceLastExe > debounce;
+    } catch (e) {
+      console.log(`could not execute command.`);
+      return false;
+    }
+
+  }
+
+  public isCommand(command: string): boolean {
     // See if input message begins with command character &&
     // See if input message is longer than command character.
-    return message[0] === this.config.commandCharacter &&
-           message.trim().length > this.config.commandCharacter.length;
+    return command[0] === this.config.commandCharacter &&
+           command.trim().length > this.config.commandCharacter.length;
+  }
+
+  /**
+   * @method normalizeCommand
+   * @description Used to trim and lowercase incoming messages
+   *              before attempting to call them in list of commands.
+   * @param {string} inputMsg - message that needs to be converted.
+   * @return {string} - return command.
+   */
+  public normalizeMessage(inputMsg: string): string {
+    const msgArray = inputMsg.trim().split(' ');
+    const msg = msgArray[0];
+    return msg.toLowerCase();
   }
 }
