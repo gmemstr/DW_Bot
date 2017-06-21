@@ -104,7 +104,6 @@ export class TwitchBot {
   }
 
   public checkDebounce(command: string): boolean {
-    console.log(command.substr(1));
     try {
       const string = command.substr(1);
       if (!this.commands[string].action) return false;

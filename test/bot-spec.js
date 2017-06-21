@@ -28,8 +28,9 @@ test('addCommand throws error if it does not include a identifier character.', t
 });
 
 test('addCommand can be found in commands if it does not throw.', t => {
-  const command = '$highfive';
-  t.notThrows(() => bot.addCommand(command, () => {}));
+  const command = '$heyman';
+  t.notThrows(() => bot.addCommand(command, () => true));
+  t.true(bot.commands[command.substr(1)].action());
 });
 
 test('command can be found if after addCommand method', t => {
