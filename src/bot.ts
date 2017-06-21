@@ -65,7 +65,7 @@ export class TwitchBot {
     // identifier + string = command;
     if (this.userGroups.includes(command[0])) {
       const string = command.substr(1);
-      return this.commands[commandString] = {
+      return this.commands[string] = {
         action,
         debounce,
         string,
