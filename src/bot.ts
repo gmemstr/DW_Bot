@@ -57,17 +57,18 @@ export class TwitchBot {
   }
 
   public addCommand(
-    string: string, action: Function, debounce: number = 0) {
+    command: string, action: Function, debounce: number = 0) {
     // When adding a command, you can specify what 'kind' of command it is.
     // For example '*' means everyone can use this command,
     // '$' means only subscribers can use it.
-    // and '@' is mod only.
-    if (this.userGroups.includes(string[0])) {
-      const commandString = string.substr(1);
+    // and '@' is mod. These are identifiers.
+    // identifier + string = command;
+    if (this.userGroups.includes(command[0])) {
+      const string = command.substr(1);
       return this.commands[commandString] = {
         action,
         debounce,
-        string: commandString,
+        string,
         lastExe: Date.now(),
       };
     } else {
