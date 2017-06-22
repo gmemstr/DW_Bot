@@ -33,10 +33,20 @@ export interface IUser {
   'message-type': 'chat' | 'whisper';
 }
 
+// input coming from user in chat.
+export interface IInput {
+  ch: string;
+  user: IUser;
+  msg: string;
+  self: boolean;
+  action: any;
+}
+
 export interface ICommand {
   string: string;
   action: Function;
   lastExe?: number;
+  reqRights?: any;
   debounce?: number;
 }
 
@@ -53,6 +63,7 @@ export class TwitchBot {
     Rx.Observable.fromEvent(this.botEE, $.IncChat, (obj: any) => obj)
       .filter(input => this.isCommand(input.msg))
       .filter(input => this.checkDebounce(this.normalizeMessage(input.msg)))
+      .filter(input => this.checkPermissions(input))
       .subscribe((a: any) => console.log(`subscribe: ${a}`));
   }
 
@@ -64,13 +75,15 @@ export class TwitchBot {
     // and '@' is mod. These are identifiers.
     // identifier + string = command;
     if (this.userGroups.includes(command[0])) {
-      const string = command.substr(1);
+      const string = command.substr(1).toLowerCase();
       return this.commands[string] = {
         action,
         debounce,
         string,
+        reqRights: this.userGroups.indexOf(command[0]),
         lastExe: Date.now(),
       };
+
     } else {
       throw new Error(`command needs an identifier: ${this.userGroups}`);
     }
@@ -116,6 +129,16 @@ export class TwitchBot {
       return false;
     }
 
+  }
+
+  public checkPermissions(input: IInput): boolean {
+    const string = this.normalizeMessage(input.msg).substr(1);
+    switch (this.commands[string].reqRights) {
+      case UserType.Normal:     return true;
+      case UserType.Subscriber: return input.user.subscriber === true;
+      case UserType.Mod:        return input.user.mod === true;
+      default:                  return false;
+    }
   }
 
   public isCommand(command: string): boolean {

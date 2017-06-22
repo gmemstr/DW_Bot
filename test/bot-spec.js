@@ -68,3 +68,71 @@ test('checkDebounce returns true if time past is > debounce time', async t => {
   await timeout(2000);
   t.true(bot.checkDebounce(command));
 });
+
+test('checkPermissions returns correctly on different command exes for sub.', t => {
+  const user = {
+    mod: false,
+    subscriber: true,
+  };
+  const input = {
+    user,
+    msg: '!checkSubPerms please!',
+  };
+  const SubCommand = '$checkSubPerms';
+  const ModCommand = '@checkModPerms';
+  bot.addCommand(SubCommand, () => {});
+  bot.addCommand(ModCommand, () => {});
+  t.true(bot.checkPermissions(input));
+  input.msg = '!checkModPerms please!';
+  t.false(bot.checkPermissions(input));
+});
+
+test('checkPermissions returns correctly on different command exes for user.', t => {
+  const user = {
+    mod: false,
+    subscriber: false,
+  };
+  const input = {
+    user,
+    msg: '!checkSubPerms2 please!',
+  };
+  const SubCommand = '$checkSubPerms2';
+  const ModCommand = '@checkModPerms2';
+  bot.addCommand(SubCommand, () => {});
+  bot.addCommand(ModCommand, () => {});
+  t.false(bot.checkPermissions(input));
+  input.msg = '!checkModPerms2 please!';
+  t.false(bot.checkPermissions(input));
+});
+
+test('checkPermissions returns correctly on different command exes for mod.', t => {
+  const user = {
+    mod: true,
+    subscriber: false,
+  };
+  const input = {
+    user,
+    msg: '!checkSubPerms3 please!',
+  };
+  const SubCommand = '$checkSubPerms3';
+  const ModCommand = '@checkModPerms3';
+  bot.addCommand(SubCommand, () => {});
+  bot.addCommand(ModCommand, () => {});
+  t.false(bot.checkPermissions(input));
+  input.msg = '!checkModPerms3 please!';
+  t.true(bot.checkPermissions(input));
+});
+
+test('checkPermissions returns true on command with * id.', t => {
+  const user = {
+    mod: false,
+    subscriber: false,
+  };
+  const input = {
+    user,
+    msg: '!everyoneCanUseThisCommand please!',
+  };
+  const eCommand = '*everyoneCanUseThisCommand';
+  bot.addCommand(eCommand, () => {});
+  t.true(bot.checkPermissions(input));
+});
