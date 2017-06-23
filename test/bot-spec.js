@@ -136,3 +136,24 @@ test('checkPermissions returns true on command with * id.', t => {
   bot.addCommand(eCommand, () => {});
   t.true(bot.checkPermissions(input));
 });
+
+
+test('getArgumentsFromMsg returns array in correct format if multiple args are present.', t => {
+  const testMessage = '!bot Can you PARSE this 1 thing?';
+  const args = bot.getArgumentsFromMsg(testMessage);
+  console.log(`args`);
+  console.log(args);
+  t.deepEqual(['can', 'you', 'parse', 'this', 1, 'thing?'], args);
+});
+
+test('getArgumentsFromMsg returns array if only 1 arg present.', t => {
+  const testMessage = '!bot please';
+  const args = bot.getArgumentsFromMsg(testMessage);
+  t.deepEqual(['please'], args);
+});
+
+test('getArgumentsFromMsg returns false if only command is present.', t => {
+  const testMessage = '!returnFalse';
+  const args = bot.getArgumentsFromMsg(testMessage);
+  t.false(args);
+});

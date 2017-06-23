@@ -42,6 +42,18 @@ export interface IInput {
   action: any;
 }
 
+// input after it's gone though formatInput method.
+export interface ICommandPayload {
+  // if user types !bet blue 100
+  // args: ['blue', '100']
+  args: any[] | false;
+  user: IUser;
+  from: string;
+  command: string;
+  type: IUser['message-type'];
+  start: number;
+}
+
 export interface ICommand {
   string: string;
   action: Function;
@@ -64,6 +76,7 @@ export class TwitchBot {
       .filter(input => this.isCommand(input.msg))
       .filter(input => this.checkDebounce(this.normalizeMessage(input.msg)))
       .filter(input => this.checkPermissions(input))
+      .map(input => this.formatInput(input))
       .subscribe((a: any) => console.log(`subscribe: ${a}`));
   }
 
@@ -116,6 +129,24 @@ export class TwitchBot {
     });
   }
 
+  /**
+   * @method formatInput
+   * @description This command is mainly for easy access to what the user type
+   *              inside of a command.
+   * @param {IInput} input - Chat input.
+   * @return {ICommandPayload}
+   */
+  public formatInput(input: IInput): ICommandPayload {
+    return {
+      user: input.user,
+      command: this.normalizeMessage(input.msg),
+      from: input.user.username,
+      type: input.user['message-type'],
+      start: Date.now(),
+      args: this.getArgumentsFromMsg(input.msg),
+    };
+  }
+
   public checkDebounce(command: string): boolean {
     try {
       const string = command.substr(1);
@@ -159,5 +190,25 @@ export class TwitchBot {
     const msgArray = inputMsg.trim().split(' ');
     const msg = msgArray[0];
     return msg.toLowerCase();
+  }
+
+  /**
+   * @method getArgumentsFromMsg
+   * @description Used for formatting input message command arguments.
+   * @param {string} inputMsg - message that needs to be converted.
+   * @return {[string] | false} - args or false if no args are present.
+   */
+  public getArgumentsFromMsg(inputMsg: string): any[] | false {
+    try {
+      const array = inputMsg.split(' ').splice(1);
+      if (array.length < 1) return false;
+      return array.map((item) => {
+        if (item.match(/^\d+$/)) {
+          return Number(item);
+        } else {
+          return item.toString().toLowerCase();
+        }
+      });
+    } catch (e) { return false; }
   }
 }
