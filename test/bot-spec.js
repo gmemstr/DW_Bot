@@ -141,8 +141,6 @@ test('checkPermissions returns true on command with * id.', t => {
 test('getArgumentsFromMsg returns array in correct format if multiple args are present.', t => {
   const testMessage = '!bot Can you PARSE this 1 thing?';
   const args = bot.getArgumentsFromMsg(testMessage);
-  console.log(`args`);
-  console.log(args);
   t.deepEqual(['can', 'you', 'parse', 'this', 1, 'thing?'], args);
 });
 

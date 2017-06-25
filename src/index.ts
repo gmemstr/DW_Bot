@@ -1,5 +1,6 @@
 import environment from './environment';
 import { TwitchBot } from './bot';
+import plugins from './plugins';
 
 const app: {[key: string]: any, bot: TwitchBot | null} = {
   bot: null,
@@ -7,6 +8,7 @@ const app: {[key: string]: any, bot: TwitchBot | null} = {
 
 const connectBot = async (): Promise<void> => {
   const bot = new TwitchBot(environment.bot);
+  plugins(bot);
   await bot.connect();
   app.bot = bot;
   return;

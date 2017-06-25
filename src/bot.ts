@@ -77,7 +77,17 @@ export class TwitchBot {
       .filter(input => this.checkDebounce(this.normalizeMessage(input.msg)))
       .filter(input => this.checkPermissions(input))
       .map(input => this.formatInput(input))
-      .subscribe((a: any) => console.log(`subscribe: ${a}`));
+      .do(payload => this.doCommand(payload))
+      .subscribe((a: any) => console.log(`command`));
+  }
+
+  public async doCommand(payload: ICommandPayload): Promise<boolean> {
+    try {
+      const command: ICommand = this.commands[payload.command.substr(1)];
+      await command.action.call(payload.args);
+      command.lastExe = Date.now();
+      return true;
+    } catch (e) { return false; }
   }
 
   public addCommand(
