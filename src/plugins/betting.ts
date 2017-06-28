@@ -1,4 +1,4 @@
-import { ICommandPayload, TwitchBot } from '../bot';
+import { IPayload, TwitchBot } from '../bot';
 import * as moment from 'moment';
 
 export interface IBetter {
@@ -36,7 +36,7 @@ const bettingDuration = moment.duration(10, 'minutes');
 
 export class BettingPlugin {
   constructor(bot: TwitchBot) {
-    bot.addCommand('*testBet', (p: ICommandPayload) => {
+    bot.addCommand('*testBet', (p: IPayload) => {
       bot.say('test bet command');
     });
   }

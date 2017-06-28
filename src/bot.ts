@@ -43,7 +43,7 @@ export interface IInput {
 }
 
 // input after it's gone though formatInput method.
-export interface ICommandPayload {
+export interface IPayload {
   // if user types !bet blue 100
   // args: ['blue', '100']
   args: any[] | false;
@@ -81,7 +81,7 @@ export class TwitchBot {
       .subscribe((a: any) => console.log(`command`));
   }
 
-  public async doCommand(payload: ICommandPayload): Promise<boolean> {
+  public async doCommand(payload: IPayload): Promise<boolean> {
     try {
       const command: ICommand = this.commands[payload.command.substr(1)];
       await command.action.call(payload.args);
@@ -144,9 +144,9 @@ export class TwitchBot {
    * @description This command is mainly for easy access to what the user type
    *              inside of a command.
    * @param {IInput} input - Chat input.
-   * @return {ICommandPayload}
+   * @return {IPayload}
    */
-  public formatInput(input: IInput): ICommandPayload {
+  public formatInput(input: IInput): IPayload {
     return {
       user: input.user,
       command: this.normalizeMessage(input.msg),
