@@ -18,6 +18,6 @@ const ghostBetters = [
   {name: 'Gengar', tier: 5, team: 'red', amount: 300, winnings: 0},
 ];
 
-test('', t => {
+test('hey', t => {
   t.true(true);
 });
