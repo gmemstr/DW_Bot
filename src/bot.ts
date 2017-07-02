@@ -69,6 +69,7 @@ export class TwitchBot {
   public botEE: EventEmitter;
   public commands: {[key: string]: ICommand} = {};
   public userGroups: [string] = ['*', '$', '@'];
+  private whisperDelay: number = 2000;
 
   constructor(private config: {[key: string]: any}) {
     this.botEE = new EventEmitter();
@@ -87,7 +88,7 @@ export class TwitchBot {
       .subscribe((a: any) => console.log($.IncWhisper));
 
     Rx.Observable.fromEvent(this.botEE, $.OutWhisper, (obj: any) => obj)
-      .map(output => Rx.Observable.of(output).delay(5000))
+      .map(output => Rx.Observable.of(output).delay(this.whisperDelay))
       .concatAll()
       .subscribe((o: any) => this.sendWhisper(o.username, o.message));
   }
