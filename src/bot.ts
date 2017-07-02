@@ -14,6 +14,8 @@ export enum UserType {
 const $ = {
   IncChat: 'IncChat$',
   OutChat: 'OutChat$',
+  IncWhisper: 'IncWhisper$',
+  OutWhisper: 'OutWhisper$',
 };
 
 export interface IUser {
@@ -79,6 +81,15 @@ export class TwitchBot {
       .map(input => this.formatInput(input))
       .do(payload => this.doCommand(payload))
       .subscribe((a: any) => console.log(`command`));
+
+    Rx.Observable.fromEvent(this.botEE, $.IncWhisper, (obj: any) => obj)
+      .do(input => console.log(input))
+      .subscribe((a: any) => console.log($.IncWhisper));
+
+    Rx.Observable.fromEvent(this.botEE, $.OutWhisper, (obj: any) => obj)
+      .map(output => Rx.Observable.of(output).delay(5000))
+      .concatAll()
+      .subscribe((o: any) => this.sendWhisper(o.username, o.message));
   }
 
   public async doCommand(payload: IPayload): Promise<boolean> {
@@ -118,6 +129,16 @@ export class TwitchBot {
     return;
   }
 
+  public async whisper(username: string, message: string): Promise<void> {
+    await this.botEE.emit($.OutWhisper, { username, message });
+    return;
+  }
+
+  public async sendWhisper(username: string, message: string): Promise<void> {
+    await this.client.whisper(username, message);
+    return;
+  }
+
   /**
    * @method connect
    * @description connect the twitch bot to irc channel.
@@ -125,18 +146,14 @@ export class TwitchBot {
    */
   public async connect(): Promise<void> {
     await this.client.connect();
-    this.client.addListener('chat', (
-      ch: string, user: IUser, msg: string, self: boolean, action: any) => {
-      console.log(`
-      user: ${user['display-name']}
-      channel: ${ch}
-      msg: ${msg}
-      self: ${self}
-      actions: ${action}
-      `);
-      this.botEE.emit($.IncChat, { ch, user, msg, self, action });
 
-    });
+    this.client.addListener('chat', (
+      ch: string, user: IUser, msg: string, self: boolean, action: any) =>
+        this.botEE.emit($.IncChat, { ch, user, msg, self, action }));
+
+    this.client.addListener('whisper', (
+      ch: string, user: IUser, msg: string) =>
+        this.botEE.emit($.IncWhisper, { ch, user, msg }));
   }
 
   /**

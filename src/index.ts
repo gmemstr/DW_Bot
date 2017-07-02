@@ -16,5 +16,4 @@ const connectBot = async (): Promise<void> => {
 
 setImmediate(async () => {
   await connectBot();
-  setTimeout(() => { app.bot.say('hello world.'); }, 9000);
 });
