@@ -38,4 +38,5 @@ test('validObjective returns FALSE if INVALID arguments is passed in.', t => {
   t.false(betting.validObjective('eca'));
   t.false(betting.validObjective('6'));
   t.false(betting.validObjective('-1'));
+  t.false(betting.validObjective(false));
 });

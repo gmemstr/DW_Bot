@@ -75,6 +75,7 @@ export class BettingPlugin {
 
   private validObjective(objective: any): ObjTypes | number {
     if (objective === 'ace') return objective;
+    if (objective === false) return false;
     const number = Number(objective);
     if (isNaN(number) || number < 0 || number > 5) {
       return false;
