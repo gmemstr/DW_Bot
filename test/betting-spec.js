@@ -22,14 +22,14 @@ const ghostBetters = [
 ];
 
 test('validObjective returns TRUE if VALID arguments is passed in.', t => {
-  t.true(betting.validObjective('ace'));
-  t.true(betting.validObjective(0));
-  t.true(betting.validObjective(1));
-  t.true(betting.validObjective(2));
-  t.true(betting.validObjective(3));
-  t.true(betting.validObjective(4));
-  t.true(betting.validObjective(5));
-  t.true(betting.validObjective('5'));
+  t.true(betting.validObjective('ace') === 'ace');
+  t.true(betting.validObjective(0) === 0);
+  t.true(betting.validObjective(1) === 1);
+  t.true(betting.validObjective(2) === 2);
+  t.true(betting.validObjective(3) === 3);
+  t.true(betting.validObjective(4) === 4);
+  t.true(betting.validObjective(5) === 5);
+  t.true(betting.validObjective('5') === 5);
 });
 
 test('validObjective returns FALSE if INVALID arguments is passed in.', t => {

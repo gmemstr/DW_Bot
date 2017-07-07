@@ -2,6 +2,8 @@ import { IPayload, IUser, TwitchBot } from '../bot';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 
+export type ObjTypes = false | 0 | 1 | 2 | 3 | 4 | 5 | 'ace';
+
 export interface IBetter {
   name: string;
   tier: number;
@@ -9,7 +11,7 @@ export interface IBetter {
   amount: number;
   winnings: number;
   mods: {
-    objectives: false | 0 | 1 | 2 | 3 | 4 | 5 | 'ace';
+    objectives: ObjTypes;
     strikes: false | string;
   };
 }
@@ -71,10 +73,13 @@ export class BettingPlugin {
 
   }
 
-  private validObjective(objective: any): boolean {
-    if (objective === 'ace') return true;
+  private validObjective(objective: any): ObjTypes | number {
+    if (objective === 'ace') return objective;
     const number = Number(objective);
-    return number >= 0 && number <= 5;
+    if (isNaN(number) || number < 0 || number > 5) {
+      return false;
+    }
+    return number;
   }
 
   /**
