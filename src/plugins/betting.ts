@@ -5,9 +5,13 @@ import * as _ from 'lodash';
 export interface IBetter {
   name: string;
   tier: number;
-  team: string;
+  team: 'red' | 'blue' | 'tie';
   amount: number;
   winnings: number;
+  mods: {
+    objectives: false | 0 | 1 | 2 | 3 | 4 | 5 | 'ace';
+    strikes: false | string;
+  };
 }
 
 interface IPool {
@@ -23,12 +27,8 @@ enum Teams {
 }
 
 enum BettingTiers {
-  tie = 0, one,
-  two, three,
-  four, five,
+  one = 1, two, three, four,
 }
-
-enum betVariation { type1, type2, type3 }
 
 const maxBet = 10;
 const minBet = 10000;
@@ -51,6 +51,30 @@ export class BettingPlugin {
 
   private addBet(name: string, tier: number, amount: number) {
 
+  }
+
+  /**
+   * @method formatBetter
+   * @description This function will make format Better before putting
+   *              it is placed into pool.
+   * @param {string} name - better username.
+   * @param {array} args - arguments from payload.
+   *
+   */
+  private formatBetter(name: string, ...args: any[]): any {
+    const [amount, team, ...modifiers] = args;
+    // tier starts off at 1 with no modifiers.
+    const tier = 1;
+    const obj = modifiers[0] || false;
+    const strikes = modifiers[1] || false;
+    const first = modifiers[2] || false;
+
+  }
+
+  private validObjective(objective: any): boolean {
+    if (objective === 'ace') return true;
+    const number = Number(objective);
+    return number >= 0 && number <= 5;
   }
 
   /**

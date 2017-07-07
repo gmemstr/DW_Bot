@@ -1,7 +1,10 @@
 import test from 'ava';
 import environment from '../lib/environment'
 import { TwitchBot } from '../lib/bot';
+import { BettingPlugin } from '../lib/plugins/betting';
 const bot = new TwitchBot(environment.bot);
+const betting = new BettingPlugin(bot);
+
 
 /*
  * betting docs:
@@ -18,6 +21,21 @@ const ghostBetters = [
   {name: 'Gengar', tier: 5, team: 'red', amount: 300, winnings: 0},
 ];
 
-test('hey', t => {
-  t.true(true);
+test('validObjective returns TRUE if VALID arguments is passed in.', t => {
+  t.true(betting.validObjective('ace'));
+  t.true(betting.validObjective(0));
+  t.true(betting.validObjective(1));
+  t.true(betting.validObjective(2));
+  t.true(betting.validObjective(3));
+  t.true(betting.validObjective(4));
+  t.true(betting.validObjective(5));
+  t.true(betting.validObjective('5'));
+});
+
+test('validObjective returns FALSE if INVALID arguments is passed in.', t => {
+  t.false(betting.validObjective(-1));
+  t.false(betting.validObjective(6));
+  t.false(betting.validObjective('eca'));
+  t.false(betting.validObjective('6'));
+  t.false(betting.validObjective('-1'));
 });
