@@ -21,7 +21,7 @@ const ghostBetters = [
   {name: 'Gengar', tier: 5, team: 'red', amount: 300, winnings: 0},
 ];
 
-test('validObjective returns TRUE if VALID arguments is passed in.', t => {
+test('validObjective returns TRUE if VALID arguments are passed in.', t => {
   t.true(betting.validObjective('ace') === 'ace');
   t.true(betting.validObjective(0) === 0);
   t.true(betting.validObjective(1) === 1);
@@ -32,11 +32,24 @@ test('validObjective returns TRUE if VALID arguments is passed in.', t => {
   t.true(betting.validObjective('5') === 5);
 });
 
-test('validObjective returns FALSE if INVALID arguments is passed in.', t => {
+test('validObjective returns FALSE if INVALID arguments are passed in.', t => {
   t.false(betting.validObjective(-1));
   t.false(betting.validObjective(6));
   t.false(betting.validObjective('eca'));
   t.false(betting.validObjective('6'));
   t.false(betting.validObjective('-1'));
   t.false(betting.validObjective(false));
+});
+
+test('validStrikes returns TRUE if VALID arguments are passed in.', t => {
+  t.true(betting.validStrikes('x') === 'x');
+  t.true(betting.validStrikes('xx') === 'xx');
+  t.true(betting.validStrikes('xxx') === 'xxx');
+});
+
+test('validStrikes returns FALSE if INVALID arguments are passed in.', t => {
+  t.false(betting.validStrikes());
+  t.false(betting.validStrikes(-1));
+  t.false(betting.validStrikes(false));
+  t.false(betting.validStrikes('xxxx'));
 });

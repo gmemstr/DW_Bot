@@ -11,7 +11,7 @@ export interface IBetter {
   amount: number;
   winnings: number;
   mods: {
-    objectives: ObjTypes;
+    objectives: ObjTypes | number;
     strikes: false | string;
   };
 }
@@ -63,14 +63,32 @@ export class BettingPlugin {
    * @param {array} args - arguments from payload.
    *
    */
-  private formatBetter(name: string, ...args: any[]): any {
+  private formatBetter(name: string, ...args: any[]): IBetter {
     const [amount, team, ...modifiers] = args;
     // tier starts off at 1 with no modifiers.
     const tier = 1;
     const obj = modifiers[0] || false;
     const strikes = modifiers[1] || false;
-    const first = modifiers[2] || false;
+    return {
+      name,
+      team,
+      amount,
+      tier,
+      winnings: 0,
+      mods: {
+        strikes: this.validStrikes(strikes),
+        objectives: this.validObjective(obj),
+      },
+    };
+  }
 
+  private validStrikes(strikes: any): false | string {
+    if (
+      strikes === 'x' ||
+      strikes === 'xx' ||
+      strikes === 'xxx'
+    ) return strikes;
+    return false;
   }
 
   private validObjective(objective: any): ObjTypes | number {
