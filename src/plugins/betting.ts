@@ -6,7 +6,6 @@ export type ObjTypes = false | 0 | 1 | 2 | 3 | 4 | 5 | 'ace';
 
 export interface IBetter {
   name: string;
-  tier: number;
   team: 'red' | 'blue' | 'tie';
   amount: number;
   winnings: number;
@@ -23,14 +22,7 @@ interface IPool {
   bets: IBetter[];
 }
 
-enum Teams {
-  red,
-  blue,
-}
-
-enum BettingTiers {
-  one = 1, two, three, four,
-}
+const odds = [(2 / 7), (1 / 10), (2 / 10), (5 / 10), (1 / 1)];
 
 const maxBet = 10;
 const minBet = 10000;
@@ -66,14 +58,12 @@ export class BettingPlugin {
   private formatBetter(name: string, ...args: any[]): IBetter {
     const [amount, team, ...modifiers] = args;
     // tier starts off at 1 with no modifiers.
-    const tier = 1;
     const obj = modifiers[0] || false;
     const strikes = modifiers[1] || false;
     return {
       name,
       team,
       amount,
-      tier,
       winnings: 0,
       mods: {
         strikes: this.validStrikes(strikes),
@@ -89,6 +79,11 @@ export class BettingPlugin {
       strikes === 'xxx'
     ) return strikes;
     return false;
+  }
+
+  private determineWinnings(better: IBetter): number {
+    // TODO:
+
   }
 
   private validObjective(objective: any): ObjTypes | number {
