@@ -24,11 +24,13 @@
   },
   "dependencies": {
     "@reactivex/rxjs": "^5.4.1",
+    "axios": "^0.16.2",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "tmi.js": "^1.2.1"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/lodash": "^4.14.64",
     "@types/moment": "^2.13.0",
     "@types/node": "^7.0.0",
