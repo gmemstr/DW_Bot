@@ -81,8 +81,14 @@ export class BettingPlugin {
     return false;
   }
 
-  private determineWinnings(better: IBetter): number {
-    // TODO:
+  /**
+   *
+   * @method determineWinnings
+   * @description Winnings is based on how many modiferiers are in IBetter.
+   * @param {IBetter} better - Better object.
+   * @return {void}
+   */
+  private determineWinnings(better: IBetter): void {
 
   }
 
