@@ -90,7 +90,7 @@ export class TwitchBot {
     Rx.Observable.fromEvent(this.botEE, $.OutWhisper, (obj: any) => obj)
       .map(output => Rx.Observable.of(output).delay(this.whisperDelay))
       .concatAll()
-      .subscribe((o: any) => this.sendWhisper(o.username, o.message));
+      .subscribe((o: any) => this.whisper(o.username, o.message));
   }
 
   public async doCommand(payload: IPayload): Promise<boolean> {
@@ -130,12 +130,12 @@ export class TwitchBot {
     return;
   }
 
-  public async whisper(username: string, message: string): Promise<void> {
+  public async whisperQueue(username: string, message: string): Promise<void> {
     await this.botEE.emit($.OutWhisper, { username, message });
     return;
   }
 
-  public async sendWhisper(username: string, message: string): Promise<void> {
+  public async whisper(username: string, message: string): Promise<void> {
     await this.client.whisper(username, message);
     return;
   }
