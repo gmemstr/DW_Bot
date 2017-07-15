@@ -82,18 +82,17 @@ export class BettingPlugin {
   }
 
   /**
-   *
-   * @method determineWinnings
-   * @description Winnings is based on how many modiferiers are in IBetter.
+   * @method oddsWinnings
+   * @description Winnings based on objective odds.
    * @param {IBetter} better - Better object.
    * @return {void}
    */
-  private determineWinnings(better: IBetter): void {
+  private oddsWinnings(better: IBetter): void {
 
   }
 
   private validObjective(objective: any): ObjTypes | number {
-    if (objective === 'ace') return objective;
+    if (objective === 'ace') return 5;
     if (objective === false) return false;
     const number = Number(objective);
     if (isNaN(number) || number < 0 || number > 5) {
