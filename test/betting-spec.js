@@ -17,6 +17,9 @@ function timeout(ms) {
 
 const ghostBetters = [
   { // !bet 300 blue
+    // note: user can't bet 0 objectives.
+    // 0 is just a placeholder for if the user doesn't specify an objective.
+    // This basically means the user just places a bet on a team to win.
     name: 'Gastly',
     team: 'blue',
     amount: 300,
