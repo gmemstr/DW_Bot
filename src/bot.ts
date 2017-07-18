@@ -96,7 +96,7 @@ export class TwitchBot {
   public async doCommand(payload: IPayload): Promise<boolean> {
     try {
       const command: ICommand = this.commands[payload.command.substr(1)];
-      await command.action.call(payload.args);
+      await command.action.call(this, payload);
       command.lastExe = Date.now();
       return true;
     } catch (e) { return false; }
