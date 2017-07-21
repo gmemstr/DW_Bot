@@ -1,4 +1,5 @@
 import { IPayload, IUser, TwitchBot } from '../bot';
+import { hasBits, putBits } from '../services/user.service';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 
@@ -22,8 +23,8 @@ interface IPool {
   bets: IBetter[];
 }
 
-const maxBet = 10;
-const minBet = 10000;
+const maxBet = 10000;
+const minBet = 10;
 
 const bettingDuration = moment.duration(10, 'minutes');
 
@@ -37,27 +38,40 @@ export class BettingPlugin {
     bets: [],
   };
 
-  constructor(bot: TwitchBot) {
+  constructor(private bot: TwitchBot) {
     bot.addCommand('*testBet', (p: IPayload) => {
       bot.say('test bet command');
     });
   }
 
-  private addBet(name: string, tier: number, amount: number) {
+  private async addBet(better: IBetter) {
+    // check if user already has bet.
+    if (this.hasBet(better.name)) await this.removeBet(better.name);
+    // check if user has enough bits to bet that amount.
+    if (await !hasBits(better.name, better.amount)) return;
+    putBits(better.name, better.amount)
+      .then(() => {
+        this.pool.bets.push(better);
+      })
+      .catch((e) => {
+        this.bot.whisperQueue(better.name, 'Something went wrong with adding' +
+          'your bet.');
+        // TODO: internal error reporter
+      });
 
   }
 
   /**
    * @method formatBetter
-   * @description This function will make format Better before putting
-   *              it is placed into pool.
+   * @description This function will make sure amount is valid &
+   *              format Better before putting it is placed into pool.
    * @param {string} name - better username.
    * @param {array} args - arguments from payload.
    *
    */
-  private formatBetter(name: string, ...args: any[]): IBetter {
+  private formatBetter(name: string, ...args: any[]): false | IBetter {
     const [amount, team, ...modifiers] = args;
-    // tier starts off at 1 with no modifiers.
+    if (this.validAmount(amount) === false) return false;
     const obj = modifiers[0] || false;
     const strikes = modifiers[1] || false;
     return {
@@ -70,6 +84,18 @@ export class BettingPlugin {
         objectives: this.validObjective(obj),
       },
     };
+  }
+
+  private validAmount(amount: any): false | number {
+    try {
+      // TODO: support #k format.
+      const number = Number(amount.toString().replace(/,/g, ''));
+      if (isNaN(number)) return false;
+      if (number % 1 !== 0) return false;
+      if (number < minBet) return false;
+      if (number > maxBet) return false;
+      return number;
+    } catch (e) { return false; }
   }
 
   private validStrikes(strikes: any): false | string {

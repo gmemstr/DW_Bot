@@ -75,6 +75,23 @@ test('validStrikes returns FALSE if INVALID arguments are passed in.', t => {
   t.false(betting.validStrikes('xxxx'));
 });
 
+test('validAmount return FALSE if INVALID amount number is passed in.', t => {
+  t.false(betting.validAmount(1));
+  t.false(betting.validAmount(99999999));
+  t.false(betting.validAmount(-2));
+  t.false(betting.validAmount('-2000000000'));
+  t.false(betting.validAmount('-20,000'));
+  t.false(betting.validAmount(0));
+  t.false(betting.validAmount(1.1));
+  t.false(betting.validAmount(0.5));
+});
+
+test('validAmount returns a number if VALID number amount is passed in.', t => {
+  t.true(betting.validAmount(10) === 10);
+  t.true(betting.validAmount(100) === 100);
+  t.true(betting.validAmount('5,000') === 5000);
+});
+
 test('oddsWinnings calculate the correct objective bet modifier based Better object.', t => {
   const values = betting.oddValues;
   // TODO: you can do better than this travesty.
