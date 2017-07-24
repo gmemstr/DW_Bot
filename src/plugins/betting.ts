@@ -1,5 +1,6 @@
-import { IPayload, IUser, TwitchBot } from '../bot';
+import { IPayload, TwitchBot } from '../bot';
 import { hasBits, putBits } from '../services/user.service';
+import { currentGame } from '../services/game.service';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 
@@ -18,7 +19,8 @@ export interface IBetter {
 
 interface IPool {
   open: boolean;
-  openTime: number;
+  timer: any;
+  duration: number;
   gameId: number;
   bets: IBetter[];
 }
@@ -26,14 +28,13 @@ interface IPool {
 const maxBet = 10000;
 const minBet = 10;
 
-const bettingDuration = moment.duration(10, 'minutes');
-
 export class BettingPlugin {
   public oddValues =
     [(1 / 2), (3 / 5), (4 / 5), (5 / 5), (7 / 5), (10 / 5)];
   private pool: IPool = {
     open: false,
-    openTime: -1,
+    timer: -1,
+    duration: moment.duration(5, 'minutes').asMilliseconds(),
     gameId: -1,
     bets: [],
   };
@@ -41,6 +42,10 @@ export class BettingPlugin {
   constructor(private bot: TwitchBot) {
     bot.addCommand('*testBet', (p: IPayload) => {
       bot.say('test bet command');
+    });
+
+    bot.addCommand('@openBets', (p: IPayload) => {
+      if (this.pool.open) return bot.say('Betting pool is currently open.');
     });
   }
 
@@ -144,6 +149,24 @@ export class BettingPlugin {
     this.pool.bets = _.remove(this.pool.bets, (b: IBetter) => b.name === name);
 
     return;
+  }
+
+  private async openBets(duration: number = 300000) {
+    const gameId = await currentGame() || 0;
+    this.pool.open = true;
+    this.pool.gameId = gameId;
+    // TODO: Switch Frame stage to betting.
+
+    this.pool.timer = setInterval(() => {
+      this.pool.duration = this.pool.duration - moment.duration(1, 'minutes')
+          .asMilliseconds();
+      if (this.pool.duration < 0 || this.pool.open === false) {
+        clearInterval(this.pool.timer);
+        this.bot.say('Betting has closed.');
+        // TODO: Switch Frame stage back to objective.
+      }
+    }, moment.duration(60, 'seconds').asMilliseconds());
+
   }
 
   /**
