@@ -34,7 +34,7 @@ export class BettingPlugin {
   private pool: IPool = {
     open: false,
     timer: -1,
-    duration: moment.duration(5, 'minutes').asMilliseconds(),
+    duration: this.ms(5),
     gameId: -1,
     bets: [],
   };
@@ -44,8 +44,16 @@ export class BettingPlugin {
       bot.say('test bet command');
     });
 
-    bot.addCommand('@openBets', (p: IPayload) => {
+    bot.addCommand('@openBets', async (p: IPayload) => {
       if (this.pool.open) return bot.say('Betting pool is currently open.');
+      await this.openBets();
+      return bot.say('Betting is now open.');
+    });
+
+    bot.addCommand('@closeBets', (p: IPayload) => {
+      if (!this.pool.open) return bot.say('Betting is already closed.');
+      this.pool.open = false;
+      bot.say('Betting will be closing soon.');
     });
   }
 
@@ -151,22 +159,32 @@ export class BettingPlugin {
     return;
   }
 
-  private async openBets(duration: number = 300000) {
+  private async openBets() {
     const gameId = await currentGame() || 0;
     this.pool.open = true;
     this.pool.gameId = gameId;
     // TODO: Switch Frame stage to betting.
 
     this.pool.timer = setInterval(() => {
-      this.pool.duration = this.pool.duration - moment.duration(1, 'minutes')
-          .asMilliseconds();
+      this.pool.duration = this.pool.duration - this.ms(1);
       if (this.pool.duration < 0 || this.pool.open === false) {
         clearInterval(this.pool.timer);
-        this.bot.say('Betting has closed.');
-        // TODO: Switch Frame stage back to objective.
+        return this.closeBets();
       }
-    }, moment.duration(60, 'seconds').asMilliseconds());
+    }, this.ms(60, 'seconds'));
 
+  }
+
+  private closeBets() {
+    this.pool.open = false;
+    this.pool.timer = -1;
+    this.pool.duration = this.ms(5);
+    return this.bot.say('Betting has been closed.');
+    // TODO: Switch Frame stage back to objective.
+  }
+
+  private ms(duration: number, measurement: 'minutes' | 'seconds' = 'minutes') {
+    return moment.duration(duration, measurement).asMilliseconds();
   }
 
   /**
