@@ -1,7 +1,10 @@
 import test from 'ava';
+import * as _ from 'lodash';
 import environment from '../lib/environment'
 import { TwitchBot } from '../lib/bot';
 import { BettingPlugin } from '../lib/plugins/betting';
+import { getBits, putBits } from '../lib/services/user.service';
+
 const bot = new TwitchBot(environment.bot);
 const betting = new BettingPlugin(bot);
 
@@ -40,6 +43,20 @@ const ghostBetters = [
     winnings: 0,
     mods: {objectives: 5, strikes: false}
   },
+  { // !bet 300 red ace
+    name: 'divine_don',
+    team: 'red',
+    amount: 300,
+    winnings: 0,
+    mods: {objectives: 5, strikes: false}
+  },
+  { // !bet 300 blue ace
+    name: 'syntag',
+    team: 'blue',
+    amount: 300,
+    winnings: 0,
+    mods: {objectives: 5, strikes: false}
+  }
 ];
 
 test('validObjective returns TRUE if VALID arguments are passed in.', t => {
@@ -110,4 +127,29 @@ test('oddsWinnings calculate the correct objective bet modifier based Better obj
     ===
     ghostBetters[2].amount * values[ghostBetters[2].mods.objectives]
   )
+});
+
+test('addBet adds better to pool and removes bet amount.', async (t) => {
+  const better = ghostBetters[3];
+  // put required amount of bits on account.
+  await putBits(better.name, better.amount);
+  // get current number of bits user has.
+  const currentBits = await getBits(better.name);
+  await betting.addBet(better);
+  // make sure better is in betting pool.
+  t.true(_.findIndex(betting.pool.bets, o => o.name === better.name) >= 0);
+  // make sure the right number of bits where taken from user.
+  t.true(await getBits(better.name) + better.amount === currentBits)
+});
+
+test('hasBet returns index number of better if better is found in pool.', async (t) => {
+  const better = ghostBetters[0];
+  betting.pool.bets.push(better);
+  t.true(betting.hasBet(better.name) >= 0);
+});
+
+test('hasBet returns false if better is not found in pool.', t => {
+  let better = ghostBetters[0];
+  better.name += 'unique';
+  t.false(betting.hasBet(ghostBetters.name));
 });

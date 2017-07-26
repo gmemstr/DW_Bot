@@ -62,16 +62,9 @@ export class BettingPlugin {
     if (this.hasBet(better.name)) await this.removeBet(better.name);
     // check if user has enough bits to bet that amount.
     if (await !hasBits(better.name, better.amount)) return;
-    putBits(better.name, better.amount)
-      .then(() => {
-        this.pool.bets.push(better);
-      })
-      .catch((e) => {
-        this.bot.whisperQueue(better.name, 'Something went wrong with adding' +
-          'your bet.');
-        // TODO: internal error reporter
-      });
-
+    await putBits(better.name, this.negative(better.amount));
+    // TODO: error handler
+    return this.pool.bets.push(better);
   }
 
   /**
@@ -154,8 +147,8 @@ export class BettingPlugin {
   }
 
   private async removeBet(name: string): Promise<void> {
+    await this.returnBetAmount(name);
     this.pool.bets = _.remove(this.pool.bets, (b: IBetter) => b.name === name);
-
     return;
   }
 
@@ -188,11 +181,18 @@ export class BettingPlugin {
   }
 
   /**
-   * @method returnBet
-   * @param {number} index - Position
+   * @method returnBetAmount
+   * @param {string} name - IUser.name.
    * @return {Promise<void>}
    */
-  private async returnBet(index: number): Promise<void> {
+  private async returnBetAmount(name: string) {
+    const idx = _.findIndex(this.pool.bets, (b: IBetter) => b.name === name);
+    const better = this.pool.bets[idx];
+    await putBits(better.name, better.amount);
+    return;
+  }
 
+  private negative(num: number) {
+    return -Math.abs(num);
   }
 }
