@@ -48,7 +48,7 @@ export interface IInput {
 export interface IPayload {
   // if user types !bet blue 100
   // args: ['blue', '100']
-  args: any[] | false;
+  args: [any];
   user: IUser;
   from: string;
   command: string;
@@ -226,10 +226,10 @@ export class TwitchBot {
    * @param {string} inputMsg - message that needs to be converted.
    * @return {[string] | false} - args or false if no args are present.
    */
-  public getArgumentsFromMsg(inputMsg: string): any[] | false {
+  public getArgumentsFromMsg(inputMsg: string): any[] {
     try {
       const array = inputMsg.split(' ').splice(1);
-      if (array.length < 1) return false;
+      if (array.length < 1) return [];
       return array.map((item) => {
         if (item.match(/^\d+$/)) {
           return Number(item);
@@ -237,6 +237,6 @@ export class TwitchBot {
           return item.toString().toLowerCase();
         }
       });
-    } catch (e) { return false; }
+    } catch (e) { return []; }
   }
 }
