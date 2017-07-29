@@ -180,6 +180,20 @@ export class BettingPlugin {
     return moment.duration(duration, measurement).asMilliseconds();
   }
 
+  // TODO: test this
+  private async winner(team: 'red' | 'blue') {
+    _.forEach(this.pool.bets, async (o) => {
+      if (o.team !== team) return this.removeBet(o.name);
+      const winnings = this.oddsWinnings(o) + o.amount;
+      await putBits(o.name, winnings)
+        .then(() => {
+          this.removeBet(o.name);
+          this.bot.whisperQueue(o.name, `You have received ${winnings} bits.`);
+        });
+      return;
+    });
+  }
+
   /**
    * @method returnBetAmount
    * @param {string} name - IUser.name.
