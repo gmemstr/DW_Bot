@@ -48,7 +48,7 @@ export interface IInput {
 export interface IPayload {
   // if user types !bet blue 100
   // args: ['blue', '100']
-  args: [any];
+  args: any[];
   user: IUser;
   from: string;
   command: string;
