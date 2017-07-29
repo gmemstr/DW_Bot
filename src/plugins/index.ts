@@ -1,6 +1,7 @@
 import { IPayload, TwitchBot } from '../bot';
 import { BettingPlugin } from './betting';
 import { getBits } from '../services/user.service';
+import { updateFrame } from '../services/firebase.service';
 
 const plugins = (bot: TwitchBot) => {
   new BettingPlugin(bot);
@@ -12,6 +13,11 @@ const plugins = (bot: TwitchBot) => {
   bot.addCommand('*bits', async (o:IPayload) => {
     const bits = await getBits(o.user.username);
     return bot.say(`${o.user.username}: ${bits}`);
+  });
+
+  bot.addCommand('@stage', async (o:IPayload) => {
+    const stage = o.args[0] || 'objective';
+    return updateFrame({ stage });
   });
 };
 
