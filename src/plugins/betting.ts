@@ -3,6 +3,7 @@ import { hasBits, putBits } from '../services/user.service';
 import { currentGame } from '../services/game.service';
 import * as moment from 'moment';
 import * as _ from 'lodash';
+import { switchStage, updateFrame } from '../services/firebase.service';
 
 export type ObjTypes =  0 | 1 | 2 | 3 | 4 | 5;
 
@@ -156,7 +157,7 @@ export class BettingPlugin {
     const gameId = await currentGame() || 0;
     this.pool.open = true;
     this.pool.gameId = gameId;
-    // TODO: Switch Frame stage to betting.
+    switchStage('betting');
 
     this.pool.timer = setInterval(() => {
       this.pool.duration = this.pool.duration - this.ms(1);
@@ -172,8 +173,8 @@ export class BettingPlugin {
     this.pool.open = false;
     this.pool.timer = -1;
     this.pool.duration = this.ms(5);
+    switchStage('objective');
     return this.bot.say('Betting has been closed.');
-    // TODO: Switch Frame stage back to objective.
   }
 
   private ms(duration: number, measurement: 'minutes' | 'seconds' = 'minutes') {

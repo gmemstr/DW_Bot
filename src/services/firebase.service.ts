@@ -73,3 +73,7 @@ export function updateFrame(updates: IFirebaseFrame) {
   });
 }
 
+export function switchStage(stage: 'objective' | 'betting' | 'voting') {
+  return frame.child('stage').set(stage);
+}
+
