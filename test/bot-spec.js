@@ -150,8 +150,8 @@ test('getArgumentsFromMsg returns array if only 1 arg present.', t => {
   t.deepEqual(['please'], args);
 });
 
-test('getArgumentsFromMsg returns false if only command is present.', t => {
+test('getArgumentsFromMsg returns empty array if only command is present.', t => {
   const testMessage = '!returnFalse';
   const args = bot.getArgumentsFromMsg(testMessage);
-  t.false(args);
+  t.true(args.length === 0);
 });
