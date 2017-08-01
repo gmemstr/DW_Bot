@@ -56,6 +56,13 @@ const ghostBetters = [
     amount: 300,
     winnings: 0,
     mods: {objectives: 5, strikes: false}
+  },
+  { // !bet 300 blue ace
+    name: 'format_me',
+    team: 'blue',
+    amount: 300,
+    winnings: 0,
+    mods: {objectives: 5, strikes: false}
   }
 ];
 
@@ -152,4 +159,11 @@ test('hasBet returns false if better is not found in pool.', t => {
   let better = ghostBetters[0];
   better.name += 'unique';
   t.false(betting.hasBet(ghostBetters.name));
+});
+
+test('formatBetter returns better object if correct params are passed in.', t => {
+  const user = ghostBetters[5];
+  const better = betting.formatBetter(user.name, [user.amount, user.team]);
+  t.true(better.name === user.name);
+  t.true(better.amount === user.amount);
 });
