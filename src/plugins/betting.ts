@@ -45,6 +45,33 @@ export class BettingPlugin {
       bot.say('test bet command');
     });
 
+    bot.addCommand('*bet', (p:IPayload) => {
+      if (!this.pool.open)
+        return bot.say('Betting is closed');
+      const better = this.formatBetter(p.user.username, p.args);
+      if (!better) return bot.whisper(p.user.username, 'Something went wrong' +
+        ' when parsing your input.');
+      return this.addBet(better);
+    });
+
+    bot.addCommand('*clearbet', async (p:IPayload) => {
+      if (!this.pool.open)
+        return bot.say('Betting is closed');
+      if (this.hasBet(p.user.username)) {
+        await this.removeBet(p.user.username);
+        console.log(`this.pool.bets`);
+        console.log(this.pool.bets);
+        return bot.whisper(
+          p.user.username,
+          'Your previous bet has been returned.',
+        );
+      } else {
+        return bot.whisper(p.user.username, 'You don\'t have a bet in' +
+          ' the pool.');
+      }
+
+    });
+
     bot.addCommand('@openBets', async (p: IPayload) => {
       if (this.pool.open) return bot.say('Betting pool is currently open.');
       await this.openBets();
@@ -54,18 +81,37 @@ export class BettingPlugin {
     bot.addCommand('@closeBets', (p: IPayload) => {
       if (!this.pool.open) return bot.say('Betting is already closed.');
       this.pool.open = false;
-      bot.say('Betting will be closing soon.');
+      return bot.say('Betting will be closing soon...');
     });
   }
 
-  private async addBet(better: IBetter) {
+  public async addBet(better: IBetter) {
+    // TODO: clean up this whisper output stuff, my god.
+    let whisper = '';
     // check if user already has bet.
-    if (this.hasBet(better.name)) await this.removeBet(better.name);
+    if (this.hasBet(better.name)) await this.removeBet(better.name)
+      .then(() => whisper += 'Your previous bet has been returned & ');
+
     // check if user has enough bits to bet that amount.
-    if (await !hasBits(better.name, better.amount)) return;
-    await putBits(better.name, this.negative(better.amount));
-    // TODO: error handler
-    return this.pool.bets.push(better);
+    const hasAmount = await hasBits(better.name, better.amount);
+    if (!hasAmount) {
+      if (whisper.length > 1) whisper += 'you still don\'t have enough bits. ';
+      else whisper += 'You don\'t have enough bits.';
+      return this.bot.whisper(better.name, whisper);
+    } else {
+      await putBits(better.name, this.negative(better.amount))
+        .then(() => {
+          if (whisper.length > 1) whisper += 'your new ';
+          whisper += 'bet has been received. ';
+        });
+
+      // TODO: error handler
+      this.pool.bets.push(better);
+      whisper = whisper.charAt(0).toUpperCase() + whisper.slice(1);
+      console.log(`this.pool.bets`);
+      console.log(this.pool.bets);
+      return this.bot.whisper(better.name, whisper);
+    }
   }
 
   /**
@@ -76,7 +122,7 @@ export class BettingPlugin {
    * @param {array} args - arguments from payload.
    *
    */
-  private formatBetter(name: string, ...args: any[]): false | IBetter {
+  private formatBetter(name: string, args: any[]): false | IBetter {
     const [amount, team, ...modifiers] = args;
     if (this.validAmount(amount) === false) return false;
     const obj = modifiers[0] || false;
@@ -142,18 +188,18 @@ export class BettingPlugin {
    * @return {false | number} - returns false if bet was not found,
    *                              returns index number if bet is found.
    */
-  private hasBet(name: string): false | number {
+  private hasBet(name: string): boolean {
     const idx = _.findIndex(this.pool.bets, (b: IBetter) => b.name === name);
-    return idx !== -1 ? idx : false;
+    return idx !== -1;
   }
 
-  private async removeBet(name: string): Promise<void> {
+  public async removeBet(name: string) {
+    console.log(`removeBet(${name})`);
     await this.returnBetAmount(name);
-    this.pool.bets = _.remove(this.pool.bets, (b: IBetter) => b.name === name);
-    return;
+    return _.remove(this.pool.bets, (b: IBetter) => b.name === name);
   }
 
-  private async openBets() {
+  public async openBets() {
     const gameId = await currentGame() || 0;
     this.pool.open = true;
     this.pool.gameId = gameId;
@@ -169,7 +215,7 @@ export class BettingPlugin {
 
   }
 
-  private closeBets() {
+  public closeBets() {
     this.pool.open = false;
     this.pool.timer = -1;
     this.pool.duration = this.ms(5);
@@ -182,7 +228,7 @@ export class BettingPlugin {
   }
 
   // TODO: test this
-  private async winner(team: 'red' | 'blue') {
+  public async winner(team: 'red' | 'blue') {
     _.forEach(this.pool.bets, async (o) => {
       if (o.team !== team) return this.removeBet(o.name);
       const winnings = this.oddsWinnings(o) + o.amount;
