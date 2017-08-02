@@ -2,7 +2,7 @@ import test from 'ava';
 import * as _ from 'lodash';
 import environment from '../lib/environment'
 import { TwitchBot } from '../lib/bot';
-import { BettingPlugin } from '../lib/plugins/betting';
+import { BettingPlugin } from '../lib/plugins/betting.plugin';
 import { getBits, putBits } from '../lib/services/user.service';
 
 const bot = new TwitchBot(environment.bot);

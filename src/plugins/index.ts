@@ -1,5 +1,5 @@
 import { IPayload, TwitchBot } from '../bot';
-import { BettingPlugin } from './betting';
+import { BettingPlugin } from './betting.plugin';
 import { getBits } from '../services/user.service';
 import { switchStage } from '../services/firebase.service';
 
