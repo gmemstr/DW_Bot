@@ -9,7 +9,7 @@ const request = axios.create({
   },
 });
 
-const ch = environment.bot.channels[0];
+const ch = environment.bot.channels[0].substr(1);
 
 // DOCS: https://dev.twitch.tv/docs/v5/reference/streams/
 export interface IStream {
@@ -47,8 +47,29 @@ export interface IChannel {
   followers: number;
 }
 
+export interface IChatters {
+  _links: any;
+  chatter_count: number;
+  chatters: {
+    moderators: [string],
+    staff: [string],
+    admins: [string],
+    global_mods: [string],
+    viewers: [string],
+  };
+}
+
 export async function getStreamInfo(channel: string = ch): Promise<IStream> {
   const stream =
     await request.get(`/streams/${channel}`);
   return stream.data;
+}
+
+export async function getViewers(channel = ch): Promise<IChatters | false> {
+  console.log(`getViewersNames(${channel})`);
+  const chatters =
+    `https://tmi.twitch.tv/group/user/${channel.toLowerCase()}/chatters`;
+  const request = await axios.get(chatters);
+  if (request.status === 200) return request.data;
+  return false;
 }
