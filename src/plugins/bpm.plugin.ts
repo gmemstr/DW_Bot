@@ -6,7 +6,7 @@ import * as moment from 'moment';
 export class BPMPlugin {
   private offline = 2;
   private online = 10;
-  private loop: number = this.ms(2, 'minutes');
+  private loop: number = this.ms(30, 'minutes');
 
   constructor(private bot: TwitchBot) {
     bot.addCommand('@bpm', async () => {
@@ -17,7 +17,7 @@ export class BPMPlugin {
     setTimeout(() => {
       console.log(`this.loop`);
       console.log(this.loop);
-      setInterval(this.giveBits, this.loop);
+      setInterval(() => this.giveBits(), this.loop);
     }, this.ms(1, 'minutes'));
 
   }
