@@ -86,3 +86,15 @@ export function addVoteOnFrame(color: teamColors, category: voteCategories) {
     .transaction(currentNum => currentNum + 1);
 }
 
+export async function addTime(ms: number) {
+  await frame.child('timer').transaction((current: number) => current + ms);
+  return;
+}
+
+export async function startTimer() {
+  await frame.child('timer').update({
+    timer: firebase.database.ServerValue.TIMESTAMP,
+  });
+  return;
+}
+
