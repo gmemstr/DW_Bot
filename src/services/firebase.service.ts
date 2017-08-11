@@ -6,6 +6,10 @@ const credential = firebase.credential
   .cert(environment.firebase.serviceAccount);
 const databaseURL = environment.firebase.databaseURL;
 
+export type stages = 'objective' | 'betting' | 'voting';
+export type voteCategories = 'design' | 'func' | 'tiebreaker';
+export type teamColors = 'red' | 'blue';
+
 export interface IFirebaseFrame {
   betting?: { blue?: number, highestBetter?: string, red?: number };
   countdown?: boolean;
@@ -13,12 +17,12 @@ export interface IFirebaseFrame {
   game?: any;
   lastUpdate?: number;
   liveVoting?: {
-    votingOn?: 'design' | 'func' | 'tiebreaker',
+    votingOn?: voteCategories,
     design?: { red?: number, blue?: number },
     func?: { red?: number, blue?: number },
     tiebreaker?: { red?: number, blue?: number },
   };
-  stage?: 'objective' | 'betting' | 'voting';
+  stage?: stages;
   timer?: number;
 }
 
@@ -73,7 +77,12 @@ export function updateFrame(updates: IFirebaseFrame) {
   });
 }
 
-export function switchStage(stage: 'objective' | 'betting' | 'voting') {
+export function switchStage(stage: stages) {
   return frame.child('stage').set(stage);
+}
+
+export function addVoteOnFrame(color: teamColors, category: voteCategories) {
+  return frame.child('liveVoting').child(category).child(color)
+    .transaction(currentNum => currentNum + 1);
 }
 
