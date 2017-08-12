@@ -1,5 +1,9 @@
 import { IPayload, TwitchBot } from '../bot';
-import { teamColors, voteCategories, addVoteOnFrame } from '../services/firebase.service';
+import {
+  teamColors,
+  voteCategories,
+  addVoteOnFrame,
+} from '../services/firebase.service';
 import * as moment from 'moment';
 
 export enum VotingShorthand { d, f, t }
