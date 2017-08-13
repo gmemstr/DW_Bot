@@ -2,7 +2,7 @@ import { IPayload, TwitchBot } from '../bot';
 import {
   teamColors,
   voteCategories,
-  addVoteOnFrame,
+  addVoteOnFrame, resetFrame,
 } from '../services/firebase.service';
 import * as moment from 'moment';
 
@@ -11,8 +11,21 @@ export enum VotingShorthand { d, f, t }
 export class VotingPlugin {
   private isOpen: boolean = false;
   private votingOn: voteCategories = 'design';
+  private voters: string[] = [];
   private duration = this.ms(3, 'minutes');
-  private voters: [string];
+  private timer: any = () => {
+    const t: any = setInterval(() => {
+      this.duration = this.duration - this.ms(1, 'minutes');
+      console.log(`this.duration : ${this.duration}`);
+      if (this.duration < 0) {
+        this.bot.say('Voting is over.');
+        // reset duration.
+        this.duration = this.ms(3, 'minutes');
+        return clearInterval(t);
+      }
+
+    }, this.ms(1, 'minutes'));
+  }
 
   constructor(private bot: TwitchBot) {
     bot.addCommand('@startvote', async (o:IPayload) => {
@@ -21,10 +34,13 @@ export class VotingPlugin {
         return bot.whisper(o.user.username, 'voting is open already.');
       switch (category.charAt(0)) {
         case VotingShorthand[VotingShorthand.d]:
+          bot.say(`Voting opening for design.`);
           return this.openVotes('design');
         case VotingShorthand[VotingShorthand.f]:
+          bot.say(`Voting opening for functionality.`);
           return this.openVotes('func');
         case VotingShorthand[VotingShorthand.t]:
+          bot.say(`Voting opening for the tiebreaker.`);
           return this.openVotes('tiebreaker');
         default:
           return bot.whisper(o.user.username, 'Could not parse vote category');
@@ -51,11 +67,20 @@ export class VotingPlugin {
   }
 
   public addVote(username: string, team: teamColors) {
-    addVoteOnFrame(team, this.votingOn);
+    addVoteOnFrame(team, this.votingOn).then(() => {
+      this.voters.push(username);
+    });
   }
 
   public openVotes(category: voteCategories) {
+    console.log(`category`);
+    console.log(category);
+    this.timer();
+  }
 
+  public endVotes() {
+    // TODO: send data to dw main server.
+    this.voters = [];
   }
 
   /**
