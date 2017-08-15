@@ -5,23 +5,28 @@ import {
   addVoteOnFrame, resetFrame,
 } from '../services/firebase.service';
 import * as moment from 'moment';
+import { currentGame, sendVotes } from '../services/game.service';
 
 export enum VotingShorthand { d, f, t }
+
+export interface IVoter {
+  username: string; team: teamColors;
+}
 
 export class VotingPlugin {
   private isOpen: boolean = false;
   private votingOn: voteCategories = 'design';
-  private voters: string[] = [];
+  private voters: IVoter[] = [];
   private duration = this.ms(3, 'minutes');
   private timer: any = () => {
     const t: any = setInterval(() => {
       this.duration = this.duration - this.ms(1, 'minutes');
       console.log(`this.duration : ${this.duration}`);
-      if (this.duration < 0) {
-        this.bot.say('Voting is over.');
-        // reset duration.
-        this.duration = this.ms(3, 'minutes');
-        return clearInterval(t);
+      if (this.duration <= 0) {
+        this.closeVotes().then(() => {
+          this.bot.say('Voting is over.');
+          return clearInterval(t);
+        });
       }
 
     }, this.ms(1, 'minutes'));
@@ -68,14 +73,25 @@ export class VotingPlugin {
 
   public addVote(username: string, team: teamColors) {
     addVoteOnFrame(team, this.votingOn).then(() => {
-      this.voters.push(username);
+      this.voters.push({ username, team });
     });
   }
 
   public openVotes(category: voteCategories) {
-    console.log(`category`);
-    console.log(category);
-    this.timer();
+    this.votingOn = category;
+    this.isOpen = true;
+    return this.timer();
+  }
+
+  public async closeVotes() {
+    // TODO: send voter to server.
+    currentGame().then((game) => {
+
+    });
+
+    this.votingOn = 'design';
+    this.isOpen = false;
+    this.duration = this.ms(3, 'minutes');
   }
 
   public endVotes() {
