@@ -15,8 +15,6 @@ export class BPMPlugin {
     });
 
     setTimeout(() => {
-      console.log(`this.loop`);
-      console.log(this.loop);
       setInterval(() => this.giveBits(), this.loop);
     }, this.ms(1, 'minutes'));
 
