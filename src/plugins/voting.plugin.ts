@@ -18,19 +18,6 @@ export class VotingPlugin {
   private votingOn: voteCategories = 'design';
   private voters: IVoter[] = [];
   private duration = this.ms(3, 'minutes');
-  private timer: any = () => {
-    const t: any = setInterval(() => {
-      this.duration = this.duration - this.ms(1, 'minutes');
-      console.log(`this.duration : ${this.duration}`);
-      if (this.duration <= 0) {
-        this.closeVotes().then(() => {
-          this.bot.say('Voting is over.');
-          return clearInterval(t);
-        });
-      }
-
-    }, this.ms(1, 'minutes'));
-  }
 
   constructor(private bot: TwitchBot) {
     bot.addCommand('@startvote', async (o:IPayload) => {
@@ -83,12 +70,31 @@ export class VotingPlugin {
     return this.timer();
   }
 
+  public timer() {
+    const t: any = setInterval(() => {
+      this.duration = this.duration - this.ms(1, 'minutes');
+      console.log(`this.duration : ${this.duration}`);
+      if (this.duration <= 0) {
+        this.closeVotes().then(() => {
+          this.bot.say('Voting is over.');
+          return clearInterval(t);
+        });
+      }
+
+    }, this.ms(1, 'minutes'));
+  }
+
   public async closeVotes() {
-    // TODO: send voter to server.
-    currentGame().then((game) => {
-
-    });
-
+    const game = await currentGame();
+    const id = game.id;
+    const blueId = game.teams.blue.id;
+    const redId = game.teams.red.id;
+    if (process.env.NODE_ENV !== 'dev') {
+      await Promise.all([
+        sendVotes(id, redId, this.votingOn, this.teamVotes('red').length),
+        sendVotes(id, blueId, this.votingOn, this.teamVotes('blue').length),
+      ]);
+    }
     this.votingOn = 'design';
     this.isOpen = false;
     this.duration = this.ms(3, 'minutes');
@@ -106,7 +112,11 @@ export class VotingPlugin {
    * //TODO: I'm splitting this into it's own method to write perf test later.
    */
   private hasVote(username: string): boolean {
-    return this.voters.includes(username);
+    return this.voters.some(obj => obj.username === username);
+  }
+
+  private teamVotes(team: teamColors): IVoter[] {
+    return this.voters.filter(obj => obj.team === team);
   }
 
   private ms(duration: number, measurement: 'minutes' | 'seconds' = 'minutes') {
