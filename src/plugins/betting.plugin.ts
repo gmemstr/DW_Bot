@@ -200,9 +200,9 @@ export class BettingPlugin {
   }
 
   public async openBets() {
-    const gameId = await currentGame() || 0;
+    const game = await currentGame() || 0;
     this.pool.open = true;
-    this.pool.gameId = gameId;
+    this.pool.gameId = game.id || 0;
     switchStage('betting');
 
     this.pool.timer = setInterval(() => {
