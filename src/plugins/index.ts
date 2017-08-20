@@ -1,7 +1,7 @@
 import { IPayload, TwitchBot } from '../bot';
 import { BettingPlugin } from './betting.plugin';
 import { getBits } from '../services/user.service';
-import { switchStage } from '../services/firebase.service';
+import { addTime, switchStage } from '../services/firebase.service';
 import { getStreamInfo } from '../services/twitch.service';
 import { BPMPlugin } from './bpm.plugin';
 import { VotingPlugin } from './voting.plugin';
@@ -24,6 +24,12 @@ const plugins = (bot: TwitchBot) => {
   bot.addCommand('@stage', async (o:IPayload) => {
     const stage = o.args[0] || 'objective';
     return switchStage(stage);
+  });
+
+  bot.addCommand('@addtime', async (o:IPayload) => {
+    // user input will be in minute format. So !addtime 1 should add 1m.
+    const ms = Math.floor(o.args[0] * 60 * 1000);
+    return addTime(ms);
   });
 
   bot.addCommand('@channel', async (o:IPayload) => {
