@@ -83,6 +83,12 @@ export class BettingPlugin {
       this.pool.open = false;
       return bot.say('Betting will be closing soon...');
     });
+
+    bot.addCommand('@winner', (p: IPayload) => {
+      const winningTeam = p.args[0].toLowerCase();
+      const teamObjectiveCount = p.args[1];
+      return this.winner(winningTeam, teamObjectiveCount);
+    });
   }
 
   public async addBet(better: IBetter) {
@@ -228,9 +234,10 @@ export class BettingPlugin {
   }
 
   // TODO: test this
-  public async winner(team: 'red' | 'blue') {
+  public async winner(team: 'red' | 'blue', objCount: number) {
     _.forEach(this.pool.bets, async (o) => {
       if (o.team !== team) return this.removeBet(o.name);
+      if (o.mods.objectives < objCount) return this.removeBet(o.name);
       const winnings = this.oddsWinnings(o) + o.amount;
       await putBits(o.name, winnings)
         .then(() => {
