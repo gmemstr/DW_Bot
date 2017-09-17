@@ -3,7 +3,11 @@ import { hasBits, putBits } from '../services/user.service';
 import { currentGame } from '../services/game.service';
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import { switchStage, updateFrame } from '../services/firebase.service';
+import {
+  addFrameBet, removeFrameBet,
+  switchStage,
+  updateFrame,
+} from '../services/firebase.service';
 
 export type ObjTypes =  0 | 1 | 2 | 3 | 4 | 5;
 
@@ -59,6 +63,7 @@ export class BettingPlugin {
         return bot.say('Betting is closed');
       if (this.hasBet(p.user.username)) {
         await this.removeBet(p.user.username);
+        removeFrameBet(p.user.username);
         console.log(`this.pool.bets`);
         console.log(this.pool.bets);
         return bot.whisper(
@@ -109,6 +114,7 @@ export class BettingPlugin {
         .then(() => {
           if (whisper.length > 1) whisper += 'your new ';
           whisper += 'bet has been received. ';
+          addFrameBet(better.name, better.amount, better.team);
         });
 
       // TODO: error handler

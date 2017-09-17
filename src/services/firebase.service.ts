@@ -11,7 +11,12 @@ export type voteCategories = 'design' | 'func' | 'tiebreaker';
 export type teamColors = 'red' | 'blue';
 
 export interface IFirebaseFrame {
-  betting?: { blue?: number, highestBetter?: string, red?: number };
+  betting?: {
+    blue?: number,
+    highestBetter?: string,
+    red?: number,
+    betters?: [any],
+  };
   countdown?: boolean;
   currentGameId?: number;
   game?: any;
@@ -95,6 +100,18 @@ export async function startTimer() {
   await frame.child('timer').update({
     timer: firebase.database.ServerValue.TIMESTAMP,
   });
+  return;
+}
+
+export async function addFrameBet(name: string, amount: number, team: string) {
+  await frame.child('betting').child('betters').child(name).update({
+    name, team, amount,
+  });
+  return;
+}
+
+export async function removeFrameBet(name: string) {
+  await frame.child('betting').child('betters').child(name).remove();
   return;
 }
 
