@@ -212,7 +212,8 @@ export class BettingPlugin {
   }
 
   public async openBets() {
-    const game = await currentGame() || 0;
+    // todo: what happens if this can't find a game?
+    const game = await currentGame();
     this.pool.open = true;
     this.pool.gameId = game.id || 0;
     switchStage('betting');

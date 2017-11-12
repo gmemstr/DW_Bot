@@ -14,7 +14,7 @@ export async function currentGame(): Promise<IGame> {
     const req = await axios(`${url}/v1/game/currentgame?key=${key}`);
     return JSON.parse(req.data);
   } catch (e) {
-
+    throw e;
   }
 }
 
