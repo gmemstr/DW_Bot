@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 import * as Rx from '@reactivex/rxjs';
 import { error } from 'util';
 import { childOfKind } from 'tslint';
+import { ICommand, IInput, IPayload, IUser } from './interfaces';
 const irc = require('tmi.js');
 
 export enum UserType {
@@ -18,51 +19,6 @@ const $ = {
   OutWhisper: 'OutWhisper$',
 };
 
-export interface IUser {
-  badges?: { [key: string]: string; };
-  color: any;
-  'display-name': string;
-  emotes: any;
-  id: string;
-  mod: boolean;
-  'room-id': string;
-  'sent-ts': string;
-  subscriber: boolean;
-  'tmi-sent-ts': string;
-  turbo: boolean;
-  'user-type': string;
-  username: string;
-  'message-type': 'chat' | 'whisper';
-}
-
-// input coming from user in chat.
-export interface IInput {
-  ch: string;
-  user: IUser;
-  msg: string;
-  self: boolean;
-  action: any;
-}
-
-// input after it's gone though formatInput method.
-export interface IPayload {
-  // if user types !bet blue 100
-  // args: ['blue', '100']
-  args: any[];
-  user: IUser;
-  from: string;
-  command: string;
-  type: IUser['message-type'];
-  start: number;
-}
-
-export interface ICommand {
-  string: string;
-  action: Function;
-  lastExe?: number;
-  reqRights?: any;
-  debounce?: number;
-}
 
 export class TwitchBot {
   public client: any;
