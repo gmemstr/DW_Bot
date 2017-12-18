@@ -94,6 +94,10 @@ export class BettingPlugin {
       const teamObjectiveCount = p.args[1];
       return this.winner(winningTeam, teamObjectiveCount);
     });
+
+    bot.addExitFunction(() => {
+      console.log(`saving bets!!!`);
+    });
   }
 
   public async addBet(better: IBetter) {

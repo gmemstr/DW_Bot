@@ -70,6 +70,8 @@ export class TwitchBot {
   public commands: {[key: string]: ICommand} = {};
   public userGroups: [string] = ['*', '$', '@'];
   private whisperDelay: number = 2000;
+  // things to do when terminal exits.
+  private TODO_ON_EXIT: [Function] = [() => console.log('EXITING')];
 
   constructor(private config: {[key: string]: any}) {
     this.botEE = new EventEmitter();
@@ -155,6 +157,20 @@ export class TwitchBot {
     this.client.addListener('whisper', (
       ch: string, user: IUser, msg: string) =>
         this.botEE.emit($.IncWhisper, { ch, user, msg }));
+  }
+
+  /**
+   * @method addExitFunction
+   * @description adds item to safe exit array.
+   * @return {number}
+   */
+  public addExitFunction(fun: Function): void {
+    this.TODO_ON_EXIT.push(fun);
+    return;
+  }
+
+  public getExitItems(): any {
+    return this.TODO_ON_EXIT.filter(fun => typeof fun === 'function');
   }
 
   /**
