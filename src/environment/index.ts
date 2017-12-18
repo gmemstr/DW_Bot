@@ -8,7 +8,6 @@ const all = {
   env: process.env.NODE_ENV,
 
   bot: {
-    mods: ['divine_don', 'syntag', 'b3zman41'],
     options: {
       debug: true,
     },
