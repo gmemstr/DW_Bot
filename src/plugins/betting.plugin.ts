@@ -1,4 +1,5 @@
-import { IPayload, TwitchBot } from '../bot';
+import { IPayload } from '../interfaces';
+import { TwitchBot } from '../bot';
 import { hasBits, putBits } from '../services/user.service';
 import { currentGame } from '../services/game.service';
 import * as moment from 'moment';

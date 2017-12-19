@@ -1,4 +1,5 @@
-import { IPayload, TwitchBot } from '../bot';
+import { IPayload } from '../interfaces';
+import { TwitchBot } from '../bot';
 import {
   teamColors,
   voteCategories,
