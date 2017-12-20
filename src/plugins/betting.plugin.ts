@@ -79,6 +79,7 @@ export class BettingPlugin {
     });
 
     bot.addCommand('@openBets', async (p: IPayload) => {
+      console.log(`openbets!`);
       if (this.pool.open) return bot.say('Betting pool is currently open.');
       await this.openBets();
       return bot.say('Betting is now open.');
@@ -92,7 +93,7 @@ export class BettingPlugin {
 
     bot.addCommand('@winner', (p: IPayload) => {
       const winningTeam = p.args[0].toLowerCase();
-      const teamObjectiveCount = p.args[1];
+      const teamObjectiveCount = p.args[1] || 0;
       return this.winner(winningTeam, teamObjectiveCount);
     });
 
@@ -186,7 +187,8 @@ export class BettingPlugin {
   private oddsWinnings(better: IBetter): number {
     const betAmount = better.amount;
     const objPrediction = better.mods.objectives;
-    return betAmount * this.oddValues[objPrediction];
+    // todo: round this
+    return Math.round(betAmount * this.oddValues[objPrediction]);
   }
 
   private validObjective(objective: any): ObjTypes | number {
@@ -212,15 +214,17 @@ export class BettingPlugin {
 
   public async removeBet(name: string) {
     console.log(`removeBet(${name})`);
+    removeFrameBet(name);
     await this.returnBetAmount(name);
     return _.remove(this.pool.bets, (b: IBetter) => b.name === name);
   }
 
   public async openBets() {
     // todo: what happens if this can't find a game?
-    const game = await currentGame();
+    // todo: uncomment this later.
+    // const game = await currentGame() || { id: 0 };
     this.pool.open = true;
-    this.pool.gameId = game.id || 0;
+    this.pool.gameId = 0;
     switchStage('betting');
 
     this.pool.timer = setInterval(() => {
@@ -230,7 +234,7 @@ export class BettingPlugin {
         return this.closeBets();
       }
     }, this.ms(60, 'seconds'));
-
+    return;
   }
 
   public closeBets() {
@@ -245,11 +249,11 @@ export class BettingPlugin {
     return moment.duration(duration, measurement).asMilliseconds();
   }
 
-  // TODO: test this
   public async winner(team: 'red' | 'blue', objCount: number) {
     _.forEach(this.pool.bets, async (o) => {
       if (o.team !== team) return this.removeBet(o.name);
-      if (o.mods.objectives < objCount) return this.removeBet(o.name);
+      // todo: next line doesn't seem to be working?
+      if (o.mods.objectives > objCount) return this.removeBet(o.name);
       const winnings = this.oddsWinnings(o) + o.amount;
       await putBits(o.name, winnings)
         .then(() => {

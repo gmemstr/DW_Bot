@@ -103,15 +103,19 @@ export async function startTimer() {
   return;
 }
 
-export async function addFrameBet(name: string, amount: number, team: string) {
-  await frame.child('betting').child('betters').child(name).update({
-    name, team, amount,
+export function addFrameBet(name: string, amount: number, team: string) {
+  frame.child('betting').child('betters').push({
+    name, team, amount, timestamp: firebase.database.ServerValue.TIMESTAMP,
   });
   return;
 }
 
-export async function removeFrameBet(name: string) {
-  await frame.child('betting').child('betters').child(name).remove();
-  return;
+export async function removeFrameBet(username: string) {
+  return await frame.child('betting').child('betters')
+    .once('value', async (snap:any) => {
+      const betters = snap.val();
+      const key = _.findKey(betters, better => better.name === username);
+      return await frame.child('betting').child('betters').child(key).remove();
+    });
 }
 
