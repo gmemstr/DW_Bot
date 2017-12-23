@@ -16,6 +16,7 @@ export interface IFirebaseFrame {
     highestBetter?: string,
     red?: number,
     betters?: [any],
+    timestamp?: number,
   };
   countdown?: boolean;
   currentGameId?: number;
@@ -84,6 +85,12 @@ export function updateFrame(updates: IFirebaseFrame) {
 
 export function switchStage(stage: stages) {
   return frame.child('stage').set(stage);
+}
+
+export function updateBettingTimestamp() {
+  return frame.child('betting').update({
+    timestamp: firebase.database.ServerValue.TIMESTAMP,
+  });
 }
 
 export function addVoteOnFrame(color: teamColors, category: voteCategories) {

@@ -1,7 +1,5 @@
 import { EventEmitter } from 'events';
 import * as Rx from '@reactivex/rxjs';
-import { error } from 'util';
-import { childOfKind } from 'tslint';
 import { ICommand, IInput, IPayload, IUser } from './interfaces';
 const irc = require('tmi.js');
 

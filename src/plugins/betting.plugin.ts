@@ -6,8 +6,7 @@ import * as moment from 'moment';
 import * as _ from 'lodash';
 import {
   addFrameBet, removeFrameBet,
-  switchStage,
-  updateFrame,
+  switchStage, updateBettingTimestamp,
 } from '../services/firebase.service';
 
 export type ObjTypes =  0 | 1 | 2 | 3 | 4 | 5;
@@ -98,6 +97,7 @@ export class BettingPlugin {
     });
 
     bot.addExitFunction(() => {
+      // todo finish this.
       console.log(`saving bets!!!`);
     });
   }
@@ -226,6 +226,7 @@ export class BettingPlugin {
     this.pool.open = true;
     this.pool.gameId = 0;
     switchStage('betting');
+    updateBettingTimestamp();
 
     this.pool.timer = setInterval(() => {
       this.pool.duration = this.pool.duration - this.ms(1);
@@ -253,7 +254,7 @@ export class BettingPlugin {
     _.forEach(this.pool.bets, async (o) => {
       if (o.team !== team) return this.removeBet(o.name);
       // todo: next line doesn't seem to be working?
-      if (o.mods.objectives > objCount) return this.removeBet(o.name);
+      if (o.mods.objectives >= objCount) return this.removeBet(o.name);
       const winnings = this.oddsWinnings(o) + o.amount;
       await putBits(o.name, winnings)
         .then(() => {
