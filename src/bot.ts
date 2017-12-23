@@ -49,6 +49,10 @@ export class TwitchBot {
       .map(output => Rx.Observable.of(output).delay(this.whisperDelay))
       .concatAll()
       .subscribe((o: any) => this.whisper(o.username, o.message));
+
+    this.addExitFunction(async () => {
+      await this.say('...signing off.');
+    });
   }
 
   public async doCommand(payload: IPayload): Promise<boolean> {
@@ -167,7 +171,8 @@ export class TwitchBot {
     switch (this.commands[string].reqRights) {
       case UserType.Normal:     return true;
       case UserType.Subscriber: return input.user.subscriber === true;
-      case UserType.Mod:        return input.user.mod === true;
+      case UserType.Mod:        return input.user.mod === true ||
+                                  input.user.badges.broadcaster === '1';
       default:                  return false;
     }
   }
