@@ -1,6 +1,10 @@
 import { EventEmitter } from 'events';
 import * as Rx from '@reactivex/rxjs';
-import { ICommand, IInput, IPayload, IUser } from './interfaces';
+import {
+  IChatLog, ICommand, IInput, ILog, IPayload,
+  IUser,
+} from './interfaces';
+import { saveChatLog } from './services/firebase.service';
 const irc = require('tmi.js');
 
 export enum UserType {
@@ -15,6 +19,7 @@ const $ = {
   OutChat: 'OutChat$',
   IncWhisper: 'IncWhisper$',
   OutWhisper: 'OutWhisper$',
+  ChatLog: 'ChatLog$',
 };
 
 
@@ -24,6 +29,7 @@ export class TwitchBot {
   public commands: {[key: string]: ICommand} = {};
   public userGroups: [string] = ['*', '$', '@'];
   private whisperDelay: number = 2000;
+  private unsavedChatLogs: IChatLog[] = [];
   // things to do when terminal exits.
   private TODO_ON_EXIT: [Function] = [() => console.log('EXITING')];
 
@@ -32,6 +38,7 @@ export class TwitchBot {
     this.client = new irc.client(this.config);
 
     Rx.Observable.fromEvent(this.botEE, $.IncChat, (obj: any) => obj)
+      .do(input => this.gatherChatLog(input))
       .filter(input => this.isCommand(input.msg))
       .filter(input => this.checkDebounce(this.normalizeMessage(input.msg)))
       .filter(input => this.checkPermissions(input))
@@ -48,7 +55,14 @@ export class TwitchBot {
       .concatAll()
       .subscribe((o: any) => this.whisper(o.username, o.message));
 
+    Rx.Observable.fromEvent(this.botEE, $.ChatLog, (obj: any) => obj)
+      .do(data => this.unsavedChatLogs.push(data))
+      .bufferCount(5)
+      .do(data => this.saveLog(data))
+      .subscribe((o: any) => console.log(`saving chat logs`));
+
     this.addExitFunction(async () => {
+      this.saveLog(this.unsavedChatLogs);
       await this.say('...signing off.');
     });
   }
@@ -213,5 +227,20 @@ export class TwitchBot {
         }
       });
     } catch (e) { return []; }
+  }
+
+  public saveLog(data, type: string = 'chat') {
+    if (type === 'chat') {
+      return saveChatLog(data);
+    }
+  }
+
+  private gatherChatLog(input) {
+    const log: IChatLog = {
+      timestamp: Date.now(),
+      message: input.msg,
+      user: input.user,
+    };
+    return this.botEE.emit($.ChatLog, log);
   }
 }

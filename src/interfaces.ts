@@ -60,7 +60,7 @@ export interface IChatLog {
   timestamp: number;
   message: string;
   user: IUser;
-  whisper: boolean;
+  whisper?: boolean;
 }
 
 export interface ILog {

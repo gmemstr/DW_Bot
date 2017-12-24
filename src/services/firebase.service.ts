@@ -1,6 +1,7 @@
 import * as firebase from 'firebase-admin';
 import environment from '../environment';
 import * as _ from 'lodash';
+import { ILog } from '../interfaces';
 
 const credential = firebase.credential
   .cert(environment.firebase.serviceAccount);
@@ -38,6 +39,9 @@ firebase.initializeApp({
 });
 
 export const frame = firebase.database().ref('frame');
+export const chatDB = firebase.database()
+  .ref(environment.bot.channels[0].substr(1))
+  .child('chatLogs');
 
 export function resetFrame() {
   frame.update({
@@ -124,5 +128,12 @@ export async function removeFrameBet(username: string) {
       const key = _.findKey(betters, better => better.name === username);
       return await frame.child('betting').child('betters').child(key).remove();
     });
+}
+
+export function saveChatLog(logs: [ILog]) {
+  return chatDB.push({
+    data: logs,
+    timestamp: firebase.database.ServerValue.TIMESTAMP,
+  });
 }
 
