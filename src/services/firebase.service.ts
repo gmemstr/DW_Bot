@@ -1,7 +1,7 @@
 import * as firebase from 'firebase-admin';
 import environment from '../environment';
 import * as _ from 'lodash';
-import { ILog } from '../interfaces';
+import { IChatLog, ILog } from '../interfaces';
 
 const credential = firebase.credential
   .cert(environment.firebase.serviceAccount);
@@ -39,9 +39,8 @@ firebase.initializeApp({
 });
 
 export const frame = firebase.database().ref('frame');
-export const chatDB = firebase.database()
-  .ref(environment.bot.channels[0].substr(1))
-  .child('chatLogs');
+export const channel = firebase.database()
+  .ref(environment.bot.channels[0].substr(1));
 
 export function resetFrame() {
   frame.update({
@@ -130,10 +129,16 @@ export async function removeFrameBet(username: string) {
     });
 }
 
-export function saveChatLog(logs: [ILog]) {
-  return chatDB.push({
+export function saveChatLog(logs: [IChatLog]) {
+  return channel.child('chatLogs').push({
     data: logs,
     timestamp: firebase.database.ServerValue.TIMESTAMP,
   });
 }
 
+export function saveSystemLog(log: ILog) {
+  return channel.child('systemLogs').push({
+    data: log,
+    timestamp: firebase.database.ServerValue.TIMESTAMP,
+  });
+}

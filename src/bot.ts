@@ -4,7 +4,7 @@ import {
   IChatLog, ICommand, IInput, ILog, IPayload,
   IUser,
 } from './interfaces';
-import { saveChatLog } from './services/firebase.service';
+import { saveChatLog, saveSystemLog } from './services/firebase.service';
 const irc = require('tmi.js');
 
 export enum UserType {
@@ -233,6 +233,13 @@ export class TwitchBot {
     if (type === 'chat') {
       return saveChatLog(data);
     }
+  }
+
+  public sysLog(type: 'info' | 'warning' | 'error',
+                message: string, plugin = '~',
+                data: any = {}) {
+    const log: ILog = { message, plugin, type, data };
+    return saveSystemLog(log);
   }
 
   private gatherChatLog(input) {

@@ -64,7 +64,8 @@ export interface IChatLog {
 }
 
 export interface ILog {
-  timestamp: number;
+  message: string;
   plugin?: string;
-  type: 'INFO' | 'WARNING' | 'ERROR';
+  type: 'info' | 'warning' | 'error';
+  data?: any;
 }
