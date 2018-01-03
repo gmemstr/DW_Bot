@@ -28,29 +28,29 @@ jobs:
       - checkout-job
       - run: npm run test-unit
 
-    integration-test-job:
+  integration-test-job:
+    docker:
+      - image: circleci/node:7.10
+    working_directory: ~/repo
+    steps:
+      - checkout-job
+      - run: npm run test-integration
+
+  unit-test-job:
       docker:
         - image: circleci/node:7.10
       working_directory: ~/repo
       steps:
         - checkout-job
-        - run: npm run test-integration
-
-    unit-test-job:
-        docker:
-          - image: circleci/node:7.10
-        working_directory: ~/repo
-        steps:
-        - checkout-job
         - run: npm run test-ui
 
-    lint-test-job:
-        docker:
-          - image: circleci/node:7.10
-        working_directory: ~/repo
-        steps:
-          - checkout-job
-          - run: npm run lint
+  lint-test-job:
+      docker:
+        - image: circleci/node:7.10
+      working_directory: ~/repo
+      steps:
+        - checkout-job
+        - run: npm run lint
 
   fake-deploy-job:
     docker:
