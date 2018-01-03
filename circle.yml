@@ -106,3 +106,9 @@ workflows:
             - unit-test-job
             - integration-test-job
             - lint-test-job
+  idle-build-workflow:
+    jobs:
+      - fake-deploy-job
+          filters:
+            branches:
+              ignore: /.*/
