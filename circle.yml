@@ -23,7 +23,7 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-  unit-test-job:
+  ui-test-job:
     docker:
       - image: circleci/node:7.10
     working_directory: ~/DW_Bot
@@ -32,7 +32,7 @@ jobs:
       - restore_cache:
           key: v1-dependencies-{{ checksum "package.json" }}
       - run: npm install
-      - run: npm run test-unit
+      - run: npm run lint
   integration-test-job:
     docker:
       - image: circleci/node:7.10
@@ -42,7 +42,7 @@ jobs:
       - restore_cache:
           key: v1-dependencies-{{ checksum "package.json" }}
       - run: npm install
-      - run: npm run test-integration
+      - run: npm run lint
   unit-test-job:
     docker:
       - image: circleci/node:7.10
@@ -52,7 +52,7 @@ jobs:
       - restore_cache:
           key: v1-dependencies-{{ checksum "package.json" }}
       - run: npm install
-      - run: npm run test-ui
+      - run: npm run lint
   lint-test-job:
     docker:
       - image: circleci/node:7.10
