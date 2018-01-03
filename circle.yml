@@ -108,7 +108,7 @@ workflows:
             - lint-test-job
   idle-build-workflow:
     jobs:
-      - fake-deploy-job
+      - fake-deploy-job:
           filters:
             branches:
               ignore: /.*/
