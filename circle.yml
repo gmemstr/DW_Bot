@@ -9,7 +9,7 @@ jobs:
   checkout-job:
     docker:
       - image: circleci/node:7.10
-    working_directory: ~/repo
+    working_directory: ~/DW_Bot
     steps:
       - checkout
       # Download and cache dependencies
@@ -26,31 +26,31 @@ jobs:
   unit-test-job:
     docker:
       - image: circleci/node:7.10
-    working_directory: ~/repo
+    working_directory: ~/DW_Bot
     steps:
       - run: npm run test-unit
   integration-test-job:
     docker:
       - image: circleci/node:7.10
-    working_directory: ~/repo
+    working_directory: ~/DW_Bot
     steps:
       - run: npm run test-integration
   unit-test-job:
       docker:
         - image: circleci/node:7.10
-      working_directory: ~/repo
+      working_directory: ~/DW_Bot
       steps:
         - run: npm run test-ui
   lint-test-job:
       docker:
         - image: circleci/node:7.10
-      working_directory: ~/repo
+      working_directory: ~/DW_Bot
       steps:
         - run: npm run lint
   fake-deploy-job:
     docker:
       - image: circleci/node:7.10
-    working_directory: ~/repo
+    working_directory: ~/DW_Bot
     steps:
       - run: npm install
       - run: npm run build
