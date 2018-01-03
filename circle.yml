@@ -30,40 +30,40 @@ jobs:
     steps:
       - run: npm run test-unit
   integration-test-job:
-      docker:
-        - image: circleci/node:7.10
-      working_directory: ~/DW_Bot
-      steps:
-        - checkout
-        - restore_cache:
-            key: v1-dependencies-{{ checksum "package.json" }}
-        - run: npm run test-integration
+    docker:
+      - image: circleci/node:7.10
+    working_directory: ~/DW_Bot
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run: npm run test-integration
   unit-test-job:
-      docker:
-        - image: circleci/node:7.10
-      working_directory: ~/DW_Bot
-      steps:
-        - checkout
-        - restore_cache:
-            key: v1-dependencies-{{ checksum "package.json" }}
-        - run: npm run test-ui
+    docker:
+      - image: circleci/node:7.10
+    working_directory: ~/DW_Bot
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run: npm run test-ui
   lint-test-job:
-      docker:
-        - image: circleci/node:7.10
-      working_directory: ~/DW_Bot
-      steps:
-        - checkout
-        - restore_cache:
-            key: v1-dependencies-{{ checksum "package.json" }}
-        - run: npm run lint
+    docker:
+      - image: circleci/node:7.10
+    working_directory: ~/DW_Bot
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run: npm run lint
   fake-deploy-job:
-      docker:
-        - image: circleci/node:7.10
-      working_directory: ~/DW_Bot
-      steps:
-        - checkout
-        - restore_cache:
-            key: v1-dependencies-{{ checksum "package.json" }}
+    docker:
+      - image: circleci/node:7.10
+    working_directory: ~/DW_Bot
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
       - run: npm install
       - run: npm run build
 workflows:
