@@ -80,7 +80,7 @@ workflows:
       - fake-deploy-job:
           requires:
             - unit-test-job
-            - intergration-test-job
+            - integration-test-job
             - lint-test-job
 
 
