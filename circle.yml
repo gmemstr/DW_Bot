@@ -68,6 +68,8 @@ workflows:
     jobs:
       - checkout-job
       - integration-test-job
+          requires:
+            - checkout-job
   test-all-workflow:
     jobs:
       - checkout-job
