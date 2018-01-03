@@ -49,21 +49,17 @@ jobs:
           - image: circleci/node:7.10
         working_directory: ~/repo
         steps:
-        - checkout-job
-        - run: npm run lint
+          - checkout-job
+          - run: npm run lint
 
   fake-deploy-job:
     docker:
       - image: circleci/node:7.10
     working_directory: ~/repo
     steps:
-        - checkout
-        - restore_cache:
-            keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            - v1-dependencies-
-        - run: npm install
-        - run: npm run build
+      - checkout-job
+      - run: npm install
+      - run: npm run build
 
 workflows:
   version: 2
@@ -82,10 +78,10 @@ workflows:
       - integration-test-job
       - lint-test-job
       - fake-deploy-job:
-        requires:
-          - unit-test-job
-          - intergration-test-job
-          - lint-test-job
+          requires:
+            - unit-test-job
+            - intergration-test-job
+            - lint-test-job
 
 
 
