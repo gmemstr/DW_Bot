@@ -28,6 +28,10 @@ jobs:
       - image: circleci/node:7.10
     working_directory: ~/DW_Bot
     steps:
+      - checkout
+      - restore_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run: npm install
       - run: npm run test-unit
   integration-test-job:
     docker:
@@ -37,6 +41,7 @@ jobs:
       - checkout
       - restore_cache:
           key: v1-dependencies-{{ checksum "package.json" }}
+      - run: npm install
       - run: npm run test-integration
   unit-test-job:
     docker:
@@ -46,6 +51,7 @@ jobs:
       - checkout
       - restore_cache:
           key: v1-dependencies-{{ checksum "package.json" }}
+      - run: npm install
       - run: npm run test-ui
   lint-test-job:
     docker:
@@ -55,6 +61,7 @@ jobs:
       - checkout
       - restore_cache:
           key: v1-dependencies-{{ checksum "package.json" }}
+      - run: npm install
       - run: npm run lint
   fake-deploy-job:
     docker:
