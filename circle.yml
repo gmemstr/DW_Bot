@@ -1,0 +1,93 @@
+version: 2
+machine:
+  timezone: America/Los_Angeles # Set the timezone
+  node:
+    version: 7.10
+  environment:
+    CIRCLE_ENV: test
+jobs:
+  checkout-job:
+      - checkout
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+      - run: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+  unit-test-job:
+    docker:
+      - image: circleci/node:7.10
+    working_directory: ~/repo
+    steps:
+      - checkout-job
+      - run: npm run test-unit
+
+    integration-test-job:
+      docker:
+        - image: circleci/node:7.10
+      working_directory: ~/repo
+      steps:
+        - checkout-job
+        - run: npm run test-integration
+
+    unit-test-job:
+        docker:
+          - image: circleci/node:7.10
+        working_directory: ~/repo
+        steps:
+        - checkout-job
+        - run: npm run test-ui
+
+    lint-test-job:
+        docker:
+          - image: circleci/node:7.10
+        working_directory: ~/repo
+        steps:
+        - checkout-job
+        - run: npm run lint
+
+  fake-deploy-job:
+    docker:
+      - image: circleci/node:7.10
+    working_directory: ~/repo
+    steps:
+        - checkout
+        - restore_cache:
+            keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+        - run: npm install
+        - run: npm run build
+
+workflows:
+  version: 2
+  scheduled-workflow:
+    triggers:
+      - schedule:
+          cron: "0,30 * * * *"
+          filters:
+            branches:
+              only: master
+    jobs:
+      - integration-test-job
+  test-all-workflow:
+    jobs:
+      - unit-test-job
+      - integration-test-job
+      - lint-test-job
+      - fake-deploy-job:
+        requires:
+          - unit-test-job
+          - intergration-test-job
+          - lint-test-job
+
+
+
+
+

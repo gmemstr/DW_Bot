@@ -66,7 +66,7 @@ const ghostBetters = [
   }
 ];
 
-test('validObjective returns TRUE if VALID arguments are passed in.', t => {
+test('validObjective returns TRUE if VALID arguments are passed in. #unit', t => {
   t.true(betting.validObjective('ace') === 5);
   t.true(betting.validObjective(0) === 0);
   t.true(betting.validObjective(1) === 1);
@@ -77,7 +77,7 @@ test('validObjective returns TRUE if VALID arguments are passed in.', t => {
   t.true(betting.validObjective('5') === 5);
 });
 
-test('validObjective returns FALSE if INVALID arguments are passed in.', t => {
+test('validObjective returns FALSE if INVALID arguments are passed in. #unit', t => {
   t.false(betting.validObjective(-1) === -1);
   t.false(betting.validObjective(6) === 6);
   t.false(betting.validObjective('eca') === 'eca');
@@ -86,20 +86,20 @@ test('validObjective returns FALSE if INVALID arguments are passed in.', t => {
   t.false(betting.validObjective(false) === false);
 });
 
-test('validStrikes returns TRUE if VALID arguments are passed in.', t => {
+test('validStrikes returns TRUE if VALID arguments are passed in. #unit', t => {
   t.true(betting.validStrikes('x') === 'x');
   t.true(betting.validStrikes('xx') === 'xx');
   t.true(betting.validStrikes('xxx') === 'xxx');
 });
 
-test('validStrikes returns FALSE if INVALID arguments are passed in.', t => {
+test('validStrikes returns FALSE if INVALID arguments are passed in. #unit', t => {
   t.false(betting.validStrikes());
   t.false(betting.validStrikes(-1));
   t.false(betting.validStrikes(false));
   t.false(betting.validStrikes('xxxx'));
 });
 
-test('validAmount return FALSE if INVALID amount number is passed in.', t => {
+test('validAmount return FALSE if INVALID amount number is passed in. #unit', t => {
   t.false(betting.validAmount(1));
   t.false(betting.validAmount(99999999));
   t.false(betting.validAmount(-2));
@@ -110,13 +110,13 @@ test('validAmount return FALSE if INVALID amount number is passed in.', t => {
   t.false(betting.validAmount(0.5));
 });
 
-test('validAmount returns a number if VALID number amount is passed in.', t => {
+test('validAmount returns a number if VALID number amount is passed in. #unit', t => {
   t.true(betting.validAmount(10) === 10);
   t.true(betting.validAmount(100) === 100);
   t.true(betting.validAmount('5,000') === 5000);
 });
 
-test('oddsWinnings calculate the correct objective bet modifier based Better object.', t => {
+test('oddsWinnings calculate the correct objective bet modifier based Better object. #unit', t => {
   const values = betting.oddValues;
   // TODO: you can do better than this travesty.
   t.true(
@@ -137,7 +137,7 @@ test('oddsWinnings calculate the correct objective bet modifier based Better obj
 });
 
 // Skipping this since it requires connection to chat.
-test.skip('addBet adds better to pool and removes bet amount.', async (t) => {
+test('addBet adds better to pool and removes bet amount. #integration', async (t) => {
   const better = ghostBetters[3];
   // put required amount of bits on account.
   await putBits(better.name, better.amount);
@@ -150,19 +150,19 @@ test.skip('addBet adds better to pool and removes bet amount.', async (t) => {
   t.true(await getBits(better.name) + better.amount === currentBits)
 });
 
-test('hasBet returns index number of better if better is found in pool.', async (t) => {
+test('hasBet returns index number of better if better is found in pool. #unit', async (t) => {
   const better = ghostBetters[0];
   betting.pool.bets.push(better);
   t.true(betting.hasBet(better.name) >= 0);
 });
 
-test('hasBet returns false if better is not found in pool.', t => {
+test('hasBet returns false if better is not found in pool. #unit', t => {
   let better = ghostBetters[0];
   better.name += 'unique';
   t.false(betting.hasBet(ghostBetters.name));
 });
 
-test('formatBetter returns better object if correct params are passed in.', t => {
+test('formatBetter returns better object if correct params are passed in. #unit', t => {
   const user = ghostBetters[5];
   const better = betting.formatBetter(user.name, [user.amount, user.team]);
   t.true(better.name === user.name);

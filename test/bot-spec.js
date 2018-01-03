@@ -7,33 +7,33 @@ function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-test('isCommand returns true on valid format inputs', t => {
+test('isCommand returns true on valid format inputs #unit', t => {
   t.true(bot.isCommand('!hello'));
   t.true(bot.isCommand('!h'));
 });
 
-test('isCommand returns false if user message does not begin command character', t => {
+test('isCommand returns false if user message does not begin command character #unit', t => {
   t.false(bot.isCommand('/!hello'));
   t.false(bot.isCommand(' !hello'));
   t.false(bot.isCommand('#hello'));
 });
 
-test('isCommand returns false when user only inputs just command character', t => {
+test('isCommand returns false when user only inputs just command character #unit', t => {
   t.false(bot.isCommand('!'));
   t.false(bot.isCommand('! '));
 });
 
-test('addCommand throws error if it does not include a identifier character.', t => {
+test('addCommand throws error if it does not include a identifier character. #unit', t => {
   t.throws(() => bot.addCommand('hey', () => {}));
 });
 
-test('addCommand can be found in commands if it does not throw.', t => {
+test('addCommand can be found in commands if it does not throw. #unit', t => {
   const command = '$heyman';
   t.notThrows(() => bot.addCommand(command, () => true));
   t.true(bot.commands[command.substr(1)].action());
 });
 
-test('command can be found if after addCommand method', t => {
+test('command can be found if after addCommand method #unit', t => {
   // identifier + string = command;
   const identifier = '$';
   const string = 'testing';
@@ -41,20 +41,20 @@ test('command can be found if after addCommand method', t => {
   t.true(bot.commands[string] !== undefined);
 });
 
-test('command\'s action can be executed after addCommand method', t => {
+test('command\'s action can be executed after addCommand method #integration', t => {
   const id = '*';
   const string = 'add';
   bot.addCommand(`${id}${string}`, () => true);
   t.true(bot.commands[string].action() === true);
 });
 
-test('normalizeMessage returns command from user input message', t => {
+test('normalizeMessage returns command from user input message #unit', t => {
   t.true(bot.normalizeMessage('!Hey') === '!hey');
   t.true(bot.normalizeMessage('!foreVer young') === '!forever');
   t.true(bot.normalizeMessage('!hey ') === '!hey');
 });
 
-test('checkDebounce returns false if time past is < debounce time', async t => {
+test('checkDebounce returns false if time past is < debounce time #unit', async t => {
   const command = '$defalse';
   bot.addCommand(command, () => {}, 1000);
   await timeout(500);
@@ -62,17 +62,18 @@ test('checkDebounce returns false if time past is < debounce time', async t => {
   t.false(bot.checkDebounce(command));
 });
 
-test('checkDebounce returns true if time past is > debounce time', async t => {
+test('checkDebounce returns true if time past is > debounce time #unit', async t => {
   const command = '$m';
   bot.addCommand(command, () => true, 1000);
   await timeout(2000);
   t.true(bot.checkDebounce(command));
 });
 
-test('checkPermissions returns correctly on different command exes for sub.', t => {
+test('checkPermissions returns correctly on different command exes for sub. #unit', t => {
   const user = {
     mod: false,
     subscriber: true,
+    badges: {broadcaster: false}
   };
   const input = {
     user,
@@ -87,10 +88,11 @@ test('checkPermissions returns correctly on different command exes for sub.', t 
   t.false(bot.checkPermissions(input));
 });
 
-test('checkPermissions returns correctly on different command exes for user.', t => {
+test('checkPermissions returns correctly on different command exes for user. #unit', t => {
   const user = {
     mod: false,
     subscriber: false,
+    badges: {broadcaster: false}
   };
   const input = {
     user,
@@ -105,10 +107,11 @@ test('checkPermissions returns correctly on different command exes for user.', t
   t.false(bot.checkPermissions(input));
 });
 
-test('checkPermissions returns correctly on different command exes for mod.', t => {
+test('checkPermissions returns correctly on different command exes for mod. #unit', t => {
   const user = {
     mod: true,
     subscriber: false,
+    badges: {broadcaster: false}
   };
   const input = {
     user,
@@ -123,7 +126,7 @@ test('checkPermissions returns correctly on different command exes for mod.', t 
   t.true(bot.checkPermissions(input));
 });
 
-test('checkPermissions returns true on command with * id.', t => {
+test('checkPermissions returns true on command with * id. #unit', t => {
   const user = {
     mod: false,
     subscriber: false,
@@ -138,19 +141,19 @@ test('checkPermissions returns true on command with * id.', t => {
 });
 
 
-test('getArgumentsFromMsg returns array in correct format if multiple args are present.', t => {
+test('getArgumentsFromMsg returns array in correct format if multiple args are present. #unit', t => {
   const testMessage = '!bot Can you PARSE this 1 thing?';
   const args = bot.getArgumentsFromMsg(testMessage);
   t.deepEqual(['can', 'you', 'parse', 'this', 1, 'thing?'], args);
 });
 
-test('getArgumentsFromMsg returns array if only 1 arg present.', t => {
+test('getArgumentsFromMsg returns array if only 1 arg present. #unit', t => {
   const testMessage = '!bot please';
   const args = bot.getArgumentsFromMsg(testMessage);
   t.deepEqual(['please'], args);
 });
 
-test('getArgumentsFromMsg returns empty array if only command is present.', t => {
+test('getArgumentsFromMsg returns empty array if only command is present. #unit', t => {
   const testMessage = '!returnFalse';
   const args = bot.getArgumentsFromMsg(testMessage);
   t.true(args.length === 0);
