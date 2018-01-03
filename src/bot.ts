@@ -110,7 +110,11 @@ export class TwitchBot {
   }
 
   public async whisper(username: string, message: string): Promise<void> {
-    await this.client.whisper(username, message);
+    try {
+      await this.client.whisper(username, message);
+    } catch (e) {
+      this.sysLog('warning', 'could not send whisper', '~', e);
+    }
     return;
   }
 
@@ -236,8 +240,9 @@ export class TwitchBot {
   }
 
   public sysLog(type: 'info' | 'warning' | 'error',
-                message: string, plugin = '~',
-                data: any = {}) {
+                message: string,
+                plugin: '~' | 'betting'| 'bpm' | 'voting',
+                data: any = false) {
     const log: ILog = { message, plugin, type, data };
     return saveSystemLog(log);
   }

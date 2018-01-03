@@ -65,7 +65,7 @@ export interface IChatLog {
 
 export interface ILog {
   message: string;
-  plugin?: string;
+  plugin: '~' | 'betting'| 'bpm' | 'voting';
   type: 'info' | 'warning' | 'error';
   data?: any;
 }
