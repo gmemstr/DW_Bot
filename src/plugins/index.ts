@@ -3,7 +3,7 @@ import {  TwitchBot } from '../bot';
 import { BettingPlugin } from './betting.plugin';
 import { getBits } from '../services/user.service';
 import {
-  addTime, startTimer, switchStage,
+  addTime, resetFrame, startTimer, switchStage,
   updateFrame,
 } from '../services/firebase.service';
 import { getStreamInfo } from '../services/twitch.service';
@@ -74,6 +74,10 @@ const plugins = (bot: TwitchBot) => {
 
   bot.addCommand('@channel', async (o:IPayload) => {
     return getStreamInfo('beleek');
+  });
+
+  bot.addCommand('@endgame', async (o:IPayload) => {
+    return await resetFrame();
   });
 
   // example of self command:

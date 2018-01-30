@@ -44,7 +44,7 @@ export const env = firebase.database()
 
 export function resetFrame() {
   frame.update({
-    lastUpdated: false,
+    lastUpdated: firebase.database.ServerValue.TIMESTAMP,
     currentGameId: 0,
     timer: false,
     stage: 'objective',

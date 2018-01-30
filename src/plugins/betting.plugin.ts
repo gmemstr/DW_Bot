@@ -93,7 +93,15 @@ export class BettingPlugin {
     bot.addCommand('@winner', (p: IPayload) => {
       const winningTeam = p.args[0].toLowerCase();
       const teamObjectiveCount = p.args[1] || 0;
-      return this.winner(winningTeam, teamObjectiveCount);
+      try {
+        return this.winner(winningTeam, teamObjectiveCount);
+      } catch (e) {
+        bot.sysLog('error', 'Problem executing winnings command', 'betting', {
+          payload: p,
+          data: e,
+        });
+      }
+
     });
 
     bot.addExitFunction(() => {
