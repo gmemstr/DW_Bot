@@ -73,7 +73,13 @@ export class TwitchBot {
       await command.action.call(this, payload);
       command.lastExe = Date.now();
       return true;
-    } catch (e) { return false; }
+    } catch (e) {
+      this.sysLog('error', 'Problem executing command doCommand()', '~', {
+        payload,
+        error: e,
+      });
+      return false;
+    }
   }
 
   public addCommand(
@@ -244,7 +250,44 @@ export class TwitchBot {
                 plugin: '~' | 'betting'| 'bpm' | 'voting',
                 data: any = false) {
     const log: ILog = { message, plugin, type, data };
+    switch (type) {
+      case 'error':
+        console.error(log);
+        break;
+      case 'warning':
+        console.warn(log);
+        break;
+      case 'info':
+        console.info(log);
+    }
+
     return saveSystemLog(log);
+  }
+
+  /**
+   * @method selfCommand
+   * @description Method for bot to tell itself to execute a command.
+   * @param command - command string, example: !openBets.
+   * @param args - command arguments.
+   * @return <void>
+   */
+  public selfCommand(command: string, ...args) {
+    const payload: IPayload = {
+      args,
+      command: command.toLowerCase(),
+      user: {
+        'display-name': this.config.identity.username,
+        'message-type': 'self',
+        mod: true,
+        subscriber: true,
+        turbo: false,
+        username: this.config.identity.username,
+      },
+      type: 'self',
+      start: Date.now(),
+      from: 'self',
+    };
+    return this.doCommand(payload);
   }
 
   private gatherChatLog(input) {

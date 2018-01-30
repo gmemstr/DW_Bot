@@ -2,8 +2,12 @@ import { IPayload } from '../interfaces';
 import {  TwitchBot } from '../bot';
 import { BettingPlugin } from './betting.plugin';
 import { getBits } from '../services/user.service';
-import { addTime, switchStage } from '../services/firebase.service';
+import {
+  addTime, startTimer, switchStage,
+  updateFrame,
+} from '../services/firebase.service';
 import { getStreamInfo } from '../services/twitch.service';
+import { currentGame } from '../services/game.service';
 import { BPMPlugin } from './bpm.plugin';
 import { VotingPlugin } from './voting.plugin';
 
@@ -11,6 +15,26 @@ const plugins = (bot: TwitchBot) => {
   new BettingPlugin(bot);
   new BPMPlugin(bot);
   new VotingPlugin(bot);
+
+  bot.addCommand('@startgame', async (o:IPayload) => {
+    try {
+      const game = await currentGame();
+      await Promise
+        .all([switchStage('objective'), updateFrame({ game }), startTimer()]);
+
+      await bot.say('Starting Game!');
+
+      if (game.theme.toLowerCase() === 'zen garden') {
+        await bot.say('bets are closed for this game.');
+      } else {
+        await bot.say('betting will open in 5 minutes.');
+        setTimeout(() => bot.selfCommand('!openbets'), 300000);
+      }
+
+    } catch (e) {
+      bot.sysLog('error', 'Problems with startGame command', '~', e);
+    }
+  });
 
   bot.addCommand('*devbits', async (o:IPayload) => {
     const bits = await getBits(o.user.username);
@@ -35,6 +59,14 @@ const plugins = (bot: TwitchBot) => {
 
   bot.addCommand('@channel', async (o:IPayload) => {
     return getStreamInfo('beleek');
+  });
+
+  // example of self command:
+  bot.addCommand('@mirrormirror', async (o:IPayload) => {
+    return bot.say('...on the wall');
+  });
+  bot.addCommand('@selfCommand', async (o:IPayload) => {
+    return bot.selfCommand('!mirrormirror');
   });
 };
 

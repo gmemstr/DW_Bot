@@ -69,6 +69,7 @@ export function resetFrame() {
     },
 
     betting: {
+      betters: [],
       red: 0,
       blue: 0,
       highestBetter: false,
@@ -137,6 +138,7 @@ export function saveChatLog(logs: [IChatLog]) {
 }
 
 export function saveSystemLog(log: ILog) {
+  log.data = JSON.stringify(log.data);
   return env.child('systemLogs').push({
     data: log,
     timestamp: firebase.database.ServerValue.TIMESTAMP,

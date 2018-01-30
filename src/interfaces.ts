@@ -1,18 +1,18 @@
 export interface IUser {
   badges?: { [key: string]: string; };
-  color: any;
+  color?: any;
   'display-name': string;
-  emotes: any;
-  id: string;
+  emotes?: any;
+  id?: string;
   mod: boolean;
-  'room-id': string;
-  'sent-ts': string;
+  'room-id'?: string;
+  'sent-ts'?: string;
   subscriber: boolean;
-  'tmi-sent-ts': string;
+  'tmi-sent-ts'?: string;
   turbo: boolean;
-  'user-type': string;
+  'user-type'?: string;
   username: string;
-  'message-type': 'chat' | 'whisper';
+  'message-type': 'chat' | 'whisper' | 'self';
 }
 
 // input coming from user in chat.
