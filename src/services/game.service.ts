@@ -34,3 +34,14 @@ export async function sendVotes(gameId: number,
   }
 
 }
+
+export async function signUp(twitchUsername: string, gameId: number) {
+  try {
+    return await axios.post(`${url}/v1/${gameId}/signuptwitchuser`, {
+      key,
+      username: twitchUsername,
+    });
+  } catch (e) {
+    throw Error(e);
+  }
+}

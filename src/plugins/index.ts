@@ -7,7 +7,7 @@ import {
   updateFrame,
 } from '../services/firebase.service';
 import { getStreamInfo } from '../services/twitch.service';
-import { currentGame } from '../services/game.service';
+import { currentGame, signUp } from '../services/game.service';
 import { BPMPlugin } from './bpm.plugin';
 import { VotingPlugin } from './voting.plugin';
 
@@ -55,6 +55,21 @@ const plugins = (bot: TwitchBot) => {
     // user input will be in minute format. So !addtime 1 should add 1m.
     const ms = Math.floor(o.args[0] * 60 * 1000);
     return addTime(ms);
+  });
+
+  bot.addCommand('*apply', async (o:IPayload) => {
+    try {
+      const game = await currentGame();
+      const { id } = game;
+      await signUp(o.user.username, id);
+      return bot.say(`${o.user.username} has signed up for game ${id}!`);
+    } catch (e) {
+      bot.sysLog('error', 'Problem applying for game', '~', {
+        error: e,
+        payload: o,
+      });
+      throw Error(e);
+    }
   });
 
   bot.addCommand('@channel', async (o:IPayload) => {
