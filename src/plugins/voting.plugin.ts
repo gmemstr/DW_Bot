@@ -85,32 +85,32 @@ export class VotingPlugin {
     }, this.ms(1, 'minutes'));
   }
 
-  public async closeVotes() {
-    const game = await currentGame();
-    const id = game.id;
-    const blueId = game.teams.blue.id;
-    const redId = game.teams.red.id;
-    if (process.env.NODE_ENV !== 'dev') {
-      await Promise.all([
-        sendVotes(id, redId, this.votingOn, this.teamVotes('red').length),
-        sendVotes(id, blueId, this.votingOn, this.teamVotes('blue').length),
-      ]);
+  public async closeVotes(): Promise<void> {
+    try {
+      const game = await currentGame();
+      const id = game.id;
+      const blueId = game.teams.blue.id;
+      const redId = game.teams.red.id;
+      if (process.env.NODE_ENV !== 'dev') {
+        await Promise.all([
+          sendVotes(id, redId, this.votingOn, this.teamVotes('red').length),
+          sendVotes(id, blueId, this.votingOn, this.teamVotes('blue').length),
+        ]);
+      }
+      this.votingOn = 'design';
+      this.isOpen = false;
+      this.duration = this.ms(3, 'minutes');
+    } catch (e) {
+      this.bot.sysLog(
+        'error', 'problem closing out votes', 'voting', { error: e });
     }
-    this.votingOn = 'design';
-    this.isOpen = false;
-    this.duration = this.ms(3, 'minutes');
-  }
 
-  public endVotes() {
-    // TODO: send data to dw main server.
-    this.voters = [];
   }
 
   /**
    * @method hasVote
    * @description Checks voters array to see if user has already placed a bet.
    * @param {string} username
-   * //TODO: I'm splitting this into it's own method to write perf test later.
    */
   private hasVote(username: string): boolean {
     return this.voters.some(obj => obj.username === username);

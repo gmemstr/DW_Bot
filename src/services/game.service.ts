@@ -6,16 +6,9 @@ import { voteCategories } from './firebase.service';
 const url = environment.dwServer.url;
 const key: string = environment.dwServer.key;
 
-// TODO:
-const errHandler = (error: any) => {};
 
 export async function currentGame(): Promise<IGame> {
-  try {
-    const req = await axios(`${url}/v1/game/currentgame?key=${key}`);
-    return JSON.parse(req.data);
-  } catch (e) {
-    throw e;
-  }
+  return axios.get(`${url}/v1/game/currentgame?key=${key}`);
 }
 
 // Example Request:
@@ -30,7 +23,7 @@ export async function sendVotes(gameId: number,
     });
     return JSON.parse(r.data);
   } catch (e) {
-    // TODO: errHandler.
+    throw e;
   }
 
 }

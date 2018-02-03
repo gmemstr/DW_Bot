@@ -105,13 +105,14 @@ export class BettingPlugin {
     });
 
     bot.addExitFunction(() => {
-      // todo finish this.
-      console.log(`saving bets!!!`);
+      if (this.pool.gameId !== -1 && this.pool.bets.length > 1) {
+        bot.sysLog('info', 'saving bets', 'betting', { pool: this.pool });
+      }
     });
   }
 
   public async addBet(better: IBetter) {
-    // TODO: clean up this whisper output stuff, my god.
+    // nah
     let whisper = '';
     // check if user already has bet.
     if (this.hasBet(better.name)) await this.removeBet(better.name)
@@ -131,7 +132,6 @@ export class BettingPlugin {
           addFrameBet(better.name, better.amount, better.team);
         });
 
-      // TODO: error handler
       this.pool.bets.push(better);
       whisper = whisper.charAt(0).toUpperCase() + whisper.slice(1);
       console.log(`this.pool.bets`);
@@ -195,7 +195,6 @@ export class BettingPlugin {
   private oddsWinnings(better: IBetter): number {
     const betAmount = better.amount;
     const objPrediction = better.mods.objectives;
-    // todo: round this
     return Math.round(betAmount * this.oddValues[objPrediction]);
   }
 

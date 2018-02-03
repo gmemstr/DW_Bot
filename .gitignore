@@ -6,5 +6,5 @@ npm-debug.log
 src/environment/*
 !src/environment/index.ts
 lib/
-
+testing.http
 
