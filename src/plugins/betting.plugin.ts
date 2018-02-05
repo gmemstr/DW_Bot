@@ -1,8 +1,6 @@
 import { IPayload } from '../interfaces';
 import { TwitchBot } from '../bot';
 import { hasBits, putBits } from '../services/user.service';
-import { currentGame } from '../services/game.service';
-import * as moment from 'moment';
 import * as _ from 'lodash';
 import {
   addFrameBet, removeFrameBet,
@@ -39,20 +37,20 @@ export class BettingPlugin {
   private pool: IPool = {
     open: false,
     timer: -1,
-    duration: this.ms(5),
+    duration: TwitchBot.ms(5),
     gameId: -1,
     bets: [],
   };
 
   constructor(private bot: TwitchBot) {
-    bot.addCommand('*testBet', (p: IPayload) => {
+    bot.addCommand('*testBet', () => {
       bot.say('test bet command');
     });
 
     bot.addCommand('*bet', (p:IPayload) => {
       if (!this.pool.open)
         return bot.say('Betting is closed');
-      const better = this.formatBetter(p.user.username, p.args);
+      const better = BettingPlugin.formatBetter(p.user.username, p.args);
       if (!better) return bot.whisper(p.user.username, 'Something went wrong' +
         ' when parsing your input.');
       return this.addBet(better);
@@ -77,14 +75,14 @@ export class BettingPlugin {
 
     });
 
-    bot.addCommand('@openBets', async (p: IPayload) => {
+    bot.addCommand('@openBets', async () => {
       console.log(`openbets!`);
       if (this.pool.open) return bot.say('Betting pool is currently open.');
       await this.openBets();
       return bot.say('Betting is now open.');
     });
 
-    bot.addCommand('@closeBets', (p: IPayload) => {
+    bot.addCommand('@closeBets', () => {
       if (!this.pool.open) return bot.say('Betting is already closed.');
       this.pool.open = false;
       return bot.say('Betting will be closing soon...');
@@ -96,7 +94,8 @@ export class BettingPlugin {
       try {
         return this.winner(winningTeam, teamObjectiveCount);
       } catch (e) {
-        bot.sysLog('error', 'Problem executing winnings command', 'betting', {
+        TwitchBot.sysLog
+        ('error', 'Problem executing winnings command', 'betting', {
           payload: p,
           data: e,
         });
@@ -106,7 +105,7 @@ export class BettingPlugin {
 
     bot.addExitFunction(() => {
       if (this.pool.gameId !== -1 && this.pool.bets.length > 1) {
-        bot.sysLog('info', 'saving bets', 'betting', { pool: this.pool });
+        TwitchBot.sysLog('info', 'saving bets', 'betting', { pool: this.pool });
       }
     });
   }
@@ -125,7 +124,7 @@ export class BettingPlugin {
       else whisper += 'You don\'t have enough bits.';
       return this.bot.whisper(better.name, whisper);
     } else {
-      await putBits(better.name, this.negative(better.amount))
+      await putBits(better.name, BettingPlugin.negative(better.amount))
         .then(() => {
           if (whisper.length > 1) whisper += 'your new ';
           whisper += 'bet has been received. ';
@@ -148,9 +147,9 @@ export class BettingPlugin {
    * @param {array} args - arguments from payload.
    *
    */
-  private formatBetter(name: string, args: any[]): false | IBetter {
+  private static formatBetter(name: string, args: any[]): false | IBetter {
     const [amount, team, ...modifiers] = args;
-    if (this.validAmount(amount) === false) return false;
+    if (BettingPlugin.validAmount(amount) === false) return false;
     const obj = modifiers[0] || false;
     const strikes = modifiers[1] || false;
     return {
@@ -159,13 +158,13 @@ export class BettingPlugin {
       amount,
       winnings: 0,
       mods: {
-        strikes: this.validStrikes(strikes),
-        objectives: this.validObjective(obj),
+        strikes: BettingPlugin.validStrikes(strikes),
+        objectives: BettingPlugin.validObjective(obj),
       },
     };
   }
 
-  private validAmount(amount: any): false | number {
+  private static validAmount(amount: any): false | number {
     try {
       // TODO: support #k format.
       const number = Number(amount.toString().replace(/,/g, ''));
@@ -177,7 +176,7 @@ export class BettingPlugin {
     } catch (e) { return false; }
   }
 
-  private validStrikes(strikes: any): false | string {
+  private static validStrikes(strikes: any): false | string {
     if (
       strikes === 'x' ||
       strikes === 'xx' ||
@@ -198,7 +197,7 @@ export class BettingPlugin {
     return Math.round(betAmount * this.oddValues[objPrediction]);
   }
 
-  private validObjective(objective: any): ObjTypes | number {
+  private static validObjective(objective: any): ObjTypes | number {
     if (objective === 'ace') return 5;
     if (objective === false) return 0;
     const number = Number(objective);
@@ -236,25 +235,21 @@ export class BettingPlugin {
     updateBettingTimestamp();
 
     this.pool.timer = setInterval(() => {
-      this.pool.duration = this.pool.duration - this.ms(1);
+      this.pool.duration = this.pool.duration - TwitchBot.ms(1);
       if (this.pool.duration < 0 || this.pool.open === false) {
         clearInterval(this.pool.timer);
         return this.closeBets();
       }
-    }, this.ms(60, 'seconds'));
+    }, TwitchBot.ms(60, 'seconds'));
     return;
   }
 
   public closeBets() {
     this.pool.open = false;
     this.pool.timer = -1;
-    this.pool.duration = this.ms(5);
+    this.pool.duration = TwitchBot.ms(5);
     switchStage('objective');
     return this.bot.say('Betting has been closed.');
-  }
-
-  private ms(duration: number, measurement: 'minutes' | 'seconds' = 'minutes') {
-    return moment.duration(duration, measurement).asMilliseconds();
   }
 
   public async winner(team: 'red' | 'blue', objCount: number) {
@@ -284,7 +279,7 @@ export class BettingPlugin {
     return;
   }
 
-  private negative(num: number) {
+  private static negative(num: number) {
     return -Math.abs(num);
   }
 }

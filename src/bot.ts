@@ -5,6 +5,7 @@ import {
   IUser,
 } from './interfaces';
 import { saveChatLog, saveSystemLog } from './services/firebase.service';
+import * as moment from 'moment';
 const irc = require('tmi.js');
 
 export enum UserType {
@@ -40,15 +41,16 @@ export class TwitchBot {
     Rx.Observable.fromEvent(this.botEE, $.IncChat, (obj: any) => obj)
       .do(input => this.gatherChatLog(input))
       .filter(input => this.isCommand(input.msg))
-      .filter(input => this.checkDebounce(this.normalizeMessage(input.msg)))
+      .filter(input =>
+        this.checkDebounce(TwitchBot.normalizeMessage(input.msg)))
       .filter(input => this.checkPermissions(input))
       .map(input => this.formatInput(input))
       .do(payload => this.doCommand(payload))
-      .subscribe((a: any) => console.log(`command`));
+      .subscribe(() => console.log(`command`));
 
     Rx.Observable.fromEvent(this.botEE, $.IncWhisper, (obj: any) => obj)
       .do(input => console.log(input))
-      .subscribe((a: any) => console.log($.IncWhisper));
+      .subscribe(() => console.log($.IncWhisper));
 
     Rx.Observable.fromEvent(this.botEE, $.OutWhisper, (obj: any) => obj)
       .map(output => Rx.Observable.of(output).delay(this.whisperDelay))
@@ -58,11 +60,11 @@ export class TwitchBot {
     Rx.Observable.fromEvent(this.botEE, $.ChatLog, (obj: any) => obj)
       .do(data => this.unsavedChatLogs.push(data))
       .bufferCount(5)
-      .do(data => this.saveLog(data))
-      .subscribe((o: any) => console.log(`saving chat logs`));
+      .do(data => TwitchBot.saveLog(data))
+      .subscribe(() => console.log(`saving chat logs`));
 
     this.addExitFunction(async () => {
-      this.saveLog(this.unsavedChatLogs);
+      TwitchBot.saveLog(this.unsavedChatLogs);
       await this.say('...signing off.');
     });
   }
@@ -74,7 +76,7 @@ export class TwitchBot {
       command.lastExe = Date.now();
       return true;
     } catch (e) {
-      this.sysLog('error', 'Problem executing command doCommand()', '~', {
+      TwitchBot.sysLog('error', 'Problem executing command doCommand()', '~', {
         payload,
         error: e,
       });
@@ -119,7 +121,7 @@ export class TwitchBot {
     try {
       await this.client.whisper(username, message);
     } catch (e) {
-      this.sysLog('warning', 'could not send whisper', '~', e);
+      TwitchBot.sysLog('warning', 'could not send whisper', '~', e);
     }
     return;
   }
@@ -165,7 +167,7 @@ export class TwitchBot {
   public formatInput(input: IInput): IPayload {
     return {
       user: input.user,
-      command: this.normalizeMessage(input.msg),
+      command: TwitchBot.normalizeMessage(input.msg),
       from: input.user.username,
       type: input.user['message-type'],
       start: Date.now(),
@@ -189,7 +191,7 @@ export class TwitchBot {
   }
 
   public checkPermissions(input: IInput): boolean {
-    const string = this.normalizeMessage(input.msg).substr(1);
+    const string = TwitchBot.normalizeMessage(input.msg).substr(1);
     switch (this.commands[string].reqRights) {
       case UserType.Normal:     return true;
       case UserType.Subscriber: return input.user.subscriber === true;
@@ -213,7 +215,7 @@ export class TwitchBot {
    * @param {string} inputMsg - message that needs to be converted.
    * @return {string} - return command.
    */
-  public normalizeMessage(inputMsg: string): string {
+  public static normalizeMessage(inputMsg: string): string {
     const msgArray = inputMsg.trim().split(' ');
     const msg = msgArray[0];
     return msg.toLowerCase();
@@ -239,13 +241,13 @@ export class TwitchBot {
     } catch (e) { return []; }
   }
 
-  public saveLog(data, type: string = 'chat') {
+  public static saveLog(data, type: string = 'chat') {
     if (type === 'chat') {
       return saveChatLog(data);
     }
   }
 
-  public sysLog(type: 'info' | 'warning' | 'error',
+  public static sysLog(type: 'info' | 'warning' | 'error',
                 message: string,
                 plugin: '~' | 'betting'| 'bpm' | 'voting' | 'apply',
                 data: any = false) {
@@ -288,6 +290,12 @@ export class TwitchBot {
       from: 'self',
     };
     return this.doCommand(payload);
+  }
+
+  public static ms(
+    duration: number, measurement: 'minutes' | 'seconds' = 'minutes',
+  ) {
+    return moment.duration(duration, measurement).asMilliseconds();
   }
 
   private gatherChatLog(input) {

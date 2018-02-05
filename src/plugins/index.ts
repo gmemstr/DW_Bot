@@ -34,7 +34,7 @@ const plugins = (bot: TwitchBot) => {
       }
 
     } catch (e) {
-      bot.sysLog('error', 'Problems with startGame command', '~', e);
+      TwitchBot.sysLog('error', 'Problems with startGame command', '~', e);
     }
   });
 
@@ -59,19 +59,19 @@ const plugins = (bot: TwitchBot) => {
     return addTime(ms);
   });
 
-  bot.addCommand('@channel', async (o:IPayload) => {
+  bot.addCommand('@channel', async () => {
     return getStreamInfo('beleek');
   });
 
-  bot.addCommand('@endgame', async (o:IPayload) => {
+  bot.addCommand('@endgame', async () => {
     return await resetFrame();
   });
 
   // example of self command:
-  bot.addCommand('@mirrormirror', async (o:IPayload) => {
+  bot.addCommand('@mirrormirror', async () => {
     return bot.say('...on the wall');
   });
-  bot.addCommand('@selfCommand', async (o:IPayload) => {
+  bot.addCommand('@selfCommand', async () => {
     return bot.selfCommand('!mirrormirror');
   });
 };

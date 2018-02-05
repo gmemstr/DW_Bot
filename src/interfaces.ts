@@ -45,16 +45,16 @@ export interface ICommand {
 }
 
 
-export interface DatabaseInterface {
-  channels: [IChannel];
-  startTimestamp: number;
-}
+// export interface DatabaseInterface {
+//   channels: [IChannel];
+//   startTimestamp: number;
+// }
 
-export interface IChannel {
-  name: string;
-  chatLogs: [IChatLog];
-  infoLogs: [ILog];
-}
+// export interface IChannel {
+//   name: string;
+//   chatLogs: [IChatLog];
+//   infoLogs: [ILog];
+// }
 
 export interface IChatLog {
   timestamp: number;

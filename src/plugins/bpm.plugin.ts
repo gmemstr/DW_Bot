@@ -1,13 +1,11 @@
-import { IPayload } from '../interfaces';
 import { TwitchBot } from '../bot';
 import { putBits } from '../services/user.service';
 import { getStreamInfo, getViewers } from '../services/twitch.service';
-import * as moment from 'moment';
 
 export class BPMPlugin {
   private offline = 2;
   private online = 10;
-  private loop: number = this.ms(25, 'minutes');
+  private loop: number = TwitchBot.ms(25, 'minutes');
 
   constructor(private bot: TwitchBot) {
     bot.addCommand('@bpm', async () => {
@@ -17,7 +15,7 @@ export class BPMPlugin {
 
     setTimeout(() => {
       setInterval(() => this.giveBits(), this.loop);
-    }, this.ms(1, 'minutes'));
+    }, TwitchBot.ms(1, 'minutes'));
 
   }
 
@@ -45,10 +43,6 @@ export class BPMPlugin {
         });
       }
     }
-  }
-
-  private ms(duration: number, measurement: 'minutes' | 'seconds' = 'minutes') {
-    return moment.duration(duration, measurement).asMilliseconds();
   }
 
 }

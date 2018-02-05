@@ -3,9 +3,8 @@ import { TwitchBot } from '../bot';
 import {
   teamColors,
   voteCategories,
-  addVoteOnFrame, resetFrame,
+  addVoteOnFrame,
 } from '../services/firebase.service';
-import * as moment from 'moment';
 import { currentGame, sendVotes } from '../services/game.service';
 
 export enum VotingShorthand { d, f, t }
@@ -18,7 +17,7 @@ export class VotingPlugin {
   private isOpen: boolean = false;
   private votingOn: voteCategories = 'design';
   private voters: IVoter[] = [];
-  private duration = this.ms(3, 'minutes');
+  private duration = TwitchBot.ms(3, 'minutes');
 
   constructor(private bot: TwitchBot) {
     bot.addCommand('@startvote', async (o:IPayload) => {
@@ -73,7 +72,7 @@ export class VotingPlugin {
 
   public timer() {
     const t: any = setInterval(() => {
-      this.duration = this.duration - this.ms(1, 'minutes');
+      this.duration = this.duration - TwitchBot.ms(1, 'minutes');
       console.log(`this.duration : ${this.duration}`);
       if (this.duration <= 0) {
         this.closeVotes().then(() => {
@@ -82,7 +81,7 @@ export class VotingPlugin {
         });
       }
 
-    }, this.ms(1, 'minutes'));
+    }, TwitchBot.ms(1, 'minutes'));
   }
 
   public async closeVotes(): Promise<void> {
@@ -99,9 +98,9 @@ export class VotingPlugin {
       }
       this.votingOn = 'design';
       this.isOpen = false;
-      this.duration = this.ms(3, 'minutes');
+      this.duration = TwitchBot.ms(3, 'minutes');
     } catch (e) {
-      this.bot.sysLog(
+      TwitchBot.sysLog(
         'error', 'problem closing out votes', 'voting', { error: e });
     }
 
@@ -118,10 +117,6 @@ export class VotingPlugin {
 
   private teamVotes(team: teamColors): IVoter[] {
     return this.voters.filter(obj => obj.team === team);
-  }
-
-  private ms(duration: number, measurement: 'minutes' | 'seconds' = 'minutes') {
-    return moment.duration(duration, measurement).asMilliseconds();
   }
 
 }
