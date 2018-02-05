@@ -247,7 +247,7 @@ export class TwitchBot {
 
   public sysLog(type: 'info' | 'warning' | 'error',
                 message: string,
-                plugin: '~' | 'betting'| 'bpm' | 'voting',
+                plugin: '~' | 'betting'| 'bpm' | 'voting' | 'apply',
                 data: any = false) {
     const log: ILog = { message, plugin, type, data };
     switch (type) {
