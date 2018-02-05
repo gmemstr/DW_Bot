@@ -1,15 +1,8 @@
 import environment from '../environment';
 import axios from 'axios';
 
-const request = axios.create({
-  baseURL: 'https://api.twitch.tv/kraken',
-  timeout: 1000,
-  headers: {
-    'Client-ID': environment.bot.identity.password,
-  },
-});
 
-const ch = environment.bot.channels[0].substr(1);
+const ch = environment.bot.channels[0].substr(1).toLowerCase();
 
 // DOCS: https://dev.twitch.tv/docs/v5/reference/streams/
 export interface IStream {
@@ -60,8 +53,15 @@ export interface IChatters {
 }
 
 export async function getStreamInfo(channel: string = ch): Promise<IStream> {
-  const stream =
-    await request.get(`/streams/${channel}`);
+  const stream = await axios
+    .get('https://api.twitch.tv/helix/streams', {
+      data: {
+        user_login: channel,
+      },
+      headers: {
+        'Client-ID': environment.bot.client_id,
+      },
+    });
   return stream.data;
 }
 
