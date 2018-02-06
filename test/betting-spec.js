@@ -14,9 +14,6 @@ const betting = new BettingPlugin(bot);
  * https://docs.google.com/spreadsheets/d/1kg4zsgf2d_FqbshCdTii3oZnU_W5Imlj_ka6sRfaiCk/edit#gid=2069817316
  */
 
-function timeout(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 const ghostBetters = [
   { // !bet 300 blue
@@ -67,53 +64,53 @@ const ghostBetters = [
 ];
 
 test('validObjective returns TRUE if VALID arguments are passed in. #unit', t => {
-  t.true(betting.validObjective('ace') === 5);
-  t.true(betting.validObjective(0) === 0);
-  t.true(betting.validObjective(1) === 1);
-  t.true(betting.validObjective(2) === 2);
-  t.true(betting.validObjective(3) === 3);
-  t.true(betting.validObjective(4) === 4);
-  t.true(betting.validObjective(5) === 5);
-  t.true(betting.validObjective('5') === 5);
+  t.true(BettingPlugin.validObjective('ace') === 5);
+  t.true(BettingPlugin.validObjective(0) === 0);
+  t.true(BettingPlugin.validObjective(1) === 1);
+  t.true(BettingPlugin.validObjective(2) === 2);
+  t.true(BettingPlugin.validObjective(3) === 3);
+  t.true(BettingPlugin.validObjective(4) === 4);
+  t.true(BettingPlugin.validObjective(5) === 5);
+  t.true(BettingPlugin.validObjective('5') === 5);
 });
 
 test('validObjective returns FALSE if INVALID arguments are passed in. #unit', t => {
-  t.false(betting.validObjective(-1) === -1);
-  t.false(betting.validObjective(6) === 6);
-  t.false(betting.validObjective('eca') === 'eca');
-  t.false(betting.validObjective('6') === '6');
-  t.false(betting.validObjective('-1') === '-1');
-  t.false(betting.validObjective(false) === false);
+  t.false(BettingPlugin.validObjective(-1) === -1);
+  t.false(BettingPlugin.validObjective(6) === 6);
+  t.false(BettingPlugin.validObjective('eca') === 'eca');
+  t.false(BettingPlugin.validObjective('6') === '6');
+  t.false(BettingPlugin.validObjective('-1') === '-1');
+  t.false(BettingPlugin.validObjective(false) === false);
 });
 
 test('validStrikes returns TRUE if VALID arguments are passed in. #unit', t => {
-  t.true(betting.validStrikes('x') === 'x');
-  t.true(betting.validStrikes('xx') === 'xx');
-  t.true(betting.validStrikes('xxx') === 'xxx');
+  t.true(BettingPlugin.validStrikes('x') === 'x');
+  t.true(BettingPlugin.validStrikes('xx') === 'xx');
+  t.true(BettingPlugin.validStrikes('xxx') === 'xxx');
 });
 
 test('validStrikes returns FALSE if INVALID arguments are passed in. #unit', t => {
-  t.false(betting.validStrikes());
-  t.false(betting.validStrikes(-1));
-  t.false(betting.validStrikes(false));
-  t.false(betting.validStrikes('xxxx'));
+  t.false(BettingPlugin.validStrikes());
+  t.false(BettingPlugin.validStrikes(-1));
+  t.false(BettingPlugin.validStrikes(false));
+  t.false(BettingPlugin.validStrikes('xxxx'));
 });
 
 test('validAmount return FALSE if INVALID amount number is passed in. #unit', t => {
-  t.false(betting.validAmount(1));
-  t.false(betting.validAmount(99999999));
-  t.false(betting.validAmount(-2));
-  t.false(betting.validAmount('-2000000000'));
-  t.false(betting.validAmount('-20,000'));
-  t.false(betting.validAmount(0));
-  t.false(betting.validAmount(1.1));
-  t.false(betting.validAmount(0.5));
+  t.false(BettingPlugin.validAmount(1));
+  t.false(BettingPlugin.validAmount(99999999));
+  t.false(BettingPlugin.validAmount(-2));
+  t.false(BettingPlugin.validAmount('-2000000000'));
+  t.false(BettingPlugin.validAmount('-20,000'));
+  t.false(BettingPlugin.validAmount(0));
+  t.false(BettingPlugin.validAmount(1.1));
+  t.false(BettingPlugin.validAmount(0.5));
 });
 
 test('validAmount returns a number if VALID number amount is passed in. #unit', t => {
-  t.true(betting.validAmount(10) === 10);
-  t.true(betting.validAmount(100) === 100);
-  t.true(betting.validAmount('5,000') === 5000);
+  t.true(BettingPlugin.validAmount(10) === 10);
+  t.true(BettingPlugin.validAmount(100) === 100);
+  t.true(BettingPlugin.validAmount('5,000') === 5000);
 });
 
 test('oddsWinnings calculate the correct objective bet modifier based Better object. #unit', t => {
@@ -164,7 +161,7 @@ test('hasBet returns false if better is not found in pool. #unit', t => {
 
 test('formatBetter returns better object if correct params are passed in. #unit', t => {
   const user = ghostBetters[5];
-  const better = betting.formatBetter(user.name, [user.amount, user.team]);
+  const better = BettingPlugin.formatBetter(user.name, [user.amount, user.team]);
   t.true(better.name === user.name);
   t.true(better.amount === user.amount);
 });
