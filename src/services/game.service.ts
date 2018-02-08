@@ -8,7 +8,8 @@ const key: string = environment.dwServer.key;
 
 
 export async function currentGame(): Promise<IGame> {
-  return axios.get(`${url}/v1/game/currentgame?key=${key}`);
+  const { data } = await axios.get(`${url}/v1/game/currentgame`);
+  return data;
 }
 
 // Example Request:
@@ -17,11 +18,11 @@ export async function sendVotes(gameId: number,
                       teamId: any, category: voteCategories, votes: number) {
   try {
     const u = `${url}/v1/game`;
-    const r = await axios.post(`${u}/${gameId}/team/${teamId}/addVotes`, {
+    await axios.post(`${u}/${gameId}/team/${teamId}/addVotes`, {
       key,
       [category]: votes,
     });
-    return JSON.parse(r.data);
+    return;
   } catch (e) {
     throw e;
   }

@@ -3,7 +3,7 @@ import { TwitchBot } from '../bot';
 import {
   teamColors,
   voteCategories,
-  addVoteOnFrame,
+  addVoteOnFrame, switchVote, switchStage,
 } from '../services/firebase.service';
 import { currentGame, sendVotes } from '../services/game.service';
 
@@ -66,6 +66,8 @@ export class VotingPlugin {
 
   public openVotes(category: voteCategories) {
     this.votingOn = category;
+    switchStage('voting');
+    switchVote(category);
     this.isOpen = true;
     return this.timer();
   }

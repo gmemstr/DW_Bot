@@ -87,19 +87,22 @@ export function updateFrame(updates: IFirebaseFrame) {
   });
 }
 
-export function switchStage(stage: stages) {
-  return frame.child('stage').set(stage);
+export async function switchStage(stage: stages) {
+  await frame.child('stage').set(stage);
+  return;
 }
 
-export function updateBettingTimestamp() {
-  return frame.child('betting').update({
-    timestamp: firebase.database.ServerValue.TIMESTAMP,
-  });
+export async function updateBettingTimestamp() {
+  await frame.child('betting').child('timestamp')
+    .set(firebase.database.ServerValue.TIMESTAMP);
+  return;
 }
 
-export function addVoteOnFrame(color: teamColors, category: voteCategories) {
-  return frame.child('liveVoting').child(category).child(color)
+export async function addVoteOnFrame(
+  color: teamColors, category: voteCategories) {
+  await frame.child('liveVoting').child(category).child(color)
     .transaction(currentNum => currentNum + 1);
+  return;
 }
 
 export async function addTime(ms: number) {
@@ -108,9 +111,7 @@ export async function addTime(ms: number) {
 }
 
 export async function startTimer() {
-  await frame.child('timer').update({
-    timer: firebase.database.ServerValue.TIMESTAMP,
-  });
+  await frame.child('timer').set(firebase.database.ServerValue.TIMESTAMP);
   return;
 }
 
@@ -143,4 +144,9 @@ export function saveSystemLog(log: ILog) {
     data: log,
     timestamp: firebase.database.ServerValue.TIMESTAMP,
   });
+}
+
+export async function switchVote(category: string) {
+  await frame.child('liveVoting').child('votingOn').set(category);
+  return;
 }

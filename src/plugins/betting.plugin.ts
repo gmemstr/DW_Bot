@@ -37,7 +37,7 @@ export class BettingPlugin {
   private pool: IPool = {
     open: false,
     timer: -1,
-    duration: TwitchBot.ms(5),
+    duration: TwitchBot.ms(10),
     gameId: -1,
     bets: [],
   };
@@ -76,7 +76,6 @@ export class BettingPlugin {
     });
 
     bot.addCommand('@openBets', async () => {
-      console.log(`openbets!`);
       if (this.pool.open) return bot.say('Betting pool is currently open.');
       await this.openBets();
       return bot.say('Betting is now open.');

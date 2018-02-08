@@ -21,12 +21,13 @@ const plugins = (bot: TwitchBot) => {
   bot.addCommand('@startgame', async () => {
     try {
       const game = await currentGame();
+      const theme = game.theme || 'Classic';
       await Promise
         .all([switchStage('objective'), updateFrame({ game }), startTimer()]);
 
       await bot.say('Starting Game!');
 
-      if (game.theme.toLowerCase() === 'zen garden') {
+      if (theme.toLowerCase() === 'zen garden') {
         await bot.say('bets are closed for this game.');
       } else {
         await bot.say('betting will open in 5 minutes.');
