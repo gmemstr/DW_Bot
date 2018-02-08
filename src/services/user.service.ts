@@ -18,5 +18,5 @@ export async function putBits(name: string, amount: number): Promise<void> {
 
 export async function hasBits(name: string, amount: number): Promise<boolean> {
   const dbAmount = await getBits(name);
-  return dbAmount > amount;
+  return dbAmount >= amount;
 }

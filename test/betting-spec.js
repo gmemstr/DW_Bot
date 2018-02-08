@@ -97,8 +97,6 @@ test('validStrikes returns FALSE if INVALID arguments are passed in. #unit', t =
 });
 
 test('validAmount return FALSE if INVALID amount number is passed in. #unit', t => {
-  t.false(BettingPlugin.validAmount(1));
-  t.false(BettingPlugin.validAmount(99999999));
   t.false(BettingPlugin.validAmount(-2));
   t.false(BettingPlugin.validAmount('-2000000000'));
   t.false(BettingPlugin.validAmount('-20,000'));

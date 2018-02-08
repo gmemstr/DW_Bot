@@ -28,8 +28,6 @@ interface IPool {
   bets: IBetter[];
 }
 
-const maxBet = 10000;
-const minBet = 10;
 
 export class BettingPlugin {
   public oddValues =
@@ -169,8 +167,7 @@ export class BettingPlugin {
       const number = Number(amount.toString().replace(/,/g, ''));
       if (isNaN(number)) return false;
       if (number % 1 !== 0) return false;
-      if (number < minBet) return false;
-      if (number > maxBet) return false;
+      if (number <= 0) return false;
       return number;
     } catch (e) { return false; }
   }
