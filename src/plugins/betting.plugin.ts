@@ -35,7 +35,7 @@ export class BettingPlugin {
   private pool: IPool = {
     open: false,
     timer: -1,
-    duration: TwitchBot.ms(10),
+    duration: TwitchBot.ms(10, 'minutes'),
     gameId: -1,
     bets: [],
   };
@@ -231,7 +231,7 @@ export class BettingPlugin {
     updateBettingTimestamp();
 
     this.pool.timer = setInterval(() => {
-      this.pool.duration = this.pool.duration - TwitchBot.ms(1);
+      this.pool.duration = this.pool.duration - TwitchBot.ms(60, 'seconds');
       if (this.pool.duration < 0 || this.pool.open === false) {
         clearInterval(this.pool.timer);
         return this.closeBets();
@@ -241,6 +241,9 @@ export class BettingPlugin {
   }
 
   public closeBets() {
+    TwitchBot.sysLog('info', 'Betting Save', 'betting', {
+      pool: this.pool,
+    });
     this.pool.open = false;
     this.pool.timer = -1;
     this.pool.duration = TwitchBot.ms(5);

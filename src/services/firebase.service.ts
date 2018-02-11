@@ -93,8 +93,9 @@ export async function switchStage(stage: stages) {
 }
 
 export async function updateBettingTimestamp() {
+  const timestamp = Date.now();
   await frame.child('betting').child('timestamp')
-    .set(firebase.database.ServerValue.TIMESTAMP);
+    .set(timestamp);
   return;
 }
 
