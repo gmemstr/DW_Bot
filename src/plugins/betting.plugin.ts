@@ -232,7 +232,7 @@ export class BettingPlugin {
 
     this.pool.timer = setInterval(() => {
       this.pool.duration = this.pool.duration - TwitchBot.ms(60, 'seconds');
-      if (this.pool.duration < 0 || this.pool.open === false) {
+      if (this.pool.duration <= 0 || this.pool.open === false) {
         clearInterval(this.pool.timer);
         return this.closeBets();
       }
