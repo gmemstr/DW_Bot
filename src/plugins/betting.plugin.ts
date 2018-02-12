@@ -6,6 +6,7 @@ import {
   addFrameBet, removeFrameBet,
   switchStage, updateBettingTimestamp,
 } from '../services/firebase.service';
+import { currentGame } from '../services/game.service';
 
 export type ObjTypes =  0 | 1 | 2 | 3 | 4 | 5;
 
@@ -222,11 +223,9 @@ export class BettingPlugin {
   }
 
   public async openBets() {
-    // todo: what happens if this can't find a game?
-    // todo: uncomment this later.
-    // const game = await currentGame() || { id: 0 };
+    const game = await currentGame();
     this.pool.open = true;
-    this.pool.gameId = 0;
+    this.pool.gameId = game.id;
     switchStage('betting');
     updateBettingTimestamp();
 
@@ -253,13 +252,12 @@ export class BettingPlugin {
 
   public async winner(team: 'red' | 'blue', objCount: number) {
     _.forEach(this.pool.bets, async (o) => {
-      if (o.team !== team) return this.removeBet(o.name);
+      if (o.team !== team) return;
       // todo: next line doesn't seem to be working?
-      if (o.mods.objectives >= objCount) return this.removeBet(o.name);
+      if (o.mods.objectives >= objCount) return;
       const winnings = this.oddsWinnings(o) + o.amount;
       await putBits(o.name, winnings)
         .then(() => {
-          this.removeBet(o.name);
           this.bot.whisperQueue(o.name, `You have received ${winnings} bits.`);
         });
       return;
