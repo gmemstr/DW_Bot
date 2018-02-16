@@ -3,7 +3,8 @@ import {  TwitchBot } from '../bot';
 import { BettingPlugin } from './betting.plugin';
 import { getBits } from '../services/user.service';
 import {
-  addTime, resetFrame, startTimer, switchStage,
+  addTime, listenForStageChange, resetFrame, startTimer,
+  switchStage,
   updateFrame,
 } from '../services/firebase.service';
 import { getStreamInfo } from '../services/twitch.service';
@@ -13,10 +14,21 @@ import { VotingPlugin } from './voting.plugin';
 import { ApplyPlugin } from './apply.plugin';
 
 const plugins = (bot: TwitchBot) => {
+  let listenForChanges = false;
   new BettingPlugin(bot);
   new BPMPlugin(bot);
   new VotingPlugin(bot);
   new ApplyPlugin(bot);
+
+  listenForStageChange((state) => {
+    // don't listen for changes on bot bootup.
+    if (listenForChanges === false) {
+      return listenForChanges = true;
+    }
+    if (state === 'running') {
+      return bot.selfCommand('!startgame');
+    }
+  });
 
   bot.addCommand('@startgame', async () => {
     try {

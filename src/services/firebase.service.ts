@@ -39,6 +39,7 @@ firebase.initializeApp({
 });
 
 export const frame = firebase.database().ref('frame');
+export const editor = firebase.database().ref('liveGame');
 export const env = firebase.database()
   .ref(environment.env);
 
@@ -150,4 +151,11 @@ export function saveSystemLog(log: ILog) {
 export async function switchVote(category: string) {
   await frame.child('liveVoting').child('votingOn').set(category);
   return;
+}
+
+export function listenForStageChange(cb: Function) {
+  return editor
+    .child('state')
+    .child('stage')
+    .on('value', snap => cb(snap.val()));
 }
