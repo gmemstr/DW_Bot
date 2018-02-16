@@ -163,3 +163,22 @@ test('formatBetter returns better object if correct params are passed in. #unit'
   t.true(better.name === user.name);
   t.true(better.amount === user.amount);
 });
+
+test.only('Winner command successfully gives user winnings. #integration', async t => {
+  const plugin = new BettingPlugin(bot);
+  const winner0 = ghostBetters[0]; // someone who doesn't specify objective mod amount
+  console.log(`winner0`);
+  console.log(winner0);
+  // put required amount of bits on account.
+  await putBits(winner0.name, winner0.amount);
+  // get current number of bits user has.
+  const currentWinner0 = await getBits(winner0.name);
+  await plugin.addBet(winner0);
+  const winnings0 = await plugin.oddsWinnings(winner0);
+  await plugin.winner(winner0.team, 3);
+  const afterWin0 = await getBits(winner0.name);
+
+  console.log(`afterWin: ${afterWin0} === ${currentWinner0} + ${winnings0} + ${winner0.amount}`);
+  t.true(afterWin0 === currentWinner0 + winnings0 + winner0.amount);
+  // t.true(afterWin1 === currentWinner1 + winnings1);
+});

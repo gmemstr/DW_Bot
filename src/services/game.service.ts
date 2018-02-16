@@ -39,3 +39,15 @@ export async function signUp(twitchUsername: string, gameId: number) {
     throw Error(e);
   }
 }
+
+
+export async function endGame(gameId: number, teamId: number) {
+  try {
+    return await axios.post(`${url}/v1/${gameId}/endgame`, {
+      key,
+      winner: teamId,
+    });
+  } catch (e) {
+    throw Error(e);
+  }
+}

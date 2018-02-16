@@ -6,7 +6,7 @@ import {
   addFrameBet, removeFrameBet,
   switchStage, updateBettingTimestamp,
 } from '../services/firebase.service';
-import { currentGame } from '../services/game.service';
+import { currentGame, endGame } from '../services/game.service';
 
 export type ObjTypes =  0 | 1 | 2 | 3 | 4 | 5;
 
@@ -86,10 +86,14 @@ export class BettingPlugin {
       return bot.say('Betting will be closing soon...');
     });
 
-    bot.addCommand('@winner', (p: IPayload) => {
+    bot.addCommand('@winner', async (p: IPayload) => {
       const winningTeam = p.args[0].toLowerCase();
       const teamObjectiveCount = p.args[1] || 0;
+      if (winningTeam !== 'red' || winningTeam !== 'blue') {
+        return bot.whisper(p.user.username, 'wrong format: !winner command');
+      }
       try {
+        await this.setWinnerInDatabase(winningTeam);
         return this.winner(winningTeam, teamObjectiveCount);
       } catch (e) {
         TwitchBot.sysLog
@@ -131,8 +135,6 @@ export class BettingPlugin {
 
       this.pool.bets.push(better);
       whisper = whisper.charAt(0).toUpperCase() + whisper.slice(1);
-      console.log(`this.pool.bets`);
-      console.log(this.pool.bets);
       return this.bot.whisper(better.name, whisper);
     }
   }
@@ -253,15 +255,22 @@ export class BettingPlugin {
   public async winner(team: 'red' | 'blue', objCount: number) {
     _.forEach(this.pool.bets, async (o) => {
       if (o.team !== team) return;
-      // todo: next line doesn't seem to be working?
-      if (o.mods.objectives >= objCount) return;
-      const winnings = this.oddsWinnings(o) + o.amount;
-      await putBits(o.name, winnings)
-        .then(() => {
-          this.bot.whisperQueue(o.name, `You have received ${winnings} bits.`);
-        });
+      if (o.mods.objectives >= objCount || objCount === 0) {
+        const winnings = this.oddsWinnings(o) + o.amount;
+        await putBits(o.name, winnings)
+          .then(() => {
+            this.bot
+              .whisperQueue(o.name, `You have received ${winnings} bits.`);
+          });
+      }
       return;
     });
+  }
+
+  private async setWinnerInDatabase(team: 'red' | 'blue') {
+    const game = await currentGame();
+    const winningTeamId = game.teams[team].id;
+    return endGame(game.id, winningTeamId);
   }
 
   /**
