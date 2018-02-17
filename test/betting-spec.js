@@ -13,7 +13,9 @@ const betting = new BettingPlugin(bot);
  * betting docs:
  * https://docs.google.com/spreadsheets/d/1kg4zsgf2d_FqbshCdTii3oZnU_W5Imlj_ka6sRfaiCk/edit#gid=2069817316
  */
-
+function timeout(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 const ghostBetters = [
   { // !bet 300 blue
@@ -166,19 +168,19 @@ test('formatBetter returns better object if correct params are passed in. #unit'
 
 test.only('Winner command successfully gives user winnings. #integration', async t => {
   const plugin = new BettingPlugin(bot);
-  const winner0 = ghostBetters[0]; // someone who doesn't specify objective mod amount
-  console.log(`winner0`);
-  console.log(winner0);
-  // put required amount of bits on account.
-  await putBits(winner0.name, winner0.amount);
-  // get current number of bits user has.
-  const currentWinner0 = await getBits(winner0.name);
-  await plugin.addBet(winner0);
-  const winnings0 = await plugin.oddsWinnings(winner0);
-  await plugin.winner(winner0.team, 3);
-  const afterWin0 = await getBits(winner0.name);
+  const winner3 = ghostBetters[3];
 
-  console.log(`afterWin: ${afterWin0} === ${currentWinner0} + ${winnings0} + ${winner0.amount}`);
-  t.true(afterWin0 === currentWinner0 + winnings0 + winner0.amount);
+  // get current number of bits user has.
+  const currentWinner3 = await getBits(winner3.name);
+  await plugin.addBet(winner3);
+  const winnings3 = await plugin.oddsWinnings(winner3);
+  await plugin.winner(winner3.team, winner3.mods.objectives + 1);
+
+  await timeout(5000);
+
+  const afterWin3 = await getBits(winner3.name);
+
+  console.log(`afterWin: ${afterWin3} === ${currentWinner3} + ${winnings3}`);
+  t.true(afterWin3 === currentWinner3 + winnings3);
   // t.true(afterWin1 === currentWinner1 + winnings1);
 });

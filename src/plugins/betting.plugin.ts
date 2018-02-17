@@ -255,7 +255,7 @@ export class BettingPlugin {
   public async winner(team: 'red' | 'blue', objCount: number) {
     _.forEach(this.pool.bets, async (o) => {
       if (o.team !== team) return;
-      if (o.mods.objectives >= objCount || objCount === 0) {
+      if (objCount >= o.mods.objectives || objCount === 0) {
         const winnings = this.oddsWinnings(o) + o.amount;
         await putBits(o.name, winnings)
           .then(() => {
