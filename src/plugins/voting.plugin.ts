@@ -92,20 +92,25 @@ export class VotingPlugin {
       const id = game.id;
       const blueId = game.teams.blue.id;
       const redId = game.teams.red.id;
-      if (process.env.NODE_ENV !== 'dev') {
-        await Promise.all([
-          sendVotes(id, redId, this.votingOn, this.teamVotes('red').length),
-          sendVotes(id, blueId, this.votingOn, this.teamVotes('blue').length),
-        ]);
-      }
+      TwitchBot.sysLog('info', 'Voting saved', 'voting', {
+        blueId,
+        redId,
+        voters: this.voters,
+        votingOn: this.votingOn,
+        gameId: id,
+      });
+      // await Promise.all([
+      //   sendVotes(id, redId, this.votingOn, this.teamVotes('red').length),
+      //   sendVotes(id, blueId, this.votingOn, this.teamVotes('blue').length),
+      // ]);
       this.votingOn = 'design';
       this.isOpen = false;
       this.duration = TwitchBot.ms(3, 'minutes');
+      this.voters = [];
     } catch (e) {
       TwitchBot.sysLog(
         'error', 'problem closing out votes', 'voting', { error: e });
     }
-
   }
 
   /**
