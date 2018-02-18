@@ -135,7 +135,7 @@ test('oddsWinnings calculate the correct objective bet modifier based Better obj
 
 // Skipping this since it requires connection to chat.
 test('addBet adds better to pool and removes bet amount. #integration', async (t) => {
-  const better = ghostBetters[3];
+  const better = ghostBetters[4];
   // put required amount of bits on account.
   await putBits(better.name, better.amount);
   // get current number of bits user has.
@@ -166,7 +166,7 @@ test('formatBetter returns better object if correct params are passed in. #unit'
   t.true(better.amount === user.amount);
 });
 
-test.only('Winner command successfully gives user winnings. #integration', async t => {
+test('Winner command successfully gives user winnings. #integration', async t => {
   const plugin = new BettingPlugin(bot);
   const winner3 = ghostBetters[3];
 
@@ -179,8 +179,5 @@ test.only('Winner command successfully gives user winnings. #integration', async
   await timeout(5000);
 
   const afterWin3 = await getBits(winner3.name);
-
-  console.log(`afterWin: ${afterWin3} === ${currentWinner3} + ${winnings3}`);
-  t.true(afterWin3 === currentWinner3 + winnings3);
-  // t.true(afterWin1 === currentWinner1 + winnings1);
+  t.true(currentWinner3 + winnings3 ===  afterWin3)
 });
