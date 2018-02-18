@@ -40,8 +40,7 @@ firebase.initializeApp({
 
 export const frame = firebase.database().ref('frame');
 export const editor = firebase.database().ref('liveGame');
-export const env = firebase.database()
-  .ref(environment.env);
+export const env = firebase.database().ref(environment.env);
 
 export function resetFrame() {
   frame.update({
@@ -158,4 +157,9 @@ export function listenForStageChange(cb: Function) {
     .child('state')
     .child('stage')
     .on('value', snap => cb(snap.val()));
+}
+
+export async function getLogData(locationKey: string) {
+  const snap = await env.child(`systemLogs`).child(locationKey).once('value');
+  return snap.val();
 }

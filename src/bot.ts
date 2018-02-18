@@ -59,13 +59,13 @@ export class TwitchBot {
 
     Rx.Observable.fromEvent(this.botEE, $.ChatLog, (obj: any) => obj)
       .do(data => this.unsavedChatLogs.push(data))
-      .bufferCount(5)
+      .bufferCount(25)
       .do(data => TwitchBot.saveLog(data))
       .subscribe(() => console.log(`saving chat logs`));
 
     this.addExitFunction(async () => {
       TwitchBot.saveLog(this.unsavedChatLogs);
-      await this.say('...signing off.');
+      // await this.say('...signing off.');
     });
   }
 
@@ -195,8 +195,7 @@ export class TwitchBot {
     switch (this.commands[string].reqRights) {
       case UserType.Normal:     return true;
       case UserType.Subscriber: return input.user.subscriber === true;
-      case UserType.Mod:        return input.user.mod === true ||
-                                  input.user.badges.broadcaster === '1';
+      case UserType.Mod:        return input.user.mod === true;
       default:                  return false;
     }
   }
@@ -235,7 +234,11 @@ export class TwitchBot {
         if (item.match(/^\d+$/)) {
           return Number(item);
         } else {
-          return item.toString().toLowerCase();
+          if (item.includes('key')) {
+            return item.toString();
+          } else {
+            return item.toString().toLowerCase();
+          }
         }
       });
     } catch (e) { return []; }

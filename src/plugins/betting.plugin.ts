@@ -3,7 +3,7 @@ import { TwitchBot } from '../bot';
 import { hasBits, putBits } from '../services/user.service';
 import * as _ from 'lodash';
 import {
-  addFrameBet, removeFrameBet,
+  addFrameBet, getLogData, removeFrameBet,
   switchStage, updateBettingTimestamp,
 } from '../services/firebase.service';
 import { currentGame, endGame } from '../services/game.service';
@@ -86,14 +86,24 @@ export class BettingPlugin {
       return bot.say('Betting will be closing soon...');
     });
 
-    bot.addCommand('@winner', async (p: IPayload) => {
-      const winningTeam = p.args[0].toLowerCase();
-      const teamObjectiveCount = p.args[1] || 0;
-      if (winningTeam !== 'red' || winningTeam !== 'blue') {
-        return bot.whisper(p.user.username, 'wrong format: !winner command');
-      }
+    bot.addCommand('@loadbets', async (p: IPayload) => {
+      // key:-L5_Bs5g_0Mao8w8_-1K
+      const locationKey = p.args[0].split('key:')[1];
       try {
-        await this.setWinnerInDatabase(winningTeam);
+        const json = await getLogData(locationKey);
+        const { pool } = JSON.parse(json.data.data);
+        return this.pool = pool;
+      } catch (e) {
+        throw e;
+      }
+    });
+
+    bot.addCommand('@winner', async (p: IPayload) => {
+      const winningTeam = p.args[0];
+      const teamObjectiveCount = p.args[1] || 0;
+      try {
+        // TODO: current Game is found but can't set winner.
+        // await this.setWinnerInDatabase(winningTeam);
         return this.winner(winningTeam, teamObjectiveCount);
       } catch (e) {
         TwitchBot.sysLog
