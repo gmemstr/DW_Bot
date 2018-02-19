@@ -9,7 +9,6 @@ export class BPMPlugin {
 
   constructor(private bot: TwitchBot) {
     bot.addCommand('@bpm', async () => {
-      console.log(`bpm command:`);
       return this.giveBits();
     });
 

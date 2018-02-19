@@ -3,6 +3,8 @@ import axios from 'axios';
 
 
 const ch = environment.bot.channels[0].substr(1).toLowerCase();
+const oauth = environment.bot.identity.password;
+const id = environment.bot.client_id;
 
 // DOCS: https://dev.twitch.tv/docs/v5/reference/streams/
 export interface IStream {
@@ -54,22 +56,22 @@ export interface IChatters {
 
 export async function getStreamInfo(channel: string = ch): Promise<IStream> {
   const stream = await axios
-    .get('https://api.twitch.tv/helix/streams', {
-      data: {
-        user_login: channel,
-      },
+    .get(`https://api.twitch.tv/helix/streams?user_login=${channel}`, {
       headers: {
-        'Client-ID': environment.bot.client_id,
+        'Client-ID': id,
       },
     });
-  return stream.data;
+  return stream.data.data[0];
 }
 
 export async function getViewers(channel = ch): Promise<IChatters | false> {
-  console.log(`getViewersNames(${channel})`);
   const chatters =
-    `https://tmi.twitch.tv/group/user/${channel.toLowerCase()}/chatters`;
-  const request = await axios.get(chatters);
+    `https://tmi.twitch.tv/group/user/${channel}/chatters`;
+  const request = await axios.get(chatters, {
+    headers: {
+      'Client-ID': oauth,
+    },
+  });
   if (request.status === 200) return request.data;
   return false;
 }
