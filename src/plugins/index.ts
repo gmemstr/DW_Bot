@@ -1,7 +1,10 @@
 import { IPayload } from '../interfaces';
 import {  TwitchBot } from '../bot';
 import { BettingPlugin } from './betting.plugin';
-import { getBits } from '../services/user.service';
+import {
+  bitsLeaderboard, getBits,
+  xpLeaderboard,
+} from '../services/user.service';
 import {
   addTime, listenForStageChange, resetFrame, startTimer,
   switchStage,
@@ -79,6 +82,33 @@ const plugins = (bot: TwitchBot) => {
   bot.addCommand('@endgame', async () => {
     return await resetFrame();
   });
+
+  bot.addCommand('*livecode', () =>
+    bot.say('Watch the code in real-time https://watch.devwars.tv'), 900);
+
+  bot.addCommand('*watchred', () =>
+    bot.say('View Red Team\'s website https://red.devwars.tv'), 900);
+
+  bot.addCommand('*watchblue', () =>
+    bot.say('View Blue Team\'s website https://blue.devwars.tv'), 900);
+
+  bot.addCommand('*discord', () => bot.say('https://discord.gg/devwars'), 900);
+
+  bot.addCommand('*bitsleader', async () => {
+    const leadersArr = await bitsLeaderboard();
+    bot.say(`1. ${leadersArr[0].username} - ${leadersArr[0].ranking.points}`);
+    bot.say(`2. ${leadersArr[1].username} - ${leadersArr[1].ranking.points}`);
+    bot.say(`3. ${leadersArr[2].username} - ${leadersArr[2].ranking.points}`);
+  }, 5000);
+
+  bot.addCommand('*xpleader', async () => {
+    const leadersArr = await xpLeaderboard();
+    bot.say(`1. ${leadersArr[0].username} - ${leadersArr[0].ranking.xp}xp`);
+    bot.say(`2. ${leadersArr[1].username} - ${leadersArr[1].ranking.xp}xp`);
+    bot.say(`3. ${leadersArr[2].username} - ${leadersArr[2].ranking.xp}xp`);
+  }, 5000);
+
+  bot.addCommand('*fire', () => bot.say('🔥'), 289900);
 
   // example of self command:
   bot.addCommand('@mirrormirror', async () => {

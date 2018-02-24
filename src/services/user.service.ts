@@ -20,3 +20,22 @@ export async function hasBits(name: string, amount: number): Promise<boolean> {
   const dbAmount = await getBits(name);
   return dbAmount >= amount;
 }
+
+export async function bitsLeaderboard(): Promise<any> {
+  try {
+    const { data } = await axios.get(`${url}/v1/info/bitsleaderboard`);
+    return data;
+  } catch (e) {
+    throw e;
+  }
+}
+
+
+export async function xpLeaderboard(): Promise<any> {
+  try {
+    const { data } = await axios.get(`${url}/v1/info/xpleaderboard`);
+    return data;
+  } catch (e) {
+    throw e;
+  }
+}
