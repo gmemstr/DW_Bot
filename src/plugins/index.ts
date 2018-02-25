@@ -15,6 +15,7 @@ import { currentGame } from '../services/game.service';
 import { BPMPlugin } from './bpm.plugin';
 import { VotingPlugin } from './voting.plugin';
 import { ApplyPlugin } from './apply.plugin';
+import { AnalyticsPlugin } from './analytics.plugin';
 
 const plugins = (bot: TwitchBot) => {
   let listenForChanges = false;
@@ -22,6 +23,7 @@ const plugins = (bot: TwitchBot) => {
   new BPMPlugin(bot);
   new VotingPlugin(bot);
   new ApplyPlugin(bot);
+  new AnalyticsPlugin();
 
   listenForStageChange((state) => {
     // don't listen for changes on bot bootup.

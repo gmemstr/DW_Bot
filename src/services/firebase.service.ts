@@ -170,3 +170,11 @@ export async function getLogData(locationKey: string) {
   const snap = await env.child(`systemLogs`).child(locationKey).once('value');
   return snap.val();
 }
+
+export function saveAnalytics(viewers) {
+  return env.child('analytics').push({
+    viewers,
+    env: environment.env,
+    timestamp: firebase.database.ServerValue.TIMESTAMP,
+  });
+}
