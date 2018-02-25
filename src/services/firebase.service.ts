@@ -8,7 +8,7 @@ const credential = firebase.credential
 const databaseURL = environment.firebase.databaseURL;
 
 export type stages = 'objective' | 'betting' | 'voting';
-export type voteCategories = 'design' | 'func' | 'tiebreaker';
+export type voteCategories = 'ui' | 'ux' | 'tiebreaker';
 export type teamColors = 'red' | 'blue';
 
 export interface IFirebaseFrame {
@@ -52,7 +52,7 @@ export function resetFrame() {
 
     liveVoting: {
 
-      votingOn: 'design',
+      votingOn: 'ui',
 
       design: {
         red: 0,
@@ -95,6 +95,13 @@ export async function switchStage(stage: stages) {
 export async function updateBettingTimestamp() {
   const timestamp = Date.now();
   await frame.child('betting').child('timestamp')
+    .set(timestamp);
+  return;
+}
+
+export async function updateVotingTimestamp() {
+  const timestamp = Date.now();
+  await frame.child('liveVoting').child('timestamp')
     .set(timestamp);
   return;
 }

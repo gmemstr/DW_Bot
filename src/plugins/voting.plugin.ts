@@ -3,11 +3,10 @@ import { TwitchBot } from '../bot';
 import {
   teamColors,
   voteCategories,
-  addVoteOnFrame, switchVote, switchStage,
+  addVoteOnFrame, switchVote, switchStage, updateVotingTimestamp,
 } from '../services/firebase.service';
-import { currentGame, sendVotes } from '../services/game.service';
+import { currentGame } from '../services/game.service';
 
-export enum VotingShorthand { d, f, t }
 
 export interface IVoter {
   username: string; team: teamColors;
@@ -15,29 +14,42 @@ export interface IVoter {
 
 export class VotingPlugin {
   private isOpen: boolean = false;
-  private votingOn: voteCategories = 'design';
+  private votingOn: voteCategories = 'ui';
   private voters: IVoter[] = [];
-  private duration = TwitchBot.ms(3, 'minutes');
+  private duration = TwitchBot.ms(2, 'minutes');
 
   constructor(private bot: TwitchBot) {
-    bot.addCommand('@startvote', async (o:IPayload) => {
-      const category = o.args[0];
+    bot.addCommand('@vote', async (o:IPayload) => {
+      const category = o.args[0].toLowerCase();
       if (this.isOpen)
         return bot.whisper(o.user.username, 'voting is open already.');
-      switch (category.charAt(0)) {
-        case VotingShorthand[VotingShorthand.d]:
-          bot.say(`Voting opening for design.`);
-          return this.openVotes('design');
-        case VotingShorthand[VotingShorthand.f]:
-          bot.say(`Voting opening for functionality.`);
-          return this.openVotes('func');
-        case VotingShorthand[VotingShorthand.t]:
+      switch (category) {
+        case 'ui':
+          bot.say(`Voting opening for UI. `);
+          return this.openVotes('ui');
+        case 'ux':
+          bot.say(`Voting opening for UX.`);
+          return this.openVotes('ux');
+        case 'tie':
           bot.say(`Voting opening for the tiebreaker.`);
           return this.openVotes('tiebreaker');
         default:
           return bot.whisper(o.user.username, 'Could not parse vote category');
       }
+    });
 
+    bot.addCommand('@review', async (o:IPayload) => {
+      const review = o.args[0];
+      if (this.isOpen)
+        return bot.whisper(o.user.username, 'voting is open');
+      switch (review) {
+        case 'ui':
+          return VotingPlugin.openReview('ui');
+        case 'ux':
+          return VotingPlugin.openReview('ux');
+        default:
+          return bot.whisper(o.user.username, 'Could not parse review');
+      }
     });
 
     bot.addCommand('*red', async (o:IPayload) => {
@@ -64,10 +76,11 @@ export class VotingPlugin {
     });
   }
 
-  public openVotes(category: voteCategories) {
+  public async openVotes(category: voteCategories) {
     this.votingOn = category;
-    switchStage('voting');
-    switchVote(category);
+    await Promise.all([
+      switchStage('voting'), switchVote(category), updateVotingTimestamp(),
+    ]);
     this.isOpen = true;
     return this.timer();
   }
@@ -103,7 +116,7 @@ export class VotingPlugin {
       //   sendVotes(id, redId, this.votingOn, this.teamVotes('red').length),
       //   sendVotes(id, blueId, this.votingOn, this.teamVotes('blue').length),
       // ]);
-      this.votingOn = 'design';
+      this.votingOn = 'ui';
       this.isOpen = false;
       this.duration = TwitchBot.ms(3, 'minutes');
       this.voters = [];
@@ -111,6 +124,12 @@ export class VotingPlugin {
       TwitchBot.sysLog(
         'error', 'problem closing out votes', 'voting', { error: e });
     }
+  }
+
+  public static async openReview(category: voteCategories) {
+    await Promise
+      .all([switchStage('voting'), switchVote(`review-${category}`)]);
+    return;
   }
 
   /**
