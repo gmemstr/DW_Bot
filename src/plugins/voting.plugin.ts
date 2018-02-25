@@ -16,7 +16,7 @@ export class VotingPlugin {
   private isOpen: boolean = false;
   private votingOn: voteCategories = 'ui';
   private voters: IVoter[] = [];
-  private duration = TwitchBot.ms(2, 'minutes');
+  private duration = TwitchBot.ms(3, 'minutes');
 
   constructor(private bot: TwitchBot) {
     bot.addCommand('@vote', async (o:IPayload) => {
