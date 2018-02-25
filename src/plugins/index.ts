@@ -99,16 +99,16 @@ const plugins = (bot: TwitchBot) => {
     bot.say(`1. ${leadersArr[0].username} - ${leadersArr[0].ranking.points}`);
     bot.say(`2. ${leadersArr[1].username} - ${leadersArr[1].ranking.points}`);
     bot.say(`3. ${leadersArr[2].username} - ${leadersArr[2].ranking.points}`);
-  }, 5000);
+  }, TwitchBot.ms(1, 'minutes'));
 
   bot.addCommand('*xpleader', async () => {
     const leadersArr = await xpLeaderboard();
     bot.say(`1. ${leadersArr[0].username} - ${leadersArr[0].ranking.xp}xp`);
     bot.say(`2. ${leadersArr[1].username} - ${leadersArr[1].ranking.xp}xp`);
     bot.say(`3. ${leadersArr[2].username} - ${leadersArr[2].ranking.xp}xp`);
-  }, 5000);
+  }, TwitchBot.ms(1, 'minutes'));
 
-  bot.addCommand('*fire', () => bot.say('🔥'), 289900);
+  bot.addCommand('*fire', () => bot.say('🔥'), TwitchBot.ms(45, 'minutes'));
 
   // example of self command:
   bot.addCommand('@mirrormirror', async () => {

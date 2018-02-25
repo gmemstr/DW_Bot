@@ -98,7 +98,7 @@ export class TwitchBot {
         debounce,
         string,
         reqRights: this.userGroups.indexOf(command[0]),
-        lastExe: Date.now(),
+        lastExe: 0,
       };
 
     } else {
@@ -184,20 +184,28 @@ export class TwitchBot {
       const timePastSinceLastExe = currentTime - this.commands[string].lastExe;
       return timePastSinceLastExe > debounce;
     } catch (e) {
-      console.log(`could not execute command.`);
+      console.log(`DEBOUNCE: could not execute command.`);
       return false;
     }
 
   }
 
   public checkPermissions(input: IInput): boolean {
-    const string = TwitchBot.normalizeMessage(input.msg).substr(1);
-    switch (this.commands[string].reqRights) {
-      case UserType.Normal:     return true;
-      case UserType.Subscriber: return input.user.subscriber === true;
-      case UserType.Mod:        return input.user.mod === true;
-      default:                  return false;
+    try {
+      const string = TwitchBot.normalizeMessage(input.msg).substr(1);
+      switch (this.commands[string].reqRights) {
+        case UserType.Normal:     return true;
+        case UserType.Subscriber: return input.user.subscriber === true;
+        case UserType.Mod:        return input.user.mod === true ||
+          input.user['badges-raw'].includes('broadcaster/1');
+        default:                  return false;
+      }
+    } catch (e) {
+      TwitchBot.sysLog('warning', `command did not pass checkPermissions`, '~',
+        { input, error: e });
+      return false;
     }
+
   }
 
   public isCommand(command: string): boolean {
