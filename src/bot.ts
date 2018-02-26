@@ -32,7 +32,7 @@ export class TwitchBot {
   private whisperDelay: number = 2000;
   private unsavedChatLogs: IChatLog[] = [];
   // things to do when terminal exits.
-  private TODO_ON_EXIT: [Function] = [() => console.log('EXITING')];
+  private TODO_ON_EXIT: [Function] = [() => console.log('\nEXITING')];
 
   constructor(private config: {[key: string]: any}) {
     this.botEE = new EventEmitter();
@@ -165,8 +165,11 @@ export class TwitchBot {
    * @return {IPayload}
    */
   public formatInput(input: IInput): IPayload {
+    const user = input.user;
+    // set user badges to empty string if they don't have any
+    user.badges.broadcaster = user.badges.broadcaster || '';
     return {
-      user: input.user,
+      user,
       command: TwitchBot.normalizeMessage(input.msg),
       from: input.user.username,
       type: input.user['message-type'],
@@ -197,7 +200,7 @@ export class TwitchBot {
         case UserType.Normal:     return true;
         case UserType.Subscriber: return input.user.subscriber === true;
         case UserType.Mod:        return input.user.mod === true ||
-          input.user['badges-raw'].includes('broadcaster/1');
+          input.user.badges.broadcaster === '1';
         default:                  return false;
       }
     } catch (e) {

@@ -55,16 +55,29 @@ test('normalizeMessage returns command from user input message #unit', t => {
 });
 
 test('checkDebounce returns false if time past is < debounce time #unit', async t => {
-  const command = '$defalse';
-  bot.addCommand(command, () => {}, 1000);
+  const payload = {
+    args: [],
+    user: 'Divine_Don',
+    from: 'Divine_Don',
+    command: '$defalse',
+  };
+  bot.addCommand(payload.command, () => {}, 1000);
+  bot.doCommand(payload);
   await timeout(500);
   // should return false because wait time does NOT exceed debounce.
-  t.false(bot.checkDebounce(command));
+  t.false(bot.checkDebounce(payload.command));
 });
 
 test('checkDebounce returns true if time past is > debounce time #unit', async t => {
+  const payload = {
+    args: [],
+    user: 'Divine_Don',
+    from: 'Divine_Don',
+    command: '$m',
+  };
   const command = '$m';
-  bot.addCommand(command, () => true, 1000);
+  bot.addCommand(payload.command, () => true, 1000);
+  bot.doCommand(payload);
   await timeout(2000);
   t.true(bot.checkDebounce(command));
 });
