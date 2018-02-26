@@ -71,9 +71,9 @@ export class VotingPlugin {
   }
 
   public addVote(username: string, team: teamColors) {
-    addVoteOnFrame(team, this.votingOn).then(() => {
-      this.voters.push({ username, team });
-    });
+    this.voters.push({ username, team });
+    addVoteOnFrame(team, this.votingOn);
+    return;
   }
 
   public async openVotes(category: voteCategories) {
