@@ -56,12 +56,12 @@ const plugins = (bot: TwitchBot) => {
     }
   });
 
-  bot.addCommand('*devbits', async (o:IPayload) => {
+  bot.addCommand('*devcoins', async (o:IPayload) => {
     const bits = await getBits(o.user.username);
     return bot.say(`${o.user.username}: ${bits}`);
   });
 
-  bot.addCommand('*bits', async (o:IPayload) => {
+  bot.addCommand('*coins', async (o:IPayload) => {
     const bits = await getBits(o.user.username);
     return bot.say(`${o.user.username}: ${bits}`);
   });

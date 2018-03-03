@@ -23,20 +23,20 @@ export class ApplyPlugin {
       }
     });
 
-    bot.addCommand('*apply', async (o:IPayload) => {
-      if (this.applyForGame === -1) return bot.say('No !apply game set.');
-      try {
-        const game = this.applyForGame;
-        await signUp(o.user.username, game);
-        return bot.say(`${o.user.username} has signed up for game ${game}!`);
-      } catch (e) {
-        TwitchBot.sysLog('error', 'Problem applying for game', '~', {
-          error: e,
-          payload: o,
-        });
-        throw Error(e);
-      }
-    });
+    // bot.addCommand('*apply', async (o:IPayload) => {
+    //   if (this.applyForGame === -1) return bot.say('No !apply game set.');
+    //   try {
+    //     const game = this.applyForGame;
+    //     await signUp(o.user.username, game);
+    //     return bot.say(`${o.user.username} has signed up for game ${game}!`);
+    //   } catch (e) {
+    //     TwitchBot.sysLog('error', 'Problem applying for game', '~', {
+    //       error: e,
+    //       payload: o,
+    //     });
+    //     throw Error(e);
+    //   }
+    // });
   }
 
 }

@@ -166,8 +166,6 @@ export class TwitchBot {
    */
   public formatInput(input: IInput): IPayload {
     const user = input.user;
-    // set user badges to empty string if they don't have any
-    user.badges.broadcaster = user.badges.broadcaster || '';
     return {
       user,
       command: TwitchBot.normalizeMessage(input.msg),
@@ -199,8 +197,7 @@ export class TwitchBot {
       switch (this.commands[string].reqRights) {
         case UserType.Normal:     return true;
         case UserType.Subscriber: return input.user.subscriber === true;
-        case UserType.Mod:        return input.user.mod === true ||
-          input.user.badges.broadcaster === '1';
+        case UserType.Mod:        return input.user.mod === true;
         default:                  return false;
       }
     } catch (e) {
