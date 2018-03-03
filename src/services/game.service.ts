@@ -8,7 +8,7 @@ const key: string = environment.dwServer.key;
 
 
 export async function currentGame(): Promise<IGame> {
-  const { data } = await axios.get(`${url}/v1/game/currentgame`);
+  const { data } = await axios.get(`${url}/v1/game/active`);
   return data;
 }
 
@@ -17,10 +17,12 @@ export async function currentGame(): Promise<IGame> {
 export async function sendVotes(gameId: number,
                       teamId: any, category: voteCategories, votes: number) {
   try {
-    const u = `${url}/v1/game`;
-    await axios.post(`${u}/${gameId}/team/${teamId}/addVotes`, {
-      key,
-      [category]: votes,
+    await axios.post(`${url}/game/team/${teamId}/votes`, {}, {
+      params: {
+        key,
+        category,
+        amount: votes,
+      },
     });
     return;
   } catch (e) {
@@ -43,10 +45,13 @@ export async function signUp(twitchUsername: string, gameId: number) {
 
 export async function endGame(gameId: number, teamId: number) {
   try {
-    return await axios.post(`${url}/v1/${gameId}/endgame`, {
-      key,
-      winner: teamId,
-    });
+    return await axios.post(`${url}/game/${gameId}/ended`, {},
+      {
+        params: {
+          key,
+          team: teamId,
+        },
+      });
   } catch (e) {
     throw Error(e);
   }
