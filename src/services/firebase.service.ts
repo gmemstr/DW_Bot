@@ -54,11 +54,11 @@ export function resetFrame() {
 
       votingOn: 'ui',
 
-      design: {
+      ui: {
         red: 0,
         blue: 0,
       },
-      func: {
+      ux: {
         red: 0,
         blue: 0,
       },

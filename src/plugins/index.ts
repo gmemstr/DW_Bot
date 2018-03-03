@@ -58,12 +58,12 @@ const plugins = (bot: TwitchBot) => {
 
   bot.addCommand('*devcoins', async (o:IPayload) => {
     const bits = await getBits(o.user.username);
-    return bot.say(`${o.user.username}: ${bits}`);
+    return bot.say(`${o.user.username}: devwarsCoin ${bits}`);
   });
 
   bot.addCommand('*coins', async (o:IPayload) => {
     const bits = await getBits(o.user.username);
-    return bot.say(`${o.user.username}: ${bits}`);
+    return bot.say(`${o.user.username}: devwarsCoin ${bits}`);
   });
 
   bot.addCommand('@stage', async (o:IPayload) => {
@@ -96,7 +96,7 @@ const plugins = (bot: TwitchBot) => {
 
   bot.addCommand('*discord', () => bot.say('https://discord.gg/devwars'), 900);
 
-  bot.addCommand('*bitsleader', async () => {
+  bot.addCommand('*coinsleader', async () => {
     const leadersArr = await bitsLeaderboard();
     bot.say(`1. ${leadersArr[0].username} - ${leadersArr[0].ranking.points}`);
     bot.say(`2. ${leadersArr[1].username} - ${leadersArr[1].ranking.points}`);

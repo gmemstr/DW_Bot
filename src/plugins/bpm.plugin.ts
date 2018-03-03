@@ -29,18 +29,9 @@ export class BPMPlugin {
         ...viewers.chatters.global_mods,
         ...viewers.chatters.viewers,
       ];
-      // get if stream is online or offline.
-      const status = await getStreamInfo();
-      if (!status.viewers) {
-        // stream is offline
-        return putBits(chatters.join(), this.offline).then(() => {
-          return this.bot.say(`Everyone has received ${this.offline} Bits.`);
-        });
-      } else if (status.viewers) {
-        return putBits(chatters.join(), this.online).then(() => {
-          return this.bot.say(`Everyone has received ${this.online} Bits!`);
-        });
-      }
+      return putBits(chatters.join(), this.online).then(() => {
+        return this.bot.say(`Everyone has received ${this.online} Bits.`);
+      });
     }
   }
 

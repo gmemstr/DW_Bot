@@ -8,7 +8,7 @@ const key: string = environment.dwServer.key;
 
 
 export async function currentGame(): Promise<IGame> {
-  const { data } = await axios.get(`${url}/v1/game/active`);
+  const { data } = await axios.get(`${url}/game/active`);
   return data;
 }
 
