@@ -139,6 +139,15 @@ export async function removeFrameBet(username: string) {
     });
 }
 
+export async function emptyFrameBetters() {
+  return await frame.child('betting').child('betters').remove();
+}
+
+export async function getFrameBetters() {
+  const snap = await frame.child('betting').child('betters').once('value');
+  return snap.val();
+}
+
 export function saveChatLog(logs: [IChatLog]) {
   return env.child('chatLogs').push({
     data: logs,

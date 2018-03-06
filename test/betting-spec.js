@@ -4,6 +4,7 @@ import environment from '../lib/environment'
 import { TwitchBot } from '../lib/bot';
 import { BettingPlugin } from '../lib/plugins/betting.plugin';
 import { getBits, putBits } from '../lib/services/user.service';
+import {addFrameBet, emptyFrameBetters, getFrameBetters} from '../lib/services/firebase.service';
 
 const bot = new TwitchBot(environment.bot);
 const betting = new BettingPlugin(bot);
@@ -180,4 +181,25 @@ test('Winner command successfully gives user winnings. #integration', async t =>
 
   const afterWin3 = await getBits(winner3.name);
   t.true(currentWinner3 + winnings3 ===  afterWin3)
+});
+
+
+test('Firebase better methods. #integration', async t  => {
+  const bet = {
+    name: ghostBetters[0].name,
+    amount: ghostBetters[0].amount,
+    team: ghostBetters[0].team,
+    timestamp: ''
+  };
+  let actual = [];
+  await emptyFrameBetters();
+  await addFrameBet(bet.name, bet.amount, bet.team);
+  // make sure better has been added.
+  const bettersObject = await getFrameBetters();
+  for (let better in bettersObject) {
+    // remove timestamp
+    bettersObject[better].timestamp = '';
+    actual.push(bettersObject[better]);
+  }
+  t.deepEqual(actual, [bet])
 });

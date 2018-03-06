@@ -6,7 +6,7 @@ import {
   xpLeaderboard,
 } from '../services/user.service';
 import {
-  addTime, listenForStageChange, resetFrame, startTimer,
+  addTime, emptyFrameBetters, listenForStageChange, resetFrame, startTimer,
   switchStage,
   updateFrame,
 } from '../services/firebase.service';
@@ -111,6 +111,8 @@ const plugins = (bot: TwitchBot) => {
   }, TwitchBot.ms(1, 'minutes'));
 
   bot.addCommand('*fire', () => bot.say('🔥'), TwitchBot.ms(45, 'minutes'));
+
+  bot.addCommand('@emptyframepool', () => emptyFrameBetters());
 
   // example of self command:
   bot.addCommand('@mirrormirror', async () => {
