@@ -33,6 +33,14 @@ test('addCommand can be found in commands if it does not throw. #unit', t => {
   t.true(bot.commands[command.substr(1)].action());
 });
 
+test('addCommand works for an array of commands. #unit', t => {
+  const cmdOne = '$one';
+  const cmdTwo = '@two';
+  t.notThrows(() => bot.addCommand([cmdOne, cmdTwo], () => true));
+  t.true(bot.commands[cmdOne.substr(1)].action());
+  t.true(bot.commands[cmdTwo.substr(1)].action());
+});
+
 test('command can be found if after addCommand method #unit', t => {
   // identifier + string = command;
   const identifier = '$';

@@ -85,7 +85,11 @@ export class TwitchBot {
   }
 
   public addCommand(
-    command: string, action: Function, debounce: number = 0) {
+    command: string | [string], action: Function, debounce: number = 0) {
+    // If array, we want to apply that action to the array of commands
+    if (Array.isArray(command)) {
+      return command.map(cmd => this.addCommand(cmd, action, debounce));
+    }
     // When adding a command, you can specify what 'kind' of command it is.
     // For example '*' means everyone can use this command,
     // '$' means only subscribers can use it.
