@@ -35,7 +35,7 @@ export async function hasBits(name: string, amount: number): Promise<boolean> {
 
 export async function bitsLeaderboard(): Promise<any> {
   try {
-    const {data} = await axios.get(`${url}/leaderboard/bits`);
+    const { data } = await axios.get(`${url}/leaderboard/bits`);
     return data;
   } catch (e) {
     throw e;
@@ -45,7 +45,7 @@ export async function bitsLeaderboard(): Promise<any> {
 
 export async function xpLeaderboard(): Promise<any> {
   try {
-    const {data} = await axios.get(`${url}/leaderboard/xp`);
+    const { data } = await axios.get(`${url}/leaderboard/xp`);
     return data;
   } catch (e) {
     throw e;

@@ -5,7 +5,7 @@ import { getStreamInfo, getViewers } from '../services/twitch.service';
 export class BPMPlugin {
   private offline = 2;
   private online = 10;
-  private loop: number = TwitchBot.ms(25, 'minutes');
+  private loop: number = TwitchBot.ms(20, 'minutes');
 
   constructor(private bot: TwitchBot) {
     bot.addCommand('@bpm', async () => {

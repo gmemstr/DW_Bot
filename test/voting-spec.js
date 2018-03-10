@@ -41,7 +41,7 @@ test('hasVote returns true if voter is already in voters array', t => {
   t.true(plugin.hasVote(ghostVoter.username));
 });
 
-test.skip('endVote empties voters array', async (t) => {
+test('endVote empties voters array', async (t) => {
   const plugin = new VotingPlugin(bot);
   const ghostVoter = ghostVoters[2];
   plugin.addVote(ghostVoter.username, ghostVoter.team);
