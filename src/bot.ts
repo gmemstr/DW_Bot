@@ -197,7 +197,8 @@ export class TwitchBot {
       switch (this.commands[string].reqRights) {
         case UserType.Normal:     return true;
         case UserType.Subscriber: return input.user.subscriber === true;
-        case UserType.Mod:        return input.user.mod === true;
+        case UserType.Mod:        return input.user.mod === true ||
+                                    this.isBroadcaster(input.user.username);
         default:                  return false;
       }
     } catch (e) {
@@ -307,6 +308,11 @@ export class TwitchBot {
     duration: number, measurement: 'minutes' | 'seconds' = 'minutes',
   ) {
     return moment.duration(duration, measurement).asMilliseconds();
+  }
+
+  public isBroadcaster(username: string) : boolean {
+    const ch = this.config.channels[0].substr(1).toLowerCase();
+    return ch === username.toLowerCase();
   }
 
   private gatherChatLog(input) {
