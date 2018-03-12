@@ -125,7 +125,11 @@ export class TwitchBot {
     try {
       await this.client.whisper(username, message);
     } catch (e) {
-      TwitchBot.sysLog('warning', 'could not send whisper', '~', e);
+      TwitchBot.sysLog('warning', 'could not send whisper', '~', {
+        username,
+        message,
+        error: e,
+      });
     }
     return;
   }

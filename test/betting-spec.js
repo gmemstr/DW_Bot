@@ -203,3 +203,32 @@ test('Firebase better methods. #integration', async t  => {
   }
   t.deepEqual(actual, [bet])
 });
+
+
+test.only('Make sure if user over bets more than they can afford, their new bet is declined and old bet is returned. #integration', async t => {
+  const name = 'dw_bot';
+  const coinsAmount = await getBits(name);
+  const plugin = new BettingPlugin(bot);
+  const bet = { name: name, amount: Math.ceil(coinsAmount * .50), team: 'red', winnings: 0,
+    mods: {
+      objectives: 0,
+      strikes: false
+    }
+  };
+
+  await plugin.addBet(bet);
+
+  t.true(plugin.hasBet(name));
+  // If the same user places another bet (but this time more than they can afford), they should not have any bets.
+  await plugin.addBet({ name: name, amount: coinsAmount * 99999999, team: 'red', winnings: 0,
+    mods: {
+      objectives: 0,
+      strikes: false,
+    }
+  });
+
+  // User has not bets in pool
+  t.false(plugin.hasBet(name));
+  // Users original bet has been returned:
+  t.true(coinsAmount === await getBits(name));
+});
