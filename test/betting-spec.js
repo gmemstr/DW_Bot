@@ -205,7 +205,7 @@ test('Firebase better methods. #integration', async t  => {
 });
 
 
-test.only('Make sure if user over bets more than they can afford, their new bet is declined and old bet is returned. #integration', async t => {
+test('Make sure if user over bets more than they can afford, their new bet is declined and old bet is returned. #integration', async t => {
   const name = 'dw_bot';
   const coinsAmount = await getBits(name);
   const plugin = new BettingPlugin(bot);

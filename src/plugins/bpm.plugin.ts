@@ -1,6 +1,7 @@
 import { TwitchBot } from '../bot';
 import { putBits } from '../services/user.service';
 import { getStreamInfo, getViewers } from '../services/twitch.service';
+import { IPayload } from '../interfaces';
 
 export class BPMPlugin {
   private offline = 2;
@@ -8,17 +9,18 @@ export class BPMPlugin {
   private loop: number = TwitchBot.ms(20, 'minutes');
 
   constructor(private bot: TwitchBot) {
-    bot.addCommand('@bpm', async () => {
-      return this.giveBits();
+    bot.addCommand('@bpm', async (p:IPayload) => {
+      const amount = p.args[0] || this.online;
+      return this.giveBits(amount);
     });
 
     setTimeout(() => {
-      setInterval(() => this.giveBits(), this.loop);
+      setInterval(() => this.giveBits(this.online), this.loop);
     }, TwitchBot.ms(1, 'minutes'));
 
   }
 
-  private async giveBits() {
+  private async giveBits(amount: number) {
     // get everyone's usernames that are in chat.
     const viewers = await getViewers();
     if (viewers) {
@@ -29,8 +31,8 @@ export class BPMPlugin {
         ...viewers.chatters.global_mods,
         ...viewers.chatters.viewers,
       ];
-      return putBits(chatters.join(), this.online).then(() => {
-        return this.bot.say(`Everyone has received ${this.online} Bits.`);
+      return putBits(chatters.join(), amount).then(() => {
+        return this.bot.say(`Everyone has received ${amount} Bits.`);
       });
     }
   }
