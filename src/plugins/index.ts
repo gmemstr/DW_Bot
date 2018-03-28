@@ -1,5 +1,5 @@
 import { IPayload } from '../interfaces';
-import {  TwitchBot } from '../bot';
+import {  TwitchBot } from '../twitch.bot';
 import { BettingPlugin } from './betting.plugin';
 import {
   bitsLeaderboard, getBits,

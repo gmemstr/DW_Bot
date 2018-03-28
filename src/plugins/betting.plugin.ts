@@ -1,5 +1,5 @@
 import { IPayload } from '../interfaces';
-import { TwitchBot } from '../bot';
+import { TwitchBot } from '../twitch.bot';
 import { hasBits, putBits } from '../services/user.service';
 import * as _ from 'lodash';
 import {

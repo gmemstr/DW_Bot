@@ -1,19 +1,24 @@
 import environment from './environment';
 import * as process from 'process';
-import { TwitchBot } from './bot';
+import { TwitchBot } from './twitch.bot';
+import { DiscordBot } from './discord.bot';
 import plugins from './plugins';
 
-const app: {[key: string]: any, bot: TwitchBot | null} = {
-  bot: null,
+const app: {[key: string]: any, twitch: TwitchBot | null} = {
+  twitch: null,
+  discord: null,
 };
 
-const connectBot = async (): Promise<void> => {
-  const bot = new TwitchBot(environment.bot);
-  plugins(bot);
-  await bot.connect();
-  app.bot = bot;
+const connectBots = async (): Promise<void> => {
+  const twitch = new TwitchBot(environment.bot);
+  const discord = new DiscordBot(environment.discord);
+  plugins(twitch);
+  await twitch.connect();
+  await discord.connect();
+  app.twitch = twitch;
+  app.discord = discord;
   process.on('SIGINT', async () => {
-    const exitItems = app.bot.getExitItems();
+    const exitItems = app.twitch.getExitItems();
     for (const fun of exitItems) {
       await fun.call();
     }
@@ -23,5 +28,5 @@ const connectBot = async (): Promise<void> => {
 };
 
 setImmediate(async () => {
-  await connectBot();
+  await connectBots();
 });

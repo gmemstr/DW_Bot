@@ -28,6 +28,7 @@
   "dependencies": {
     "@reactivex/rxjs": "^5.4.1",
     "axios": "^0.16.2",
+    "discord.js": "^11.3.2",
     "firebase-admin": "^5.1.0",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",

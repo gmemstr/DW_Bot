@@ -14,17 +14,17 @@ export enum UserType {
   Mod,
 }
 
-// Different Streams that are connected to Event Emitters.
-const $ = {
-  IncChat: 'IncChat$',
-  OutChat: 'OutChat$',
-  IncWhisper: 'IncWhisper$',
-  OutWhisper: 'OutWhisper$',
-  ChatLog: 'ChatLog$',
-};
 
 
 export class TwitchBot {
+  // Different Streams that are connected to Event Emitters.
+  public $ = {
+    IncChat: 'IncChat$',
+    OutChat: 'OutChat$',
+    IncWhisper: 'IncWhisper$',
+    OutWhisper: 'OutWhisper$',
+    ChatLog: 'ChatLog$',
+  };
   public client: any;
   public botEE: EventEmitter;
   public commands: {[key: string]: ICommand} = {};
@@ -38,7 +38,7 @@ export class TwitchBot {
     this.botEE = new EventEmitter();
     this.client = new irc.client(this.config);
 
-    Rx.Observable.fromEvent(this.botEE, $.IncChat, (obj: any) => obj)
+    Rx.Observable.fromEvent(this.botEE, this.$.IncChat, (obj: any) => obj)
       .do(input => this.gatherChatLog(input))
       .filter(input => this.isCommand(input.msg))
       .filter(input =>
@@ -48,16 +48,16 @@ export class TwitchBot {
       .do(payload => this.doCommand(payload))
       .subscribe(() => console.log(`command`));
 
-    Rx.Observable.fromEvent(this.botEE, $.IncWhisper, (obj: any) => obj)
+    Rx.Observable.fromEvent(this.botEE, this.$.IncWhisper, (obj: any) => obj)
       .do(input => console.log(input))
-      .subscribe(() => console.log($.IncWhisper));
+      .subscribe(() => console.log(this.$.IncWhisper));
 
-    Rx.Observable.fromEvent(this.botEE, $.OutWhisper, (obj: any) => obj)
+    Rx.Observable.fromEvent(this.botEE, this.$.OutWhisper, (obj: any) => obj)
       .map(output => Rx.Observable.of(output).delay(this.whisperDelay))
       .concatAll()
       .subscribe((o: any) => this.whisper(o.username, o.message));
 
-    Rx.Observable.fromEvent(this.botEE, $.ChatLog, (obj: any) => obj)
+    Rx.Observable.fromEvent(this.botEE, this.$.ChatLog, (obj: any) => obj)
       .do(data => this.unsavedChatLogs.push(data))
       .bufferCount(25)
       .do(data => TwitchBot.saveLog(data))
@@ -117,7 +117,7 @@ export class TwitchBot {
   }
 
   public async whisperQueue(username: string, message: string): Promise<void> {
-    await this.botEE.emit($.OutWhisper, { username, message });
+    await this.botEE.emit(this.$.OutWhisper, { username, message });
     return;
   }
 
@@ -144,11 +144,11 @@ export class TwitchBot {
 
     this.client.addListener('chat', (
       ch: string, user: IUser, msg: string, self: boolean, action: any) =>
-        this.botEE.emit($.IncChat, { ch, user, msg, self, action }));
+        this.botEE.emit(this.$.IncChat, { ch, user, msg, self, action }));
 
     this.client.addListener('whisper', (
       ch: string, user: IUser, msg: string) =>
-        this.botEE.emit($.IncWhisper, { ch, user, msg }));
+        this.botEE.emit(this.$.IncWhisper, { ch, user, msg }));
   }
 
   /**
@@ -337,6 +337,6 @@ export class TwitchBot {
       message: input.msg,
       user: input.user,
     };
-    return this.botEE.emit($.ChatLog, log);
+    return this.botEE.emit(this.$.ChatLog, log);
   }
 }

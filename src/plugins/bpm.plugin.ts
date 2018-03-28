@@ -1,4 +1,4 @@
-import { TwitchBot } from '../bot';
+import { TwitchBot } from '../twitch.bot';
 import { putBits } from '../services/user.service';
 import { getStreamInfo, getViewers } from '../services/twitch.service';
 import { IPayload } from '../interfaces';

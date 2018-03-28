@@ -69,3 +69,18 @@ export interface ILog {
   type: 'info' | 'warning' | 'error';
   data?: any;
 }
+
+// DISCORD INTERFACES
+export interface user {
+
+}
+
+export interface DUser {
+  id: string;
+  username: string;
+  discriminator: string;
+  avatar: string;
+  bot: boolean;
+  lastMessageID: string;
+  lastMessage: any;
+}

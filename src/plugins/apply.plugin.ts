@@ -1,4 +1,4 @@
-import { TwitchBot } from '../bot';
+import { TwitchBot } from '../twitch.bot';
 import { signUp } from '../services/game.service';
 import { IPayload } from '../interfaces';
 
