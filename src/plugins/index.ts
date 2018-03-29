@@ -16,8 +16,9 @@ import { BPMPlugin } from './bpm.plugin';
 import { VotingPlugin } from './voting.plugin';
 import { ApplyPlugin } from './apply.plugin';
 import { AnalyticsPlugin } from './analytics.plugin';
+import { DiscordBot } from '../discord.bot';
 
-const plugins = (bot: TwitchBot) => {
+const twitchPlugins = (bot: TwitchBot) => {
   let listenForChanges = false;
   new BettingPlugin(bot);
   new BPMPlugin(bot);
@@ -119,4 +120,13 @@ const plugins = (bot: TwitchBot) => {
   });
 };
 
-export default plugins;
+const discordPlugins = (bot: DiscordBot) => {
+  bot.addCommand('D*ping', async () => {
+    return bot.say('pong', 'bot-testing');
+  });
+};
+
+export default {
+  twitch: twitchPlugins,
+  discord: discordPlugins,
+};

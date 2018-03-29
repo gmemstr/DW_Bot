@@ -90,6 +90,8 @@ export class TwitchBot {
     if (Array.isArray(command)) {
       return command.map(cmd => this.addCommand(cmd, action, debounce));
     }
+    // ignore Discord commands.
+    if (command[0] === 'D') return;
     // When adding a command, you can specify what 'kind' of command it is.
     // For example '*' means everyone can use this command,
     // '$' means only subscribers can use it.
@@ -172,7 +174,7 @@ export class TwitchBot {
    * @param {IInput} input - Chat input.
    * @return {IPayload}
    */
-  public formatInput(input: IInput): IPayload {
+  private formatInput(input: IInput): IPayload {
     const user = input.user;
     return {
       user,
@@ -184,7 +186,7 @@ export class TwitchBot {
     };
   }
 
-  public checkDebounce(command: string): boolean {
+  private checkDebounce(command: string): boolean {
     try {
       const string = command.substr(1);
       if (!this.commands[string].action) return false;
@@ -193,7 +195,6 @@ export class TwitchBot {
       const timePastSinceLastExe = currentTime - this.commands[string].lastExe;
       return timePastSinceLastExe > debounce;
     } catch (e) {
-      console.log(`DEBOUNCE: could not execute command.`);
       return false;
     }
 
@@ -217,7 +218,7 @@ export class TwitchBot {
 
   }
 
-  public isCommand(command: string): boolean {
+  private isCommand(command: string): boolean {
     // See if input message begins with command character &&
     // See if input message is longer than command character.
     return command[0] === this.config.commandCharacter &&
@@ -231,7 +232,7 @@ export class TwitchBot {
    * @param {string} inputMsg - message that needs to be converted.
    * @return {string} - return command.
    */
-  public static normalizeMessage(inputMsg: string): string {
+  private static normalizeMessage(inputMsg: string): string {
     const msgArray = inputMsg.trim().split(' ');
     const msg = msgArray[0];
     return msg.toLowerCase();
@@ -243,7 +244,7 @@ export class TwitchBot {
    * @param {string} inputMsg - message that needs to be converted.
    * @return {[string] | false} - args or false if no args are present.
    */
-  public getArgumentsFromMsg(inputMsg: string): any[] {
+  private getArgumentsFromMsg(inputMsg: string): any[] {
     try {
       const array = inputMsg.split(' ').splice(1);
       if (array.length < 1) return [];
