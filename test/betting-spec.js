@@ -1,7 +1,7 @@
 import test from 'ava';
 import * as _ from 'lodash';
 import environment from '../lib/environment'
-import { TwitchBot } from '../lib/bot';
+import { TwitchBot } from '../lib/twitch.bot';
 import { BettingPlugin } from '../lib/plugins/betting.plugin';
 import { getBits, putBits } from '../lib/services/user.service';
 import {addFrameBet, emptyFrameBetters, getFrameBetters} from '../lib/services/firebase.service';

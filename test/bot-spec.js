@@ -1,6 +1,6 @@
 import test from 'ava';
 import environment from '../lib/environment'
-import { TwitchBot } from '../lib/bot';
+import { TwitchBot } from '../lib/twitch.bot';
 const bot = new TwitchBot(environment.bot);
 
 function timeout(ms) {
@@ -178,4 +178,11 @@ test('getArgumentsFromMsg returns empty array if only command is present. #unit'
   const testMessage = '!returnFalse';
   const args = bot.getArgumentsFromMsg(testMessage);
   t.true(args.length === 0);
+});
+
+test.only('Twitch addCommand disregards discord specific commands. #unit', t => {
+  const string = 'fakeCommand';
+  bot.addCommand(`D*${string}`, () => true);
+  bot.addCommand(`d*${string}`, () => true);
+  t.is(bot.commands[string], undefined);
 });
