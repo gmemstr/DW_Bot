@@ -28,7 +28,7 @@ export class TwitchBot {
   public client: any;
   public botEE: EventEmitter;
   public commands: {[key: string]: ICommand} = {};
-  public userGroups: [string] = ['*', '$', '@'];
+  public userGroups: string[] = ['*', '$', '@'];
   private whisperDelay: number = 2000;
   private unsavedChatLogs: IChatLog[] = [];
   // things to do when terminal exits.
@@ -85,7 +85,7 @@ export class TwitchBot {
   }
 
   public addCommand(
-    command: string | [string], action: Function, debounce: number = 0) {
+    command: string | string[], action: Function, debounce: number = 0) {
     // If array, we want to apply that action to the array of commands
     if (Array.isArray(command)) {
       return command.map(cmd => this.addCommand(cmd, action, debounce));
