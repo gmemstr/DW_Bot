@@ -2,20 +2,21 @@ import { TwitchBot } from '../twitch.bot';
 import { putBits } from '../services/user.service';
 import { getStreamInfo, getViewers } from '../services/twitch.service';
 import { IPayload } from '../interfaces';
+import { getBPMValue } from '../services/firebase.service';
 
 export class BPMPlugin {
-  private offline = 2;
-  private online = 10;
+  private defaultCoins = 10;
   private loop: number = TwitchBot.ms(20, 'minutes');
 
   constructor(private bot: TwitchBot) {
     bot.addCommand('@bpm', async (p:IPayload) => {
-      const amount = p.args[0] || this.online;
+      const amount = p.args[0] || await getBPMValue() || this.defaultCoins;
       return this.giveBits(amount);
     });
 
     setTimeout(() => {
-      setInterval(() => this.giveBits(this.online), this.loop);
+      setInterval(async () =>
+        this.giveBits(await getBPMValue() || this.defaultCoins), this.loop);
     }, TwitchBot.ms(1, 'minutes'));
 
   }

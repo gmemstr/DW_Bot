@@ -45,7 +45,7 @@ export const env = firebase.database().ref(environment.env);
 export function resetFrame() {
   frame.update({
     lastUpdated: firebase.database.ServerValue.TIMESTAMP,
-    currentGameId: 0,
+    bpm: 20,
     timer: false,
     stage: 'objective',
     game: false,
@@ -186,4 +186,9 @@ export function saveAnalytics(viewers) {
     env: environment.env,
     timestamp: firebase.database.ServerValue.TIMESTAMP,
   });
+}
+
+export async function getBPMValue() {
+  const snap = await frame.child('bpm').once('value');
+  return Number(snap.val());
 }
