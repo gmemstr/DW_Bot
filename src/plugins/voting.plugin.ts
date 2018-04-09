@@ -19,7 +19,7 @@ export class VotingPlugin {
   private duration = TwitchBot.ms(3, 'minutes');
 
   constructor(private bot: TwitchBot) {
-    bot.addCommand('@vote', async (o:IPayload) => {
+    bot.addCommand('@phase', async (o:IPayload) => {
       const category = o.args[0].toLowerCase();
       if (this.isOpen)
         return bot.whisper(o.user.username, 'voting is open already.');

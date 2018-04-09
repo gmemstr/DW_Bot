@@ -232,7 +232,7 @@ export class TwitchBot {
    * @param {string} inputMsg - message that needs to be converted.
    * @return {string} - return command.
    */
-  private static normalizeMessage(inputMsg: string): string {
+  public static normalizeMessage(inputMsg: string): string {
     const msgArray = inputMsg.trim().split(' ');
     const msg = msgArray[0];
     return msg.toLowerCase();

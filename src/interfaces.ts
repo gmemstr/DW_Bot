@@ -1,3 +1,8 @@
+import {
+  Message, User, TextChannel, DMChannel, GroupDMChannel,
+  GuildMember,
+} from 'discord.js';
+
 export interface IUser {
   badges?: { [key: string]: string; };
   color?: any;
@@ -71,16 +76,13 @@ export interface ILog {
 }
 
 // DISCORD INTERFACES
-export interface user {
-
-}
-
-export interface DUser {
-  id: string;
-  username: string;
-  discriminator: string;
-  avatar: string;
-  bot: boolean;
-  lastMessageID: string;
-  lastMessage: any;
+export interface DPayload {
+  ch: string;
+  channel: TextChannel | DMChannel | GroupDMChannel;
+  user: User;
+  member: GuildMember;
+  args: any[];
+  start: number;
+  command: string;
+  reply: Function;
 }
