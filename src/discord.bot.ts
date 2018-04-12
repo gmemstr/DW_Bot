@@ -16,7 +16,7 @@ export class DiscordBot {
   };
   public client: any;
   public commands: {[key: string]: ICommand} = {};
-  public userGroups: [string] = ['*', '$', '@'];
+  public userGroups: string[] = ['*', '$', '@'];
   public botEE: EventEmitter;
 
   constructor(private config: {[key: string]: any}) {
