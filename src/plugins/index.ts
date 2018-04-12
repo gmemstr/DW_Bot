@@ -8,7 +8,6 @@ import {
 import {
   addTime, emptyFrameBetters, listenForStageChange, resetFrame, startTimer,
   switchStage,
-  updateFrame,
 } from '../services/firebase.service';
 import { getStreamInfo } from '../services/twitch.service';
 import { currentGame } from '../services/game.service';
@@ -41,7 +40,7 @@ const twitchPlugins = (bot: TwitchBot) => {
       const game = await currentGame();
       const theme = game.theme || 'Classic';
       await Promise
-        .all([switchStage('objective'), updateFrame({ game }), startTimer()]);
+        .all([switchStage('objective'), startTimer()]);
 
       await bot.say('Starting Game!');
 

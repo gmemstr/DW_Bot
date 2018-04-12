@@ -21,7 +21,6 @@ export interface IFirebaseFrame {
   };
   countdown?: boolean;
   currentGameId?: number;
-  game?: any;
   lastUpdate?: number;
   liveVoting?: {
     votingOn?: voteCategories,
