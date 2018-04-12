@@ -2,6 +2,7 @@ import * as firebase from 'firebase-admin';
 import environment from '../environment';
 import * as _ from 'lodash';
 import { IChatLog, ILog } from '../interfaces';
+import { IBetter } from '../plugins/betting.plugin';
 
 const credential = firebase.credential
   .cert(environment.firebase.serviceAccount);
@@ -133,7 +134,8 @@ export async function removeFrameBet(username: string) {
   return await frame.child('betting').child('betters')
     .once('value', async (snap:any) => {
       const betters = snap.val();
-      const key = _.findKey(betters, better => better.name === username);
+      const key = _.findKey(betters, (better: IBetter) =>
+        better.name === username);
       return await frame.child('betting').child('betters').child(key).remove();
     });
 }
