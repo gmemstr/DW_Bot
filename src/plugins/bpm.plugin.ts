@@ -33,7 +33,7 @@ export class BPMPlugin {
         ...viewers.chatters.viewers,
       ];
       return putBits(chatters.join(), amount).then(() => {
-        return this.bot.say(`Everyone has received ${amount} Bits.`);
+        return this.bot.say(`Everyone has received devwarsCoin ${amount}.`);
       });
     }
   }

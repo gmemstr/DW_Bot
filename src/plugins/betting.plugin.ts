@@ -132,8 +132,8 @@ export class BettingPlugin {
     // check if user has enough bits to bet that amount.
     const hasAmount = await hasBits(better.name, better.amount);
     if (!hasAmount) {
-      if (whisper.length > 1) whisper += 'you still don\'t have enough bits. ';
-      else whisper += 'You don\'t have enough bits.';
+      if (whisper.length > 1) whisper += 'you still don\'t have enough coins. ';
+      else whisper += 'You don\'t have enough coins.';
       return this.bot.whisper(better.name, whisper);
     } else {
       await putBits(better.name, BettingPlugin.negative(better.amount))
@@ -270,7 +270,7 @@ export class BettingPlugin {
         await putBits(o.name, winnings)
           .then(() => {
             this.bot
-              .whisperQueue(o.name, `You have received ${winnings} bits.`);
+              .whisperQueue(o.name, `You have received ${winnings} coins.`);
           });
       }
       return;
