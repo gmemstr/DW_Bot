@@ -16,12 +16,21 @@ test('getQuestion returns question info. #unit', t => {
   t.is(actual, expected);
 });
 
-test.only('getOptions returns array of options. #unit', t => {
+test('getOptions returns array of options. #unit', t => {
   const poll = new PollPlugin(bot);
   const o = ['option a', 'option b', 'option c'];
   const actual = poll.getOptions(`What IDE do you use? | option a | option b | option c`);
   console.log(`actual`);
   console.log(actual);
   const expected = o;
-  t.is(actual, expected);
+  t.deepEqual(actual, expected);
+});
+
+
+test.only('getOptions will take out option if it is empty. #unit', t => {
+  const poll = new PollPlugin(bot);
+  const actual = poll.getOptions(`What IDE do you use? | option a | | option c | `);
+  console.log(`actual take out`);
+  console.log(actual);
+  t.is(actual.length, 2);
 });
