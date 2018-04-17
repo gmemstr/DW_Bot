@@ -7,7 +7,7 @@ const credential = firebase.credential
   .cert(environment.firebase.serviceAccount);
 const databaseURL = environment.firebase.databaseURL;
 
-export type stages = 'objective' | 'betting' | 'voting';
+export type stages = 'objective' | 'betting' | 'voting' | 'poll';
 export type voteCategories = 'ui' | 'ux' | 'tiebreaker';
 export type teamColors = 'red' | 'blue';
 
@@ -28,6 +28,10 @@ export interface IFirebaseFrame {
     design?: { red?: number, blue?: number },
     func?: { red?: number, blue?: number },
     tiebreaker?: { red?: number, blue?: number },
+  };
+  poll?: {
+    question?: string;
+    options?: {text?: string, votes?: number}
   };
   stage?: stages;
   timer?: number;
@@ -191,4 +195,19 @@ export function saveAnalytics(viewers) {
 export async function getBPMValue() {
   const snap = await frame.child('bpm').once('value');
   return Number(snap.val());
+}
+
+
+export async function setPoll(question, options: Object) {
+  await frame.child('poll').set({
+    text: question,
+    ...options,
+  });
+}
+
+
+export async function addPollVote(optionLocation, votes: number = 1) {
+  await frame.child('poll').child(optionLocation).child('votes')
+    .transaction(curr => curr + votes);
+  return;
 }

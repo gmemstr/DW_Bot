@@ -27,10 +27,27 @@ test('getOptions returns array of options. #unit', t => {
 });
 
 
-test.only('getOptions will take out option if it is empty. #unit', t => {
+test('getOptions will take out option if it is empty. #unit', t => {
   const poll = new PollPlugin(bot);
   const actual = poll.getOptions(`What IDE do you use? | option a | | option c | `);
   console.log(`actual take out`);
   console.log(actual);
   t.is(actual.length, 2);
 });
+
+test('alphabetPosition -> optionExists returns true if option is available. #unit', t => {
+  const poll = new PollPlugin(bot);
+  poll.options = poll.getOptions(`What IDE do you use? | option a | option b | option c`);
+  t.true(poll.optionExists(PollPlugin.alphabetPosition('a'))); // 0
+  t.true(poll.optionExists(PollPlugin.alphabetPosition('b'))); // 1
+  t.true(poll.optionExists(PollPlugin.alphabetPosition('c'))); // 2
+});
+
+test.only('alphabetPosition -> optionExists returns false if option is not found. #unit', t => {
+  const poll = new PollPlugin(bot);
+  poll.options = poll.getOptions(`What IDE do you use? | option a | option b | option c`);
+  t.false(poll.optionExists(PollPlugin.alphabetPosition('p')));
+  t.false(poll.optionExists(PollPlugin.alphabetPosition('e')));
+  t.false(poll.optionExists(PollPlugin.alphabetPosition('f')));
+});
+

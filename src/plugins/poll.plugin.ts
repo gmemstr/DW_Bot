@@ -1,5 +1,9 @@
 import { TwitchBot } from '../twitch.bot';
 import { IPayload } from '../interfaces';
+import {
+  addPollVote, setPoll,
+  switchStage,
+} from '../services/firebase.service';
 
 interface IOption {
   text: string;
@@ -13,22 +17,37 @@ export class PollPlugin {
   pipe = (...args) => args.reduce((prev, curr) => curr(prev));
   question: string | boolean = false;
   options: IOptions = [];
+  votes: string[] = [];
 
   constructor(private bot: TwitchBot) {
 
-    bot.addCommand('@poll', (p:IPayload) => {
+    bot.addCommand('@poll', async (p:IPayload) => {
       if (this.isPoolOpen()) return bot.say('Poll is already open.');
       const question = this.getQuestion(p.args.join(''));
       const options = this.getOptions(p.args.join(''));
       if (options.length < 1) return bot.whisper(
-        p.user.username, 'you have to have more than one option.',
+        p.user.username, 'you need more than one option.',
       );
-      // TODO: you left off here.
+      await Promise.all([
+        switchStage('poll'),
+        setPoll(question, this.formatOptions(options)),
+      ]);
       this.options = this.formatOptions(options);
+      this.question = question;
+    });
+
+    // test command
+    bot.addCommand('@setTestPoll', async () => {
+      const string = `what IDE do you use? | option a | option b | option c`;
+      const question = this.getQuestion(string);
+      const options = this.formatOptions(this.getOptions(string));
+      await setPoll(question, options);
+      return bot.say('set test poll.');
     });
 
     bot.addCommand('*vote', (p:IPayload) => {
-      // if (!this.isPoolOpen()) return bot.say('No poll is open.');
+      if (!this.isPoolOpen()) return bot.say('No poll is open.');
+      if (this.hasVoted(p.user.username)) return;
       const inputOption = p.args[0];
       // check if inputOption letter exists.
       if (!inputOption[0]) return bot.whisper(
@@ -36,8 +55,22 @@ export class PollPlugin {
       );
       // get option user is voting for.
       const optionLocation = PollPlugin.alphabetPosition(inputOption[0]);
+      // check if that optionLocation exists.
+      if (!this.optionExists(optionLocation))
+        return bot
+          .whisper(p.user.username, `${inputOption[0]} is not an option.`);
+
+      return this.addVote(p.user.username, optionLocation);
     });
 
+  }
+
+  private addVote(username: string, optionLocation: number) {
+    this.votes.push(username);
+    this.options[optionLocation].votes += 1;
+    if (process.env.NODE_ENV && process.env.NODE_ENV !== 'development')
+      addPollVote(optionLocation);
+    return;
   }
 
   private isPoolOpen(): boolean {
@@ -77,8 +110,16 @@ export class PollPlugin {
     }
   }
 
-  private static alphabetPosition(character: string) {
+  private static alphabetPosition(character: string): number {
     return character.toUpperCase().charCodeAt(0) - 65;
+  }
+
+  private optionExists(index: number) {
+    return !!this.options[index];
+  }
+
+  private hasVoted(username: string) {
+    return !!this.votes.includes(username);
   }
 
   /**
