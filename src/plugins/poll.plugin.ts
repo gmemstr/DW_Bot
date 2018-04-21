@@ -57,16 +57,12 @@ export class PollPlugin {
       this.options = [];
     });
 
-    bot.addCommand('*vote', (p:IPayload) => {
+    bot.addCommand(['*a', '*b', '*c', '*d', '*e', '*f', '*g'], (p:IPayload) => {
       if (!this.isPoolOpen()) return bot.say('No poll is open.');
       if (this.hasVoted(p.user.username)) return;
-      const inputOption = p.args[0];
-      // check if inputOption letter exists.
-      if (!inputOption[0]) return bot.whisper(
-        p.user.username, 'Select by using: !vote [option]',
-      );
+      const inputOption = p.command[1];
       // get option user is voting for.
-      const optionLocation = PollPlugin.alphabetPosition(inputOption[0]);
+      const optionLocation = PollPlugin.alphabetPosition(inputOption);
       // check if that optionLocation exists.
       if (!this.optionExists(optionLocation))
         return bot
