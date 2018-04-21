@@ -70,7 +70,7 @@ export interface IChatLog {
 
 export interface ILog {
   message: string;
-  plugin: '~' | 'betting'| 'bpm' | 'voting' | 'apply';
+  plugin: '~' | 'betting'| 'bpm' | 'voting' | 'apply' | 'poll';
   type: 'info' | 'warning' | 'error';
   data?: any;
 }

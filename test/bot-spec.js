@@ -180,7 +180,7 @@ test('getArgumentsFromMsg returns empty array if only command is present. #unit'
   t.true(args.length === 0);
 });
 
-test.only('Twitch addCommand disregards discord specific commands. #unit', t => {
+test('Twitch addCommand disregards discord specific commands. #unit', t => {
   const string = 'fakeCommand';
   bot.addCommand(`D*${string}`, () => true);
   bot.addCommand(`d*${string}`, () => true);

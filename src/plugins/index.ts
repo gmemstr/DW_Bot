@@ -16,6 +16,7 @@ import { VotingPlugin } from './voting.plugin';
 import { ApplyPlugin } from './apply.plugin';
 import { AnalyticsPlugin } from './analytics.plugin';
 import { DiscordBot } from '../discord.bot';
+import { PollPlugin } from './poll.plugin';
 
 const twitchPlugins = (bot: TwitchBot) => {
   let listenForChanges = false;
@@ -24,6 +25,7 @@ const twitchPlugins = (bot: TwitchBot) => {
   new VotingPlugin(bot);
   new ApplyPlugin(bot);
   new AnalyticsPlugin();
+  new PollPlugin(bot);
 
   listenForStageChange((state) => {
     // don't listen for changes on bot bootup.
