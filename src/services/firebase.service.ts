@@ -30,8 +30,9 @@ export interface IFirebaseFrame {
     tiebreaker?: { red?: number, blue?: number },
   };
   poll?: {
-    question?: string;
-    options?: {text?: string, votes?: number}
+    question?: string,
+    options?: {text?: string, votes?: number},
+    timer?: number,
   };
   stage?: stages;
   timer?: number;
@@ -199,9 +200,11 @@ export async function getBPMValue() {
 
 
 export async function setPoll(question, options: Object) {
+  const timer = Date.now();
   await frame.child('poll').set({
-    text: question,
-    ...options,
+    question,
+    options,
+    timer,
   });
 }
 
