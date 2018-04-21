@@ -45,6 +45,18 @@ export class PollPlugin {
       return bot.say('set test poll.');
     });
 
+    bot.addCommand('@closePoll', () => {
+      TwitchBot.sysLog('info', 'Polling results', 'poll', {
+        question: this.question,
+        options: this.options,
+        votes: this.votes,
+      });
+      bot.say('Closing poll.');
+      this.question = false;
+      this.votes = [];
+      this.options = [];
+    });
+
     bot.addCommand('*vote', (p:IPayload) => {
       if (!this.isPoolOpen()) return bot.say('No poll is open.');
       if (this.hasVoted(p.user.username)) return;

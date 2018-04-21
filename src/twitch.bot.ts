@@ -270,7 +270,7 @@ export class TwitchBot {
 
   public static sysLog(type: 'info' | 'warning' | 'error',
                 message: string,
-                plugin: '~' | 'betting'| 'bpm' | 'voting' | 'apply',
+                plugin: '~' | 'betting'| 'bpm' | 'voting' | 'apply' | 'poll',
                 data: any = false) {
     const log: ILog = { message, plugin, type, data };
     switch (type) {
