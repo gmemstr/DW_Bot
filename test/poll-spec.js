@@ -43,7 +43,7 @@ test('alphabetPosition -> optionExists returns true if option is available. #uni
   t.true(poll.optionExists(PollPlugin.alphabetPosition('c'))); // 2
 });
 
-test.only('alphabetPosition -> optionExists returns false if option is not found. #unit', t => {
+test('alphabetPosition -> optionExists returns false if option is not found. #unit', t => {
   const poll = new PollPlugin(bot);
   poll.options = poll.getOptions(`What IDE do you use? | option a | option b | option c`);
   t.false(poll.optionExists(PollPlugin.alphabetPosition('p')));

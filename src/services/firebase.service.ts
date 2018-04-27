@@ -211,7 +211,8 @@ export async function setPoll(question, options: Object) {
 
 
 export async function addPollVote(optionLocation, votes: number = 1) {
-  await frame.child('poll').child(optionLocation).child('votes')
+  await frame.child('poll').child('options')
+    .child(optionLocation).child('votes')
     .transaction(curr => curr + votes);
   return;
 }

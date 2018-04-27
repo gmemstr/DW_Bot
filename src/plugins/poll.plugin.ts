@@ -23,8 +23,8 @@ export class PollPlugin {
 
     bot.addCommand('@poll', async (p:IPayload) => {
       if (this.isPoolOpen()) return bot.say('Poll is already open.');
-      const question = this.getQuestion(p.args.join(''));
-      const options = this.getOptions(p.args.join(''));
+      const question = this.getQuestion(p.args.join(' '));
+      const options = this.getOptions(p.args.join(' '));
       if (options.length < 1) return bot.whisper(
         p.user.username, 'you need more than one option.',
       );
@@ -76,8 +76,11 @@ export class PollPlugin {
   private addVote(username: string, optionLocation: number) {
     this.votes.push(username);
     this.options[optionLocation].votes += 1;
-    if (process.env.NODE_ENV && process.env.NODE_ENV !== 'development')
+    if (process.env.NODE_ENV && process.env.NODE_ENV !== 'development') {
+      console.log(`adding: ${username} - ${optionLocation}`);
       addPollVote(optionLocation);
+    }
+
     return;
   }
 
