@@ -102,8 +102,7 @@ export class BettingPlugin {
       const winningTeam = p.args[0];
       const teamObjectiveCount = p.args[1] || 0;
       try {
-        // TODO: current Game is found but can't set winner.
-        // await this.setWinnerInDatabase(winningTeam);
+        await this.setWinnerInDatabase(winningTeam);
         return this.winner(winningTeam, teamObjectiveCount);
       } catch (e) {
         TwitchBot.sysLog

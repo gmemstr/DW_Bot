@@ -5,7 +5,7 @@ import {
   voteCategories,
   addVoteOnFrame, switchVote, switchStage, updateVotingTimestamp,
 } from '../services/firebase.service';
-import { currentGame } from '../services/game.service';
+import { currentGame, sendVotes } from '../services/game.service';
 
 
 export interface IVoter {
@@ -112,10 +112,10 @@ export class VotingPlugin {
         votingOn: this.votingOn,
         gameId: id,
       });
-      // await Promise.all([
-      //   sendVotes(id, redId, this.votingOn, this.teamVotes('red').length),
-      //   sendVotes(id, blueId, this.votingOn, this.teamVotes('blue').length),
-      // ]);
+      await Promise.all([
+        sendVotes(id, redId, this.votingOn, this.teamVotes('red').length),
+        sendVotes(id, blueId, this.votingOn, this.teamVotes('blue').length),
+      ]);
       this.votingOn = 'ui';
       this.isOpen = false;
       this.duration = TwitchBot.ms(3, 'minutes');
