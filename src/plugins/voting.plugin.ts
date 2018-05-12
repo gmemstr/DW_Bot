@@ -112,9 +112,13 @@ export class VotingPlugin {
         votingOn: this.votingOn,
         gameId: id,
       });
+      // convert vote categories for server
+      const c = (votingOn: voteCategories): 'functionality' | 'design' => {
+        return votingOn === 'ux' ? 'functionality' : 'design';
+      };
       await Promise.all([
-        sendVotes(id, redId, this.votingOn, this.teamVotes('red').length),
-        sendVotes(id, blueId, this.votingOn, this.teamVotes('blue').length),
+        sendVotes(id, redId, c(this.votingOn), this.teamVotes('red').length),
+        sendVotes(id, blueId, c(this.votingOn), this.teamVotes('blue').length),
       ]);
       this.votingOn = 'ui';
       this.isOpen = false;

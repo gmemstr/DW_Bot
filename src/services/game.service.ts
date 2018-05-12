@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { IGame } from './service.interfaces';
 import environment from '../environment';
-import { voteCategories } from './firebase.service';
 
 const url = environment.dwServer.url;
 const key: string = environment.dwServer.key;
@@ -14,8 +13,11 @@ export async function currentGame(): Promise<IGame> {
 
 // Example Request:
 // /v1/game/{game_id}/team/{team_id}/addvotes?design=20&func=20&code=20
-export async function sendVotes(gameId: number,
-                      teamId: any, category: voteCategories, votes: number) {
+export async function sendVotes(
+  gameId: number,
+  teamId: any,
+  category: 'design' | 'functionality',
+  votes: number) {
   try {
     await axios.post(`${url}/game/team/${teamId}/votes`, {}, {
       params: {
