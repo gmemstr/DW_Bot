@@ -4,7 +4,10 @@ import { DPayload, ICommand, IUser } from './interfaces';
 const discord = require('discord.js');
 import { Message, User } from 'discord.js';
 import { TwitchBot, UserType } from './twitch.bot';
-
+export enum channels {
+  moderators = 84824396887240704,
+  bot_testing = 425148457855221760,
+}
 
 export class DiscordBot {
   // Different Streams that are connected to Event Emitters. & for discord
@@ -33,8 +36,8 @@ export class DiscordBot {
       .subscribe(input => console.log(`${input}`));
   }
 
-  public async say(message: string, channel: any) {
-    await channel.send(message);
+  public async say(message: string, channel: channels) {
+    await this.client.channels.find('id', `${channel}`).send(message);
     return;
   }
 

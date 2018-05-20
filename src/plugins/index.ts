@@ -15,7 +15,7 @@ import { BPMPlugin } from './bpm.plugin';
 import { VotingPlugin } from './voting.plugin';
 import { ApplyPlugin } from './apply.plugin';
 import { AnalyticsPlugin } from './analytics.plugin';
-import { DiscordBot } from '../discord.bot';
+import { channels, DiscordBot } from '../discord.bot';
 import { PollPlugin } from './poll.plugin';
 
 const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
@@ -129,11 +129,11 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
   });
 
   discord.addCommand('D*ping', async () => {
-    return discord.say('pong', 'bot-testing');
+    return discord.say('pong', channels.bot_testing);
   });
 
   discord.addCommand('D@mod', async (o:DPayload) => {
-    discord.say('saying something', o.channel);
+    discord.say('saying something', channels.bot_testing);
     return o.reply('confirmed mod');
   });
 };

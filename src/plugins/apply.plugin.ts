@@ -1,18 +1,20 @@
 import { TwitchBot } from '../twitch.bot';
 import { signUp } from '../services/game.service';
-import { IPayload } from '../interfaces';
-import { DiscordBot } from '../discord.bot';
+import { DPayload, IPayload } from '../interfaces';
+import { channels, DiscordBot } from '../discord.bot';
 
 export class ApplyPlugin {
   private applyForGame: number = -1;
 
   constructor(private twitch: TwitchBot, private discord: DiscordBot) {
     twitch.addCommand('@applyFor', async (o:IPayload) => {
-      const game: number = o.args[0] | -1;
+      const game: number = o.args[0] || -1;
       try {
         if (typeof(game) !== 'number' && game < 0)
           throw 'argument must be a number';
         this.applyForGame = game;
+        discord.say(`users can now type !apply to apply for game ID: ${game}`,
+          channels.bot_testing);
         return twitch
           .say(`You can now play for game ${game}! Use !apply command`);
       } catch (e) {
@@ -23,6 +25,14 @@ export class ApplyPlugin {
         return twitch.whisper(o.user.username, 'Something went wrong with' +
           '!applyFor command');
       }
+    });
+
+    discord.addCommand('D*apply', async (o:DPayload) => {
+      const username = o.user.username;
+      console.log(`username`);
+      console.log(username);
+      // check to see if this discord user has devwars account.
+
     });
 
     // bot.addCommand('*apply', async (o:IPayload) => {
