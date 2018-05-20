@@ -12,8 +12,7 @@ const app: {[key: string]: any, twitch: TwitchBot | null} = {
 const connectBots = async (): Promise<void> => {
   const twitch = new TwitchBot(environment.bot);
   const discord = new DiscordBot(environment.discord);
-  plugins.twitch(twitch);
-  plugins.discord(discord);
+  plugins(twitch, discord);
   await twitch.connect();
   await discord.connect();
   app.twitch = twitch;

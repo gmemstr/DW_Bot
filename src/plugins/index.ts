@@ -18,14 +18,14 @@ import { AnalyticsPlugin } from './analytics.plugin';
 import { DiscordBot } from '../discord.bot';
 import { PollPlugin } from './poll.plugin';
 
-const twitchPlugins = (bot: TwitchBot) => {
+const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
   let listenForChanges = false;
-  new BettingPlugin(bot);
-  new BPMPlugin(bot);
-  new VotingPlugin(bot);
-  new ApplyPlugin(bot);
+  new BettingPlugin(twitch);
+  new BPMPlugin(twitch);
+  new VotingPlugin(twitch);
+  new ApplyPlugin(twitch, discord);
   new AnalyticsPlugin();
-  new PollPlugin(bot);
+  new PollPlugin(twitch);
 
   listenForStageChange((state) => {
     // don't listen for changes on bot bootup.
@@ -33,24 +33,24 @@ const twitchPlugins = (bot: TwitchBot) => {
       return listenForChanges = true;
     }
     if (state === 'running') {
-      return bot.selfCommand('!startgame');
+      return twitch.selfCommand('!startgame');
     }
   });
 
-  bot.addCommand('@startgame', async () => {
+  twitch.addCommand('@startgame', async () => {
     try {
       const game = await currentGame();
       const theme = game.theme || 'Classic';
       await Promise
         .all([switchStage('objective'), startTimer()]);
 
-      await bot.say('Starting Game!');
+      await twitch.say('Starting Game!');
 
       if (theme.toLowerCase() === 'zen garden') {
-        await bot.say('bets are closed for this game.');
+        await twitch.say('bets are closed for this game.');
       } else {
-        await bot.say('betting will open in 5 minutes.');
-        setTimeout(() => bot.selfCommand('!openbets'), 300000);
+        await twitch.say('betting will open in 5 minutes.');
+        setTimeout(() => twitch.selfCommand('!openbets'), 300000);
       }
 
     } catch (e) {
@@ -58,81 +58,84 @@ const twitchPlugins = (bot: TwitchBot) => {
     }
   });
 
-  bot.addCommand(['*coins', '*devcoins'], async (o:IPayload) => {
+  twitch.addCommand(['*coins', '*devcoins'], async (o:IPayload) => {
     const bits = await getBits(o.user.username);
     const commaSep = TwitchBot.thousands(bits);
-    return bot.say(`${o.user.username}: devwarsCoin ${commaSep}`);
+    return twitch.say(`${o.user.username}: devwarsCoin ${commaSep}`);
   });
 
-  bot.addCommand('@stage', async (o:IPayload) => {
+  twitch.addCommand('@stage', async (o:IPayload) => {
     const stage = o.args[0] || 'objective';
     return switchStage(stage);
   });
 
-  bot.addCommand('@addtime', async (o:IPayload) => {
+  twitch.addCommand('@addtime', async (o:IPayload) => {
     // user input will be in minute format. So !addtime 1 should add 1m.
     const ms = Math.floor(o.args[0] * 60 * 1000);
     return addTime(ms);
   });
 
-  bot.addCommand('@channel', async () => {
+  twitch.addCommand('@channel', async () => {
     return getStreamInfo('beleek');
   });
 
-  bot.addCommand('@endgame', async () => {
+  twitch.addCommand('@endgame', async () => {
     return await resetFrame();
   });
 
-  bot.addCommand('*livecode', () =>
-    bot.say('Watch the code in real-time https://watch.devwars.tv'), 900);
+  twitch.addCommand('*livecode', () =>
+    twitch.say('Watch the code in real-time https://watch.devwars.tv'), 900);
 
-  bot.addCommand('*watchred', () =>
-    bot.say('View Red Team\'s website https://red.devwars.tv'), 900);
+  twitch.addCommand('*watchred', () =>
+    twitch.say('View Red Team\'s website https://red.devwars.tv'), 900);
 
-  bot.addCommand('*watchblue', () =>
-    bot.say('View Blue Team\'s website https://blue.devwars.tv'), 900);
+  twitch.addCommand('*watchblue', () =>
+    twitch.say('View Blue Team\'s website https://blue.devwars.tv'), 900);
 
-  bot.addCommand('*discord', () => bot.say('https://discord.gg/devwars'), 900);
+  twitch.addCommand('*discord', () =>
+    twitch.say('https://discord.gg/devwars'), 900);
 
-  bot.addCommand('*coinsleader', async () => {
+  twitch.addCommand('*coinsleader', async () => {
     const leadersArr = await bitsLeaderboard();
-    bot.say(`1. ${leadersArr[0].username} - ${leadersArr[0].ranking.points}`);
-    bot.say(`2. ${leadersArr[1].username} - ${leadersArr[1].ranking.points}`);
-    bot.say(`3. ${leadersArr[2].username} - ${leadersArr[2].ranking.points}`);
+    twitch
+      .say(`1. ${leadersArr[0].username} - ${leadersArr[0].ranking.points}`);
+    twitch
+      .say(`2. ${leadersArr[1].username} - ${leadersArr[1].ranking.points}`);
+    twitch
+      .say(`3. ${leadersArr[2].username} - ${leadersArr[2].ranking.points}`);
   }, TwitchBot.ms(1, 'minutes'));
 
-  bot.addCommand('*xpleader', async () => {
+  twitch.addCommand('*xpleader', async () => {
     const leadersArr = await xpLeaderboard();
-    bot.say(`1. ${leadersArr[0].username} - ${leadersArr[0].ranking.xp}xp`);
-    bot.say(`2. ${leadersArr[1].username} - ${leadersArr[1].ranking.xp}xp`);
-    bot.say(`3. ${leadersArr[2].username} - ${leadersArr[2].ranking.xp}xp`);
+    twitch
+      .say(`1. ${leadersArr[0].username} - ${leadersArr[0].ranking.xp}xp`);
+    twitch
+      .say(`2. ${leadersArr[1].username} - ${leadersArr[1].ranking.xp}xp`);
+    twitch
+      .say(`3. ${leadersArr[2].username} - ${leadersArr[2].ranking.xp}xp`);
   }, TwitchBot.ms(1, 'minutes'));
 
-  bot.addCommand('*fire', () => bot.say('🔥'), TwitchBot.ms(45, 'minutes'));
+  twitch.addCommand('*fire', () =>
+    twitch.say('🔥'), TwitchBot.ms(45, 'minutes'));
 
-  bot.addCommand('@emptyframepool', () => emptyFrameBetters());
+  twitch.addCommand('@emptyframepool', () => emptyFrameBetters());
 
   // example of self command:
-  bot.addCommand('@mirrormirror', async () => {
-    return bot.say('...on the wall');
+  twitch.addCommand('@mirrormirror', async () => {
+    return twitch.say('...on the wall');
   });
-  bot.addCommand('@selfCommand', async () => {
-    return bot.selfCommand('!mirrormirror');
-  });
-};
-
-const discordPlugins = (bot: DiscordBot) => {
-  bot.addCommand('D*ping', async () => {
-    return bot.say('pong', 'bot-testing');
+  twitch.addCommand('@selfCommand', async () => {
+    return twitch.selfCommand('!mirrormirror');
   });
 
-  bot.addCommand('D@mod', async (o:DPayload) => {
-    bot.say('saying something', o.channel);
+  discord.addCommand('D*ping', async () => {
+    return discord.say('pong', 'bot-testing');
+  });
+
+  discord.addCommand('D@mod', async (o:DPayload) => {
+    discord.say('saying something', o.channel);
     return o.reply('confirmed mod');
   });
 };
 
-export default {
-  twitch: twitchPlugins,
-  discord: discordPlugins,
-};
+export default plugins;

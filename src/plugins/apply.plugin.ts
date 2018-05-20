@@ -1,24 +1,26 @@
 import { TwitchBot } from '../twitch.bot';
 import { signUp } from '../services/game.service';
 import { IPayload } from '../interfaces';
+import { DiscordBot } from '../discord.bot';
 
 export class ApplyPlugin {
   private applyForGame: number = -1;
 
-  constructor(private bot: TwitchBot) {
-    bot.addCommand('@applyFor', async (o:IPayload) => {
+  constructor(private twitch: TwitchBot, private discord: DiscordBot) {
+    twitch.addCommand('@applyFor', async (o:IPayload) => {
       const game: number = o.args[0] | -1;
       try {
         if (typeof(game) !== 'number' && game < 0)
           throw 'argument must be a number';
         this.applyForGame = game;
-        return bot.say(`You can now play for game ${game}! Use !apply command`);
+        return twitch
+          .say(`You can now play for game ${game}! Use !apply command`);
       } catch (e) {
         TwitchBot.sysLog
         ('error', 'Something went wrong with !applyFor', 'apply', {
           error: e,
         });
-        return bot.whisper(o.user.username, 'Something went wrong with' +
+        return twitch.whisper(o.user.username, 'Something went wrong with' +
           '!applyFor command');
       }
     });
