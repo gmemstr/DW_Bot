@@ -1,4 +1,4 @@
-import { IPayload } from '../interfaces';
+import { DPayload, IPayload } from '../interfaces';
 import {  TwitchBot } from '../twitch.bot';
 import { BettingPlugin } from './betting.plugin';
 import {
@@ -124,6 +124,11 @@ const twitchPlugins = (bot: TwitchBot) => {
 const discordPlugins = (bot: DiscordBot) => {
   bot.addCommand('D*ping', async () => {
     return bot.say('pong', 'bot-testing');
+  });
+
+  bot.addCommand('D@mod', async (o:DPayload) => {
+    bot.say('saying something', o.channel);
+    return o.reply('confirmed mod');
   });
 };
 

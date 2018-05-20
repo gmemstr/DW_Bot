@@ -27,17 +27,15 @@ export class DiscordBot {
       .filter((input: Message) => this.isCommand(input.content))
       // .filter((input: Message) =>
       //   this.checkDebounce(TwitchBot.normalizeMessage(input.content)))
-      // .filter((input: Message) => this.checkPermissions(input))
+      .filter((input: Message) => this.checkPermissions(input))
       .map((input: Message) => this.formatInput(input))
-      .do((input) => {
-        console.log(`input`);
-        console.log(input);
-      })
+      .do((payload: DPayload) => this.doCommand(payload))
       .subscribe(input => console.log(`${input}`));
   }
 
-  public async say(message: string, ch: string) {
-
+  public async say(message: string, channel: any) {
+    await channel.send(message);
+    return;
   }
 
   public addCommand(
@@ -67,11 +65,26 @@ export class DiscordBot {
   }
 
   public isCommand(command: string): boolean {
-    console.log(`is command? ${command}`);
     // See if input message begins with command character &&
     // See if input message is longer than command character.
     return command[0] === this.config.commandCharacter &&
       command.trim().length > this.config.commandCharacter.length;
+  }
+
+  public async doCommand(payload: DPayload): Promise<boolean> {
+    try {
+      const command: ICommand = this.commands[payload.command.substr(1)];
+      await command.action.call(this, payload);
+      command.lastExe = Date.now();
+      return true;
+    } catch (e) {
+      TwitchBot.sysLog('error', 'Problem executing command doCommand()', '~', {
+        payload,
+        error: e,
+        discord: true,
+      });
+      return false;
+    }
   }
 
   public async connect(): Promise<void> {
@@ -90,6 +103,8 @@ export class DiscordBot {
   // self: boolean;
   // action: any;
   private formatInput(input: Message): DPayload {
+    console.log(`input`);
+    console.log(input);
     const user: User = input.author;
     return {
       user,
@@ -140,16 +155,30 @@ export class DiscordBot {
     } catch (e) { return []; }
   }
 
+  /**
+   * @method normalizeCommand
+   * @description Used to trim and lowercase incoming messages
+   *              before attempting to call them in list of commands.
+   *              This is a lot like TwitchBot.normalize message but we have to
+   *              remove extra characters because of the discord modifier
+   * @param {string} inputMsg - message that needs to be converted.
+   * @return {string} - return command.
+   */
+  private static normalizeMessage(inputMsg: string) {
+    const message = TwitchBot.normalizeMessage(inputMsg);
+    // take out extra character that is placed in for discord modifier.
+    return message.split('!')[1];
+  }
+
   private checkPermissions(input: Message): boolean {
     try {
-      const string = TwitchBot.normalizeMessage(input.content);
-      const memberRole = input.member;
-      console.log(`memberRole`);
-      console.log(memberRole);
-      // switch (this.commands[string].reqRights) {
-      //   case UserType.Normal:     return true;
-      //   case UserType.Subscriber: return true;
-      // }
+      const string = DiscordBot.normalizeMessage(input.content);
+      const roles = input.member.roles;
+      switch (this.commands[string].reqRights) {
+        case UserType.Normal:     return true;
+        case UserType.Mod: return !!roles.find('name', 'mod') ||
+                                  !!roles.find('name', 'administrators');
+      }
     } catch (e) {
       console.log(e);
       return false;
