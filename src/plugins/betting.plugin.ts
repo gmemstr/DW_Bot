@@ -102,7 +102,8 @@ export class BettingPlugin {
       const winningTeam = p.args[0];
       const teamObjectiveCount = p.args[1] || 0;
       try {
-        await this.setWinnerInDatabase(winningTeam);
+        // this is being done on the mod panel now.
+        // await this.setWinnerInDatabase(winningTeam);
         return this.winner(winningTeam, teamObjectiveCount);
       } catch (e) {
         TwitchBot.sysLog

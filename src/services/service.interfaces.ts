@@ -80,6 +80,7 @@ export interface IObjective {
 
 export interface IGame {
   id?: number;
+  name?: string;
   timestamp?: number;
   theme?: string;
   status?: any;
