@@ -68,7 +68,7 @@ export class TwitchBot {
       .filter(data =>
         !data.message.toLowerCase().includes('everyone has received'))
       .do(data => this.unsavedChatLogs.push(data))
-      .bufferCount(3)
+      .bufferCount(25)
       .do(data => TwitchBot.saveLog(data))
       .subscribe(() => console.log(`saving chat logs`));
 
