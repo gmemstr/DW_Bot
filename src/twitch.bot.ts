@@ -64,8 +64,11 @@ export class TwitchBot {
       .subscribe((o: any) => this.whisper(o.username, o.message));
 
     Rx.Observable.fromEvent(this.botEE, this.$.ChatLog, (obj: any) => obj)
+    // don't log BPM messages.
+      .filter(data =>
+        !data.message.toLowerCase().includes('everyone has received'))
       .do(data => this.unsavedChatLogs.push(data))
-      .bufferCount(25)
+      .bufferCount(3)
       .do(data => TwitchBot.saveLog(data))
       .subscribe(() => console.log(`saving chat logs`));
 
