@@ -49,8 +49,14 @@ export class TwitchBot {
       .subscribe(() => console.log(`command`));
 
     Rx.Observable.fromEvent(this.botEE, this.$.IncWhisper, (obj: any) => obj)
-      .do(input => console.log(input))
-      .subscribe(() => console.log(this.$.IncWhisper));
+      .do(input => this.gatherChatLog(input))
+      .filter(input => this.isCommand(input.msg))
+      .filter(input =>
+        this.checkDebounce(TwitchBot.normalizeMessage(input.msg)))
+      .filter(input => this.checkPermissions(input))
+      .map(input => this.formatInput(input))
+      .do(payload => this.doCommand(payload))
+      .subscribe(() => console.log(`whisper command`));
 
     Rx.Observable.fromEvent(this.botEE, this.$.OutWhisper, (obj: any) => obj)
       .map(output => Rx.Observable.of(output).delay(this.whisperDelay))
@@ -183,6 +189,11 @@ export class TwitchBot {
       type: input.user['message-type'],
       start: Date.now(),
       args: this.getArgumentsFromMsg(input.msg),
+      reply: (message: string) => {
+        return user['message-type'] === 'whisper' ?
+          this.whisper(input.user.username, message) :
+          this.say(`${input.user.username} - ${message}`);
+      },
     };
   }
 
@@ -309,6 +320,7 @@ export class TwitchBot {
       type: 'self',
       start: Date.now(),
       from: 'self',
+      reply: () => {},
     };
     return this.doCommand(payload);
   }

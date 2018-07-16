@@ -39,6 +39,7 @@ export interface IPayload {
   command: string;
   type: IUser['message-type'];
   start: number;
+  reply: Function;
 }
 
 export interface ICommand {

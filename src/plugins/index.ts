@@ -61,7 +61,8 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
   twitch.addCommand(['*coins', '*devcoins'], async (o:IPayload) => {
     const bits = await getBits(o.user.username);
     const commaSep = TwitchBot.thousands(bits);
-    return twitch.say(`${o.user.username}: devwarsCoin ${commaSep}`);
+    return o.reply(`devwarsCoin ${commaSep}`);
+    // return twitch.say(`${o.user.username}: devwarsCoin ${commaSep}`);
   });
 
   twitch.addCommand('@stage', async (o:IPayload) => {
@@ -114,6 +115,10 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
     twitch
       .say(`3. ${leadersArr[2].username} - ${leadersArr[2].ranking.xp}xp`);
   }, TwitchBot.ms(1, 'minutes'));
+
+  twitch.addCommand('@testReply', async (p:IPayload) => {
+    return p.reply(`Here's your reply!`);
+  });
 
   twitch.addCommand('*fire', () =>
     twitch.say('🔥'), TwitchBot.ms(45, 'minutes'));
