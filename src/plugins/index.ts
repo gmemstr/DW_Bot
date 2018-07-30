@@ -58,10 +58,10 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
     }
   });
 
-  twitch.addCommand(['*coins', '*devcoins'], async (o:IPayload) => {
-    const bits = await getBits(o.user.username);
+  twitch.addCommand(['*coins', '*devcoins'], async (p:IPayload) => {
+    const bits = await getBits(p.user.username);
     const commaSep = TwitchBot.thousands(bits);
-    return o.reply(`devwarsCoin ${commaSep}`);
+    return p.reply(`devwarsCoin ${commaSep}`);
     // return twitch.say(`${o.user.username}: devwarsCoin ${commaSep}`);
   });
 
@@ -96,32 +96,32 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
   twitch.addCommand('*discord', () =>
     twitch.say('https://discord.gg/devwars'), 900);
 
-  twitch.addCommand('*coinsleader', async () => {
-    const leadersArr = await bitsLeaderboard();
-    twitch
-      .say(`1. ${leadersArr[0].username} - ${leadersArr[0].ranking.points}`);
-    twitch
-      .say(`2. ${leadersArr[1].username} - ${leadersArr[1].ranking.points}`);
-    twitch
-      .say(`3. ${leadersArr[2].username} - ${leadersArr[2].ranking.points}`);
-  }, TwitchBot.ms(1, 'minutes'));
+  // twitch.addCommand('*coinsleader', async () => {
+  //   const leadersArr = await bitsLeaderboard();
+  //   twitch
+  //     .say(`1. ${leadersArr[0].username} - ${leadersArr[0].ranking.points}`);
+  //   twitch
+  //     .say(`2. ${leadersArr[1].username} - ${leadersArr[1].ranking.points}`);
+  //   twitch
+  //     .say(`3. ${leadersArr[2].username} - ${leadersArr[2].ranking.points}`);
+  // }, TwitchBot.ms(1, 'minutes'));
 
-  twitch.addCommand('*xpleader', async () => {
-    const leadersArr = await xpLeaderboard();
-    twitch
-      .say(`1. ${leadersArr[0].username} - ${leadersArr[0].ranking.xp}xp`);
-    twitch
-      .say(`2. ${leadersArr[1].username} - ${leadersArr[1].ranking.xp}xp`);
-    twitch
-      .say(`3. ${leadersArr[2].username} - ${leadersArr[2].ranking.xp}xp`);
-  }, TwitchBot.ms(1, 'minutes'));
+  // twitch.addCommand('*xpleader', async () => {
+  //   const leadersArr = await xpLeaderboard();
+  //   twitch
+  //     .say(`1. ${leadersArr[0].username} - ${leadersArr[0].ranking.xp}xp`);
+  //   twitch
+  //     .say(`2. ${leadersArr[1].username} - ${leadersArr[1].ranking.xp}xp`);
+  //   twitch
+  //     .say(`3. ${leadersArr[2].username} - ${leadersArr[2].ranking.xp}xp`);
+  // }, TwitchBot.ms(1, 'minutes'));
 
   twitch.addCommand('@testReply', async (p:IPayload) => {
     return p.reply(`Here's your reply!`);
   });
 
-  twitch.addCommand('*fire', () =>
-    twitch.say('🔥'), TwitchBot.ms(45, 'minutes'));
+  twitch.addCommand('*fire', p =>
+    p.reply('🔥'), TwitchBot.ms(45, 'minutes'));
 
   twitch.addCommand('@emptyframepool', () => emptyFrameBetters());
 
