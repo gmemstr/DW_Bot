@@ -51,6 +51,7 @@ export class PollPlugin {
         options: this.options,
         votes: this.votes,
       });
+      switchStage('objective');
       bot.say('Closing poll.');
       this.question = false;
       this.votes = [];
