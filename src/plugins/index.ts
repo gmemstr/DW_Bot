@@ -93,6 +93,11 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
   twitch.addCommand('*watchblue', () =>
     twitch.say('View Blue Team\'s website https://blue.devwars.tv'), 900);
 
+  twitch.addCommand('*watch', () => {
+    twitch.selfCommand('*watchblue');
+    twitch.selfCommand('*watchred');
+  }, 30000);
+
   twitch.addCommand('*discord', () =>
     twitch.say('https://discord.gg/devwars'), 900);
 
