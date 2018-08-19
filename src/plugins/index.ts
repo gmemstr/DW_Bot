@@ -40,7 +40,7 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
   twitch.addCommand('@startgame', async () => {
     try {
       const game = await currentGame();
-      const theme = game.theme || game.name || 'Classic';
+      const theme = game.name || 'Classic';
       await Promise
         .all([switchStage('objective'), startTimer()]);
 
