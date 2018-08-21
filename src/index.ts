@@ -1,12 +1,17 @@
 import environment from './environment';
 import * as process from 'process';
 import { TwitchBot } from './twitch.bot';
-import { DiscordBot } from './discord.bot';
+import { DiscordBot, channels } from './discord.bot';
 import plugins from './plugins';
 
-const app: {[key: string]: any, twitch: TwitchBot | null} = {
+const app: {
+  [key: string]: any,
+  twitch: TwitchBot | null,
+  discord: DiscordBot | null,
+} = {
   twitch: null,
   discord: null,
+  server: null,
 };
 
 const connectBots = async (): Promise<void> => {
@@ -24,6 +29,9 @@ const connectBots = async (): Promise<void> => {
     }
     process.exit(0);
   });
+
+  await app.discord.giveRole('84838714278150144');
+  // await app.discord.say('hey', channels.bot_testing);
   return;
 };
 

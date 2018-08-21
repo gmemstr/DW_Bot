@@ -199,6 +199,10 @@ export async function getBPMValue() {
   return Number(snap.val());
 }
 
+export async function getObjectives() {
+  const snap = await editor.child('objectives').once('value');
+  return snap.val();
+}
 
 export async function setPoll(question, options: Object) {
   const timer = Date.now();

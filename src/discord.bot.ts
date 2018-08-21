@@ -2,11 +2,13 @@ import { EventEmitter } from 'events';
 import * as Rx from '@reactivex/rxjs';
 import { DPayload, ICommand, IUser } from './interfaces';
 const discord = require('discord.js');
-import { Message, User } from 'discord.js';
+import { Message, User, Guild, Client } from 'discord.js';
 import { TwitchBot, UserType } from './twitch.bot';
 export enum channels {
   moderators = 84824396887240704,
   bot_testing = 425148457855221760,
+  red = 84822921373032448,
+  blue = 84822911445110784,
 }
 
 export class DiscordBot {
@@ -17,7 +19,9 @@ export class DiscordBot {
     IncWhisper: '&_IncWhisper$',
     OutWhisper: '&_OutWhisper$',
   };
-  public client: any;
+  // for some reason, channel method "send" errors if this is not | any.
+  public client: Client | any;
+  public guild: Guild;
   public commands: {[key: string]: ICommand} = {};
   public userGroups: string[] = ['*', '$', '@'];
   public botEE: EventEmitter;
@@ -67,14 +71,25 @@ export class DiscordBot {
 
   }
 
-  public isCommand(command: string): boolean {
+  public async move(): Promise<void> {
+
+  }
+
+  public async giveRole(userId: string): Promise<void> {
+    const user = await this.getUserById(userId);
+    console.log(`this.guild`);
+    console.log(this.guild);
+    // TODO: you left off here; need to assign user a role.
+  }
+
+  private isCommand(command: string): boolean {
     // See if input message begins with command character &&
     // See if input message is longer than command character.
     return command[0] === this.config.commandCharacter &&
       command.trim().length > this.config.commandCharacter.length;
   }
 
-  public async doCommand(payload: DPayload): Promise<boolean> {
+  private async doCommand(payload: DPayload): Promise<boolean> {
     try {
       const command: ICommand = this.commands[payload.command.substr(1)];
       await command.action.call(this, payload);
@@ -92,11 +107,16 @@ export class DiscordBot {
 
   public async connect(): Promise<void> {
     await this.client.login(this.config.token);
+    this.guild = this.client.guilds.get(this.config.guildId);
 
     this.client.on('message', (message: Message) => {
       this.botEE.emit(this.$.IncChat, message);
     });
     return;
+  }
+
+  private async getUserById(userId: string) {
+    return this.client.fetchUser(userId);
   }
 
 
