@@ -46,11 +46,16 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
 
       await twitch.say('Starting Game!');
 
-      if (theme.toLowerCase().includes('zen')) {
-        await twitch.say('bets are closed for this game.');
-      } else {
-        await twitch.say('betting will open in 5 minutes.');
-        setTimeout(() => twitch.selfCommand('!openbets'), 300000);
+      switch (theme.toLowerCase()) {
+        case 'blitz':
+          await twitch.selfCommand('!openbets');
+          break;
+        case 'classic':
+          await twitch.say('betting will open in 5 minutes');
+          setTimeout(() => twitch.selfCommand('!openbets'), 300000);
+          break;
+        case 'zen garden':
+          return twitch.say('bets are closed for this game.');
       }
 
     } catch (e) {
