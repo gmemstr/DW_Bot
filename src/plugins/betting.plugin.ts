@@ -3,7 +3,7 @@ import { TwitchBot } from '../twitch.bot';
 import { hasBits, putBits } from '../services/user.service';
 import * as _ from 'lodash';
 import {
-  addFrameBet, getLogData, removeFrameBet,
+  addFrameBet, getLogData, removeFrameBet, setBetDuration,
   switchStage, updateBettingTimestamp,
 } from '../services/firebase.service';
 import { currentGame, endGame } from '../services/game.service';
@@ -74,10 +74,12 @@ export class BettingPlugin {
 
     });
 
-    bot.addCommand('@openBets', async () => {
+    bot.addCommand('@openBets', async (p:IPayload) => {
       if (this.pool.open) return bot.say('Betting pool is currently open.');
-      await this.openBets();
-      return bot.say('Betting is now open.');
+      const duration = p.args[0];
+      if (!duration) return p.reply('!openbets [duration number in minutes]');
+      await this.openBets(TwitchBot.ms(duration, 'minutes'));
+      return bot.say(`Betting is now open for ${p.args[0]} minutes.`);
     });
 
     bot.addCommand('@closeBets', () => {
@@ -234,12 +236,15 @@ export class BettingPlugin {
     return _.remove(this.pool.bets, (b: IBetter) => b.name === name);
   }
 
-  public async openBets() {
+  public async openBets(duration: number) {
     const game = await currentGame();
     this.pool.open = true;
     this.pool.gameId = game.id;
+    this.pool.duration = duration;
     switchStage('betting');
     updateBettingTimestamp();
+    // bet duration is in milliseconds but needs to be seconds for Frame.
+    setBetDuration(duration / 1000);
 
     this.pool.timer = setInterval(() => {
       this.pool.duration = this.pool.duration - TwitchBot.ms(60, 'seconds');

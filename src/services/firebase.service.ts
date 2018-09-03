@@ -19,6 +19,7 @@ export interface IFirebaseFrame {
     red?: number,
     betters?: [any],
     timestamp?: number,
+    duration?: number,
   };
   countdown?: boolean;
   currentGameId?: number;
@@ -207,6 +208,10 @@ export async function setPoll(question, options: Object) {
     options,
     timer,
   });
+}
+
+export async function setBetDuration(duration: number) {
+  return frame.child('betting').child('duration').set(duration);
 }
 
 

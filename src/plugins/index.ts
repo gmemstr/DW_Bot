@@ -48,11 +48,11 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
 
       switch (theme.toLowerCase()) {
         case 'blitz':
-          await twitch.selfCommand('!openbets');
+          setTimeout(() => twitch.selfCommand('!openbets 3'), 60000);
           break;
         case 'classic':
           await twitch.say('betting will open in 5 minutes');
-          setTimeout(() => twitch.selfCommand('!openbets'), 300000);
+          setTimeout(() => twitch.selfCommand('!openbets 10'), 300000);
           break;
         case 'zen garden':
           return twitch.say('bets are closed for this game.');
