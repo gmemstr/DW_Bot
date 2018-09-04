@@ -4,19 +4,21 @@ import environment from '../environment';
 const url = environment.dwServer.url;
 const key = environment.dwServer.key;
 
-export async function getBits(name: string): Promise<number> {
+export async function getBits(name: string, id: any): Promise<number> {
   const req = await axios.get(`${url}/bot/bits`, {
     params: {
+      id,
       username: name,
     },
   });
   return Number(req.data);
 }
 
-export async function putBits(name: string, amount: number): Promise<void> {
+export async function putBits(name: string, amount: number, id: any) {
   try {
     await axios.post(`${url}/bot/bits`, {}, {
       params: {
+        id,
         key,
         amount,
         username: name,
@@ -28,8 +30,8 @@ export async function putBits(name: string, amount: number): Promise<void> {
   }
 }
 
-export async function hasBits(name: string, amount: number): Promise<boolean> {
-  const dbAmount = await getBits(name);
+export async function hasBits(name: string, amount: number, id: any) {
+  const dbAmount = await getBits(name, id);
   return dbAmount >= amount;
 }
 

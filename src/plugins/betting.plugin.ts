@@ -1,4 +1,4 @@
-import { IPayload } from '../interfaces';
+import { IPayload, IUser } from '../interfaces';
 import { TwitchBot } from '../twitch.bot';
 import { hasBits, putBits } from '../services/user.service';
 import * as _ from 'lodash';
@@ -12,6 +12,7 @@ export type ObjTypes =  0 | 1 | 2 | 3 | 4 | 5;
 
 export interface IBetter {
   name: string;
+  id: any;
   team: 'red' | 'blue';
   amount: number;
   winnings: number;
@@ -49,7 +50,7 @@ export class BettingPlugin {
     bot.addCommand('*bet', (p:IPayload) => {
       if (!this.pool.open)
         return bot.say('Betting is closed');
-      const better = BettingPlugin.formatBetter(p.user.username, p.args);
+      const better = BettingPlugin.formatBetter(p.user, p.args);
       if (!better) return bot.whisper(p.user.username, 'Something went wrong' +
         ' when parsing your input.');
       return this.addBet(better);
@@ -132,13 +133,15 @@ export class BettingPlugin {
       .then(() => whisper += 'Your previous bet has been returned & ');
 
     // check if user has enough bits to bet that amount.
-    const hasAmount = await hasBits(better.name, better.amount);
+    const hasAmount = await hasBits(better.name, better.amount, better.id);
     if (!hasAmount) {
       if (whisper.length > 1) whisper += 'you still don\'t have enough coins. ';
       else whisper += 'You don\'t have enough coins.';
       return this.bot.whisper(better.name, whisper);
     } else {
-      await putBits(better.name, BettingPlugin.negative(better.amount))
+      await putBits(
+        better.name, BettingPlugin.negative(better.amount), better.id,
+      )
         .then(() => {
           if (whisper.length > 1) whisper += 'your new ';
           whisper += 'bet has been received. ';
@@ -155,19 +158,20 @@ export class BettingPlugin {
    * @method formatBetter
    * @description This function will make sure amount is valid &
    *              format Better before putting it is placed into pool.
-   * @param {string} name - better username.
+   * @param {IUser} user - better twitch user object.
    * @param {array} args - arguments from payload.
    *
    */
-  private static formatBetter(name: string, args: any[]): false | IBetter {
+  private static formatBetter(user: IUser, args: any[]): false | IBetter {
     const [amount, team, ...modifiers] = args;
     if (BettingPlugin.validAmount(amount) === false) return false;
     const obj = modifiers[0] || false;
     const strikes = modifiers[1] || false;
     return {
-      name,
       team,
       amount,
+      name: user.username,
+      id: user.id,
       winnings: 0,
       mods: {
         strikes: BettingPlugin.validStrikes(strikes),
@@ -272,7 +276,7 @@ export class BettingPlugin {
       if (o.team !== team) return;
       if (objCount >= o.mods.objectives || objCount === 0) {
         const winnings = this.oddsWinnings(o) + o.amount;
-        await putBits(o.name, winnings)
+        await putBits(o.name, winnings, o.id)
           .then(() => {
             this.bot
               .whisperQueue(o.name, `You have received ${winnings} coins.`);
@@ -296,7 +300,7 @@ export class BettingPlugin {
   private async returnBetAmount(name: string) {
     const idx = _.findIndex(this.pool.bets, (b: IBetter) => b.name === name);
     const better = this.pool.bets[idx];
-    await putBits(better.name, better.amount);
+    await putBits(better.name, better.amount, better.id);
     return;
   }
 

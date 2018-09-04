@@ -64,7 +64,9 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
   });
 
   twitch.addCommand(['*coins', '*devcoins'], async (p:IPayload) => {
-    const bits = await getBits(p.user.username);
+    console.log(`p.user`);
+    console.log(p.user);
+    const bits = await getBits(p.user.username, p.user.id);
     const commaSep = TwitchBot.thousands(bits);
     return p.reply(`devwarsCoin ${commaSep}`);
     // return twitch.say(`${o.user.username}: devwarsCoin ${commaSep}`);

@@ -1,6 +1,5 @@
 import { TwitchBot } from '../twitch.bot';
-import { putBits } from '../services/user.service';
-import { getStreamInfo, getViewers } from '../services/twitch.service';
+import { getViewers } from '../services/twitch.service';
 import { saveAnalytics } from '../services/firebase.service';
 
 export class AnalyticsPlugin {
