@@ -40,6 +40,7 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
   twitch.addCommand('@startgame', async () => {
     try {
       const game = await currentGame();
+      TwitchBot.sysLog('info', `starting: ${JSON.stringify(game)}`, '~');
       const theme = game.name || 'Classic';
       await Promise
         .all([switchStage('objective'), startTimer()]);
@@ -105,26 +106,6 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
 
   twitch.addCommand('*discord', () =>
     twitch.say('https://discord.gg/devwars'), 900);
-
-  // twitch.addCommand('*coinsleader', async () => {
-  //   const leadersArr = await bitsLeaderboard();
-  //   twitch
-  //     .say(`1. ${leadersArr[0].username} - ${leadersArr[0].ranking.points}`);
-  //   twitch
-  //     .say(`2. ${leadersArr[1].username} - ${leadersArr[1].ranking.points}`);
-  //   twitch
-  //     .say(`3. ${leadersArr[2].username} - ${leadersArr[2].ranking.points}`);
-  // }, TwitchBot.ms(1, 'minutes'));
-
-  // twitch.addCommand('*xpleader', async () => {
-  //   const leadersArr = await xpLeaderboard();
-  //   twitch
-  //     .say(`1. ${leadersArr[0].username} - ${leadersArr[0].ranking.xp}xp`);
-  //   twitch
-  //     .say(`2. ${leadersArr[1].username} - ${leadersArr[1].ranking.xp}xp`);
-  //   twitch
-  //     .say(`3. ${leadersArr[2].username} - ${leadersArr[2].ranking.xp}xp`);
-  // }, TwitchBot.ms(1, 'minutes'));
 
   twitch.addCommand('@testReply', async (p:IPayload) => {
     return p.reply(`Here's your reply!`);
