@@ -12,7 +12,7 @@ export type ObjTypes =  0 | 1 | 2 | 3 | 4 | 5;
 
 export interface IBetter {
   name: string;
-  team: 'red' | 'blue';
+  team: 'red' | 'blue' | 'tie';
   amount: number;
   winnings: number;
   mods: {
@@ -100,13 +100,15 @@ export class BettingPlugin {
       }
     });
 
-    bot.addCommand('@winner', async (p: IPayload) => {
-      const winningTeam = p.args[0];
-      const teamObjectiveCount = p.args[1] || 0;
+    bot.addCommand('@winnings', async (p: IPayload) => {
+      const team = p.args[0];
+      const teamObjectiveCount = p.args[1];
+      if (!!team && !!teamObjectiveCount)
+        return bot.whisper(p.user.username, 'format error: !winnings [teamColor|tie] [completedObjectives]');
       try {
         // this is being done on the mod panel now.
         // await this.setWinnerInDatabase(winningTeam);
-        return this.winner(winningTeam, teamObjectiveCount);
+        return this.winnings(team, teamObjectiveCount);
       } catch (e) {
         TwitchBot.sysLog
         ('error', 'Problem executing winnings command', 'betting', {
@@ -209,7 +211,7 @@ export class BettingPlugin {
   }
 
   private static validObjective(objective: any): ObjTypes | number {
-    if (objective === 'ace') return 5;
+    if (objective === 'ace' || objective === 'tie') return 5;
     if (objective === false) return 0;
     const number = Number(objective);
     if (isNaN(number) || number < 0 || number > 5) {
@@ -267,19 +269,28 @@ export class BettingPlugin {
     return this.bot.say('Betting has been closed.');
   }
 
-  public async winner(team: 'red' | 'blue', objCount: number) {
-    _.forEach(this.pool.bets, async (o) => {
-      if (o.team !== team) return;
-      if (objCount >= o.mods.objectives || objCount === 0) {
-        const winnings = this.oddsWinnings(o) + o.amount;
-        await putBits(o.name, winnings)
+  public async winnings(team: 'red' | 'blue' | 'tie', objCount) {
+    this.pool.bets.forEach(async bet => {
+      if (bet.team !== 'tie') {
+        // The way betting works is if person guesses that a team will get 1 objective
+        // but they actually get 2 objectives;
+        // they still receive winnings.
+        if (objCount >= bet.mods.objectives && team === bet.team) {
+          const winnings = this.oddsWinnings(bet) + bet.amount;
+          await putBits(bet.name, winnings)
+            .then(() => {
+              this.bot.whisperQueue(bet.name, `You have received ${winnings} coins.`);
+            });
+        }
+      }
+      else if (bet.team === 'tie') { // if the better team is tie:
+        const winnings = this.oddsWinnings(bet) + bet.amount;
+        await putBits(bet.name, winnings)
           .then(() => {
-            this.bot
-              .whisperQueue(o.name, `You have received ${winnings} coins.`);
+            this.bot.whisperQueue(bet.name, `You have received ${winnings} coins.`);
           });
       }
-      return;
-    });
+    })
   }
 
   private async setWinnerInDatabase(team: 'red' | 'blue') {
