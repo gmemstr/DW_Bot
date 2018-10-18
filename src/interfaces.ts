@@ -87,3 +87,32 @@ export interface DPayload {
   command: string;
   reply: Function;
 }
+
+// user object from DevWars servers
+export interface DWUser {
+  id: number;
+  ranking: {
+    rank: DWRank;
+    next_rank: DWRank;
+    bits: number;
+    xp: number;
+  };
+  players: any;
+  avatar_url: string;
+  information: {
+    url: string;
+    about: string;
+    for_hire: boolean;
+  };
+}
+
+
+interface DWRank {
+  bits: number;
+  id: number;
+  level: number;
+  rank_level: number;
+  xp_required: number;
+  rank: string;
+  level_name: string;
+}

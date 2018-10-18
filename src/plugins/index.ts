@@ -2,8 +2,7 @@ import { DPayload, IPayload } from '../interfaces';
 import {  TwitchBot } from '../twitch.bot';
 import { BettingPlugin } from './betting.plugin';
 import {
-  bitsLeaderboard, getBits,
-  xpLeaderboard,
+  getBits, user,
 } from '../services/user.service';
 import {
   addTime, emptyFrameBetters, listenForStageChange, resetFrame, startTimer,
@@ -69,6 +68,17 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
     const commaSep = TwitchBot.thousands(bits);
     return p.reply(`devwarsCoin ${commaSep}`);
     // return twitch.say(`${o.user.username}: devwarsCoin ${commaSep}`);
+  });
+
+  discord.addCommand(['D*coins', 'D*devcoins'], async (p:DPayload) => {
+    try {
+      const { ranking: { bits } } = await user(p.user.id, 'discord');
+      const commaSep = TwitchBot.thousands(Number(bits));
+      return p.reply(`${commaSep} coins.`);
+    } catch (e) {
+      return p.reply('You may need to connect your account.');
+    }
+
   });
 
   twitch.addCommand('@stage', async (o:IPayload) => {

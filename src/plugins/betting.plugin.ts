@@ -104,7 +104,9 @@ export class BettingPlugin {
       const team = p.args[0];
       const teamObjectiveCount = p.args[1];
       if (!!team && !!teamObjectiveCount)
-        return bot.whisper(p.user.username, 'format error: !winnings [teamColor|tie] [completedObjectives]');
+        return bot.whisper(
+          p.user.username, 'format error: !winnings [teamColor|tie] [completedObjectives]',
+        );
       try {
         // this is being done on the mod panel now.
         // await this.setWinnerInDatabase(winningTeam);
@@ -270,7 +272,7 @@ export class BettingPlugin {
   }
 
   public async winnings(team: 'red' | 'blue' | 'tie', objCount) {
-    this.pool.bets.forEach(async bet => {
+    this.pool.bets.forEach(async (bet) => {
       if (bet.team !== 'tie') {
         // The way betting works is if person guesses that a team will get 1 objective
         // but they actually get 2 objectives;
@@ -282,15 +284,14 @@ export class BettingPlugin {
               this.bot.whisperQueue(bet.name, `You have received ${winnings} coins.`);
             });
         }
-      }
-      else if (bet.team === 'tie') { // if the better team is tie:
+      } else { // if the better team is tie:
         const winnings = this.oddsWinnings(bet) + bet.amount;
         await putBits(bet.name, winnings)
           .then(() => {
             this.bot.whisperQueue(bet.name, `You have received ${winnings} coins.`);
           });
       }
-    })
+    });
   }
 
   private async setWinnerInDatabase(team: 'red' | 'blue') {

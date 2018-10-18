@@ -3,7 +3,7 @@
   "rules": {
     "max-line-length": [
       true,
-      80
+      100
     ],
     "align": [true, "statements"]
   }

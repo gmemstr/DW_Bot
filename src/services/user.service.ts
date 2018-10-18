@@ -51,3 +51,14 @@ export async function xpLeaderboard(): Promise<any> {
     throw e;
   }
 }
+
+export async function user(id: string, provider: 'discord' | 'twitch') {
+  try {
+    const { data } = await axios.get(`${url}/user/by-${provider}-id/${id}`);
+    console.log(`data`);
+    console.log(data);
+    return data;
+  } catch (e) {
+    throw e;
+  }
+}
