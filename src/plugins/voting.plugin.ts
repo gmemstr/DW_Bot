@@ -101,25 +101,32 @@ export class VotingPlugin {
 
   public async closeVotes(): Promise<void> {
     try {
-      const game = await currentGame();
-      const id = game.id;
-      const blueId = game.teams.blue.id;
-      const redId = game.teams.red.id;
-      TwitchBot.sysLog('info', 'Voting saved', 'voting', {
-        blueId,
-        redId,
-        voters: this.voters,
-        votingOn: this.votingOn,
-        gameId: id,
-      });
-      // convert vote categories for server
-      const c = (votingOn: voteCategories): 'functionality' | 'design' => {
-        return votingOn === 'ux' ? 'functionality' : 'design';
-      };
-      await Promise.all([
-        sendVotes(id, redId, c(this.votingOn), this.teamVotes('red').length),
-        sendVotes(id, blueId, c(this.votingOn), this.teamVotes('blue').length),
-      ]);
+
+      // TODO: make stub/mock data for currentGame and Firebase services.
+      console.log(`process.env.NODE_ENV`);
+      console.log(process.env.NODE_ENV);
+      if (process.env.NODE_ENV !== 'testing') {
+        const game = await currentGame();
+        const id = game.id;
+        const blueId = game.teams.blue.id;
+        const redId = game.teams.red.id;
+        TwitchBot.sysLog('info', 'Voting saved', 'voting', {
+          blueId,
+          redId,
+          voters: this.voters,
+          votingOn: this.votingOn,
+          gameId: id,
+        });
+        // convert vote categories for server
+        const c = (votingOn: voteCategories): 'functionality' | 'design' => {
+          return votingOn === 'ux' ? 'functionality' : 'design';
+        };
+        await Promise.all([
+          sendVotes(id, redId, c(this.votingOn), this.teamVotes('red').length),
+          sendVotes(id, blueId, c(this.votingOn), this.teamVotes('blue').length),
+        ]);
+      }
+
       this.votingOn = 'ui';
       this.isOpen = false;
       this.duration = TwitchBot.ms(3, 'minutes');

@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import * as Rx from '@reactivex/rxjs';
-import { DPayload, ICommand, IUser } from './interfaces';
+import { DPayload, ICommand } from './interfaces';
 const discord = require('discord.js');
 import { Message, User } from 'discord.js';
 import { TwitchBot, UserType } from './twitch.bot';

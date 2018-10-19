@@ -63,6 +63,13 @@ const ghostBetters = [
     amount: 300,
     winnings: 0,
     mods: {objectives: 5, strikes: false}
+  },
+  { // !bet 300 tie
+    name: 'tie_man',
+    team: 'tie',
+    amount: 300,
+    winnings: 0,
+    mods: {objectives: 0, strikes: false}
   }
 ];
 
@@ -170,16 +177,34 @@ test('formatBetter returns better object if correct params are passed in. #unit'
 test('Winner command successfully gives user winnings. #integration', async t => {
   const plugin = new BettingPlugin(bot);
   const winner3 = ghostBetters[3];
-
+  // give better some coins.
+  await putBits(winner3.name, winner3.amount);
   // get current number of bits user has.
   const currentWinner3 = await getBits(winner3.name);
   await plugin.addBet(winner3);
   const winnings3 = await plugin.oddsWinnings(winner3);
-  await plugin.winner(winner3.team, winner3.mods.objectives + 1);
+  await plugin.winnings(winner3.team, winner3.mods.objectives + 1);
 
   await timeout(5000);
 
   const afterWin3 = await getBits(winner3.name);
+  t.true(currentWinner3 + winnings3 ===  afterWin3)
+});
+
+test('Winner command successfully gives user winnings if teams tie in objectives. #integration', async t => {
+  const plugin = new BettingPlugin(bot);
+  const winner6 = ghostBetters[6];
+  // give better some coins.
+  await putBits(winner6.name, winner6.amount);
+  // get current number of bits user has.
+  const currentWinner3 = await getBits(winner6.name);
+  await plugin.addBet(winner6);
+  const winnings3 = await plugin.oddsWinnings(winner6);
+  await plugin.winnings(winner6.team, winner6.mods.objectives + 1);
+
+  await timeout(5000);
+
+  const afterWin3 = await getBits(winner6.name);
   t.true(currentWinner3 + winnings3 ===  afterWin3)
 });
 

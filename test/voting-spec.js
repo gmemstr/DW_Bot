@@ -1,5 +1,4 @@
 import test from 'ava';
-import * as _ from 'lodash';
 import environment from '../lib/environment'
 import { TwitchBot } from '../lib/twitch.bot';
 import {VotingPlugin} from '../lib/plugins/voting.plugin';
@@ -42,6 +41,7 @@ test('hasVote returns true if voter is already in voters array', t => {
 });
 
 test('endVote empties voters array', async (t) => {
+  process.env.NODE_ENV = 'testing';
   const plugin = new VotingPlugin(bot);
   const ghostVoter = ghostVoters[2];
   plugin.addVote(ghostVoter.username, ghostVoter.team);
