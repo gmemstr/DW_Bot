@@ -52,16 +52,17 @@ export class DiscordBot {
     // ... and so on, similar to twitch.addCommand
 
     // check for discord mod.
-    if (command[0] !== 'D') return;
+    // if (command[0] !== 'D') return;
+
     // check for identifier
-    if (!this.userGroups.includes(command[1])) return;
+    if (!this.userGroups.includes(command[0])) return;
     // if all checks pass, add this command to the object of commands.
-    const string = command.substr(2).toLowerCase();
+    const string = command.substr(1).toLowerCase();
     return this.commands[string] = {
       action,
       debounce,
       string,
-      reqRights: this.userGroups.indexOf(command[1]),
+      reqRights: this.userGroups.indexOf(command[0]),
       lastExe: 0,
     };
 
@@ -84,7 +85,7 @@ export class DiscordBot {
       TwitchBot.sysLog('error', 'Problem executing command doCommand()', '~', {
         payload,
         error: e,
-        discord: true,
+        platform: 'discord',
       });
       return false;
     }
@@ -123,7 +124,7 @@ export class DiscordBot {
 
   private checkDebounce(command: string): boolean {
     try {
-      const string = command.substr(2);
+      const string = command.substr(1);
       if (!this.commands[string].action) return false;
       const currentTime = Date.now();
       const debounce = this.commands[string].debounce || 0;
@@ -162,20 +163,16 @@ export class DiscordBot {
    * @method normalizeCommand
    * @description Used to trim and lowercase incoming messages
    *              before attempting to call them in list of commands.
-   *              This is a lot like TwitchBot.normalize message but we have to
-   *              remove extra characters because of the discord modifier
    * @param {string} inputMsg - message that needs to be converted.
    * @return {string} - return command.
    */
   private static normalizeMessage(inputMsg: string) {
-    const message = TwitchBot.normalizeMessage(inputMsg);
-    // take out extra character that is placed in for discord modifier.
-    return message.split('!')[1];
+    return TwitchBot.normalizeMessage(inputMsg);
   }
 
   private checkPermissions(input: Message): boolean {
     try {
-      const string = DiscordBot.normalizeMessage(input.content);
+      const string = DiscordBot.normalizeMessage(input.content).substr(1);
       const roles = input.member.roles;
       switch (this.commands[string].reqRights) {
         case UserType.Normal:     return true;

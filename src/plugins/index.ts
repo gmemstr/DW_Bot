@@ -70,7 +70,7 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
     // return twitch.say(`${o.user.username}: devwarsCoin ${commaSep}`);
   });
 
-  discord.addCommand(['D*coins', 'D*devcoins'], async (p:DPayload) => {
+  discord.addCommand(['*coins', '*devcoins'], async (p:DPayload) => {
     try {
       const { ranking: { bits } } = await user(p.user.id, 'discord');
       const commaSep = TwitchBot.thousands(Number(bits));
@@ -134,14 +134,14 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
     return twitch.selfCommand('!mirrormirror');
   });
 
-  discord.addCommand('D*ping', async () => {
-    return discord.say('pong', channels.bot_testing);
-  });
+  // discord.addCommand('*ping', async () => {
+  //   return discord.say('pong', channels.bot_testing);
+  // });
 
-  discord.addCommand('D@mod', async (o:DPayload) => {
-    discord.say('saying something', channels.bot_testing);
-    return o.reply('confirmed mod');
-  });
+  // discord.addCommand('@mod', async (o:DPayload) => {
+  //   discord.say('saying something', channels.bot_testing);
+  //   return o.reply('confirmed mod');
+  // });
 };
 
 export default plugins;

@@ -88,6 +88,7 @@ export class TwitchBot {
       TwitchBot.sysLog('error', 'Problem executing command doCommand()', '~', {
         payload,
         error: e,
+        platform: 'twitch',
       });
       return false;
     }
@@ -100,7 +101,8 @@ export class TwitchBot {
       return command.map(cmd => this.addCommand(cmd, action, debounce));
     }
     // ignore Discord commands.
-    if (command[0].toLowerCase() === 'd') return;
+    // if (command[0].toLowerCase() === 'd') return;
+
     // When adding a command, you can specify what 'kind' of command it is.
     // For example '*' means everyone can use this command,
     // '$' means only subscribers can use it.
