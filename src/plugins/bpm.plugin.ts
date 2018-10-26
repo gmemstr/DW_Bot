@@ -3,13 +3,14 @@ import { putBits } from '../services/user.service';
 import { getStreamInfo, getViewers } from '../services/twitch.service';
 import { IPayload } from '../interfaces';
 import { getBPMValue } from '../services/firebase.service';
+import botUtils from '../common/bot.utils';
 
 export class BPMPlugin {
   private defaultCoins = 10;
-  private loop: number = TwitchBot.ms(20, 'minutes');
+  private loop: number = botUtils.ms({ minutes: 20 });
 
   constructor(private bot: TwitchBot) {
-    bot.addCommand('@bpm', async (p:IPayload) => {
+    bot.addCommand(['@rain', '@bpm'], async (p:IPayload) => {
       const amount = p.args[0] || await getBPMValue() || this.defaultCoins;
       return this.giveBits(amount);
     });
@@ -17,7 +18,7 @@ export class BPMPlugin {
     setTimeout(() => {
       setInterval(async () =>
         this.giveBits(await getBPMValue() || this.defaultCoins), this.loop);
-    }, TwitchBot.ms(1, 'minutes'));
+    }, botUtils.ms({ minutes: 1 }));
 
   }
 

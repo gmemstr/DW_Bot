@@ -15,6 +15,7 @@ import { VotingPlugin } from './voting.plugin';
 import { ApplyPlugin } from './apply.plugin';
 import { AnalyticsPlugin } from './analytics.plugin';
 import { channels, DiscordBot } from '../discord.bot';
+import botUtils from '../common/bot.utils';
 import { PollPlugin } from './poll.plugin';
 
 const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
@@ -39,7 +40,7 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
   twitch.addCommand('@startgame', async () => {
     try {
       const game = await currentGame();
-      TwitchBot.sysLog('info', `starting: ${JSON.stringify(game)}`, '~');
+      botUtils.sysLog('info', `starting: ${JSON.stringify(game)}`, '~');
       const theme = game.name || 'Classic';
       await Promise
         .all([switchStage('objective'), startTimer()]);
@@ -48,24 +49,25 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
 
       switch (theme.toLowerCase()) {
         case 'blitz':
-          setTimeout(() => twitch.selfCommand('!openbets 3'), 60000);
+          await twitch.say('betting will open in 2 minutes!');
+          setTimeout(() => twitch.selfCommand('!openbets 3'), botUtils.ms({ minutes: 2 }));
           break;
         case 'classic':
-          await twitch.say('betting will open in 5 minutes');
-          setTimeout(() => twitch.selfCommand('!openbets 10'), 300000);
+          await twitch.say('betting will open in 5 minutes!');
+          setTimeout(() => twitch.selfCommand('!openbets 10'), botUtils.ms({ minutes: 5 }));
           break;
         case 'zen garden':
           return twitch.say('bets are closed for this game.');
       }
 
     } catch (e) {
-      TwitchBot.sysLog('error', 'Problems with startGame command', '~', e);
+      botUtils.sysLog('error', 'Problems with startGame command', '~', e);
     }
   });
 
   twitch.addCommand(['*coins', '*devcoins'], async (p:IPayload) => {
     const bits = await getBits(p.user.username);
-    const commaSep = TwitchBot.thousands(bits);
+    const commaSep = botUtils.thousands(bits);
     return p.reply(`devwarsCoin ${commaSep}`);
     // return twitch.say(`${o.user.username}: devwarsCoin ${commaSep}`);
   });
@@ -73,7 +75,7 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
   discord.addCommand(['*coins', '*devcoins'], async (p:DPayload) => {
     try {
       const { ranking: { bits } } = await user(p.user.id, 'discord');
-      const commaSep = TwitchBot.thousands(Number(bits));
+      const commaSep = botUtils.thousands(Number(bits));
       return p.reply(`${commaSep} coins.`);
     } catch (e) {
       return p.reply('You may need to connect your account.');
@@ -101,28 +103,25 @@ const plugins = (twitch: TwitchBot, discord: DiscordBot) => {
   });
 
   twitch.addCommand('*livecode', () =>
-    twitch.say('Watch the code in real-time https://watch.devwars.tv'), 900);
+    twitch.say('Watch the code in real-time https://watch.devwars.tv'),
+    botUtils.ms({ seconds: 15 }));
 
   twitch.addCommand('*watchred', () =>
-    twitch.say('View Red Team\'s website https://red.devwars.tv'), 900);
+    twitch.say('View Red Team\'s website https://red.devwars.tv'), botUtils.ms({ seconds: 15 }));
 
   twitch.addCommand('*watchblue', () =>
-    twitch.say('View Blue Team\'s website https://blue.devwars.tv'), 900);
+    twitch.say('View Blue Team\'s website https://blue.devwars.tv'), botUtils.ms({ seconds: 15 }));
 
   twitch.addCommand('*watch', () => {
     twitch.selfCommand('*watchblue');
     twitch.selfCommand('*watchred');
-  }, 30000);
+  }, botUtils.ms({ seconds: 30 }));
 
   twitch.addCommand('*discord', () =>
-    twitch.say('https://discord.gg/devwars'), 900);
-
-  twitch.addCommand('@testReply', async (p:IPayload) => {
-    return p.reply(`Here's your reply!`);
-  });
+    twitch.say('https://discord.gg/devwars'), botUtils.ms({ seconds: 15 }));
 
   twitch.addCommand('*fire', p =>
-    p.reply('🔥'), TwitchBot.ms(45, 'minutes'));
+    p.reply('🔥'), botUtils.ms({ minutes: 30 }));
 
   twitch.addCommand('@emptyframepool', () => emptyFrameBetters());
 

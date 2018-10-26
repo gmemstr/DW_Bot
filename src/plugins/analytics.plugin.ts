@@ -1,10 +1,9 @@
-import { TwitchBot } from '../twitch.bot';
-import { putBits } from '../services/user.service';
-import { getStreamInfo, getViewers } from '../services/twitch.service';
+import {  getViewers } from '../services/twitch.service';
 import { saveAnalytics } from '../services/firebase.service';
+import botUtils from '../common/bot.utils';
 
 export class AnalyticsPlugin {
-  private loop: number = TwitchBot.ms(3, 'minutes');
+  private loop: number = botUtils.ms({ minutes: 3 });
 
   constructor() {
     setTimeout(() => {
@@ -15,7 +14,7 @@ export class AnalyticsPlugin {
           console.log(`saving analytics`);
         }
       }, this.loop);
-    }, TwitchBot.ms(1, 'minutes'));
+    }, botUtils.ms({ minutes: 10 }));
   }
 
 }

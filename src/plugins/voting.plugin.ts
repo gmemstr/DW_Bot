@@ -6,6 +6,7 @@ import {
   addVoteOnFrame, switchVote, switchStage, updateVotingTimestamp,
 } from '../services/firebase.service';
 import { currentGame, sendVotes } from '../services/game.service';
+import botUtils from '../common/bot.utils';
 
 
 export interface IVoter {
@@ -16,7 +17,7 @@ export class VotingPlugin {
   private isOpen: boolean = false;
   private votingOn: voteCategories = 'ui';
   private voters: IVoter[] = [];
-  private duration = TwitchBot.ms(3, 'minutes');
+  private duration = botUtils.ms({ minutes: 2 });
 
   constructor(private bot: TwitchBot) {
     bot.addCommand('@phase', async (o:IPayload) => {
@@ -87,7 +88,7 @@ export class VotingPlugin {
 
   public timer() {
     const t: any = setInterval(() => {
-      this.duration = this.duration - TwitchBot.ms(1, 'minutes');
+      this.duration = this.duration - botUtils.ms({ minutes: 1 });
       console.log(`this.duration : ${this.duration}`);
       if (this.duration <= 0) {
         this.closeVotes().then(() => {
@@ -96,21 +97,19 @@ export class VotingPlugin {
         });
       }
 
-    }, TwitchBot.ms(1, 'minutes'));
+    }, botUtils.ms({ minutes: 1 }));
   }
 
   public async closeVotes(): Promise<void> {
     try {
 
       // TODO: make stub/mock data for currentGame and Firebase services.
-      console.log(`process.env.NODE_ENV`);
-      console.log(process.env.NODE_ENV);
       if (process.env.NODE_ENV !== 'testing') {
         const game = await currentGame();
         const id = game.id;
         const blueId = game.teams.blue.id;
         const redId = game.teams.red.id;
-        TwitchBot.sysLog('info', 'Voting saved', 'voting', {
+        botUtils.sysLog('info', 'Voting saved', 'voting', {
           blueId,
           redId,
           voters: this.voters,
@@ -129,10 +128,10 @@ export class VotingPlugin {
 
       this.votingOn = 'ui';
       this.isOpen = false;
-      this.duration = TwitchBot.ms(3, 'minutes');
+      this.duration = botUtils.ms({ minutes: 2 });
       this.voters = [];
     } catch (e) {
-      TwitchBot.sysLog(
+      botUtils.sysLog(
         'error', 'problem closing out votes', 'voting', { error: e });
     }
   }

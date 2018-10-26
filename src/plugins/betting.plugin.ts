@@ -7,6 +7,7 @@ import {
   switchStage, updateBettingTimestamp,
 } from '../services/firebase.service';
 import { currentGame, endGame } from '../services/game.service';
+import botUtils from '../common/bot.utils';
 
 export type ObjTypes =  0 | 1 | 2 | 3 | 4 | 5;
 
@@ -36,7 +37,7 @@ export class BettingPlugin {
   private pool: IPool = {
     open: false,
     timer: -1,
-    duration: TwitchBot.ms(10, 'minutes'),
+    duration: botUtils.ms({ minutes: 10 }),
     gameId: -1,
     bets: [],
   };
@@ -78,7 +79,7 @@ export class BettingPlugin {
       if (this.pool.open) return bot.say('Betting pool is currently open.');
       const duration = p.args[0];
       if (!duration) return p.reply('!openbets [duration number in minutes]');
-      await this.openBets(TwitchBot.ms(duration, 'minutes'));
+      await this.openBets(botUtils.ms({ minutes: duration }));
       return bot.say(`Betting is now open for ${p.args[0]} minutes.`);
     });
 
@@ -112,7 +113,7 @@ export class BettingPlugin {
         // await this.setWinnerInDatabase(winningTeam);
         return this.winnings(team, teamObjectiveCount);
       } catch (e) {
-        TwitchBot.sysLog
+        botUtils.sysLog
         ('error', 'Problem executing winnings command', 'betting', {
           payload: p,
           data: e,
@@ -123,7 +124,7 @@ export class BettingPlugin {
 
     bot.addExitFunction(() => {
       if (this.pool.gameId !== -1 && this.pool.bets.length > 1) {
-        TwitchBot.sysLog('info', 'saving bets', 'betting', { pool: this.pool });
+        botUtils.sysLog('info', 'saving bets', 'betting', { pool: this.pool });
       }
     });
   }
@@ -251,22 +252,22 @@ export class BettingPlugin {
     setBetDuration(duration / 1000);
 
     this.pool.timer = setInterval(() => {
-      this.pool.duration = this.pool.duration - TwitchBot.ms(60, 'seconds');
+      this.pool.duration = this.pool.duration - botUtils.ms({ seconds: 60 });
       if (this.pool.duration <= 0 || this.pool.open === false) {
         clearInterval(this.pool.timer);
         return this.closeBets();
       }
-    }, TwitchBot.ms(60, 'seconds'));
+    }, botUtils.ms({ seconds: 60 }));
     return;
   }
 
   public closeBets() {
-    TwitchBot.sysLog('info', 'Betting Save', 'betting', {
+    botUtils.sysLog('info', 'Betting Save', 'betting', {
       pool: this.pool,
     });
     this.pool.open = false;
     this.pool.timer = -1;
-    this.pool.duration = TwitchBot.ms(5);
+    this.pool.duration = botUtils.ms({ minutes: 5 });
     switchStage('objective');
     return this.bot.say('Betting has been closed.');
   }

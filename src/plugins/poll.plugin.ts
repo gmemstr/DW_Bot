@@ -4,6 +4,7 @@ import {
   addPollVote, setPoll,
   switchStage,
 } from '../services/firebase.service';
+import botUtils from '../common/bot.utils';
 
 interface IOption {
   text: string;
@@ -46,7 +47,7 @@ export class PollPlugin {
     });
 
     bot.addCommand('@closePoll', () => {
-      TwitchBot.sysLog('info', 'Polling results', 'poll', {
+      botUtils.sysLog('info', 'Polling results', 'poll', {
         question: this.question,
         options: this.options,
         votes: this.votes,

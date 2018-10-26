@@ -4,8 +4,8 @@ import {
   IChatLog, ICommand, IInput, ILog, IPayload,
   IUser,
 } from './interfaces';
-import { saveChatLog, saveSystemLog } from './services/firebase.service';
-import * as moment from 'moment';
+import { saveChatLog } from './services/firebase.service';
+import botUtils from './common/bot.utils';
 const irc = require('tmi.js');
 
 export enum UserType {
@@ -42,7 +42,7 @@ export class TwitchBot {
       .do(input => this.gatherChatLog(input))
       .filter(input => this.isCommand(input.msg))
       .filter(input =>
-        this.checkDebounce(TwitchBot.normalizeMessage(input.msg)))
+        this.checkDebounce(botUtils.normalizeMessage(input.msg)))
       .filter(input => this.checkPermissions(input))
       .map(input => this.formatInput(input))
       .do(payload => this.doCommand(payload))
@@ -52,7 +52,7 @@ export class TwitchBot {
       .do(input => this.gatherChatLog(input))
       .filter(input => this.isCommand(input.msg))
       .filter(input =>
-        this.checkDebounce(TwitchBot.normalizeMessage(input.msg)))
+        this.checkDebounce(botUtils.normalizeMessage(input.msg)))
       .filter(input => this.checkPermissions(input))
       .map(input => this.formatInput(input))
       .do(payload => this.doCommand(payload))
@@ -85,7 +85,7 @@ export class TwitchBot {
       command.lastExe = Date.now();
       return true;
     } catch (e) {
-      TwitchBot.sysLog('error', 'Problem executing command doCommand()', '~', {
+      botUtils.sysLog('error', 'Problem executing command doCommand()', '~', {
         payload,
         error: e,
         platform: 'twitch',
@@ -138,7 +138,7 @@ export class TwitchBot {
     try {
       await this.client.whisper(username, message);
     } catch (e) {
-      TwitchBot.sysLog('warning', 'could not send whisper', '~', {
+      botUtils.sysLog('warning', 'could not send whisper', '~', {
         username,
         message,
         error: e,
@@ -189,7 +189,7 @@ export class TwitchBot {
     const user = input.user;
     return {
       user,
-      command: TwitchBot.normalizeMessage(input.msg),
+      command: botUtils.normalizeMessage(input.msg),
       from: input.user.username,
       type: input.user['message-type'],
       start: Date.now(),
@@ -218,7 +218,7 @@ export class TwitchBot {
 
   public checkPermissions(input: IInput): boolean {
     try {
-      const string = TwitchBot.normalizeMessage(input.msg).substr(1);
+      const string = botUtils.normalizeMessage(input.msg).substr(1);
       switch (this.commands[string].reqRights) {
         case UserType.Normal:     return true;
         case UserType.Subscriber: return input.user.subscriber === true;
@@ -227,7 +227,7 @@ export class TwitchBot {
         default:                  return false;
       }
     } catch (e) {
-      TwitchBot.sysLog('warning', `command did not pass checkPermissions`, '~',
+      botUtils.sysLog('warning', `command did not pass checkPermissions`, '~',
         { input, error: e });
       return false;
     }
@@ -239,19 +239,6 @@ export class TwitchBot {
     // See if input message is longer than command character.
     return command[0] === this.config.commandCharacter &&
            command.trim().length > this.config.commandCharacter.length;
-  }
-
-  /**
-   * @method normalizeCommand
-   * @description Used to trim and lowercase incoming messages
-   *              before attempting to call them in list of commands.
-   * @param {string} inputMsg - message that needs to be converted.
-   * @return {string} - return command.
-   */
-  public static normalizeMessage(inputMsg: string): string {
-    const msgArray = inputMsg.trim().split(' ');
-    const msg = msgArray[0];
-    return msg.toLowerCase();
   }
 
   /**
@@ -284,25 +271,6 @@ export class TwitchBot {
     }
   }
 
-  public static sysLog(type: 'info' | 'warning' | 'error',
-                message: string,
-                plugin: '~' | 'betting'| 'bpm' | 'voting' | 'apply' | 'poll',
-                data: any = false) {
-    const log: ILog = { message, plugin, type, data };
-    switch (type) {
-      case 'error':
-        console.error(log);
-        break;
-      case 'warning':
-        console.warn(log);
-        break;
-      case 'info':
-        console.info(log);
-    }
-
-    return saveSystemLog(log);
-  }
-
   /**
    * @method selfCommand
    * @description Method for bot to tell itself to execute a command.
@@ -330,23 +298,9 @@ export class TwitchBot {
     return this.doCommand(payload);
   }
 
-  public static ms(
-    duration: number, measurement: 'minutes' | 'seconds' = 'minutes',
-  ) {
-    return moment.duration(duration, measurement).asMilliseconds();
-  }
-
   public isBroadcaster(username: string) : boolean {
     const ch = this.config.channels[0].substr(1).toLowerCase();
     return ch === username.toLowerCase();
-  }
-
-  /**
-   * @method thousands
-   * @description Turns number into string with commas as thousands separators.
-   */
-  public static thousands(number: number): string {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
   private gatherChatLog(input) {

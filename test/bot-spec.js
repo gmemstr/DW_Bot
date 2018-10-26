@@ -56,12 +56,6 @@ test('command\'s action can be executed after addCommand method #integration', t
   t.true(bot.commands[string].action() === true);
 });
 
-test('normalizeMessage returns command from user input message #unit', t => {
-  t.true(TwitchBot.normalizeMessage('!Hey') === '!hey');
-  t.true(TwitchBot.normalizeMessage('!foreVer young') === '!forever');
-  t.true(TwitchBot.normalizeMessage('!hey ') === '!hey');
-});
-
 test('checkDebounce returns false if time past is < debounce time #unit', async t => {
   const payload = {
     args: [],

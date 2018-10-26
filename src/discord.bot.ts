@@ -3,7 +3,8 @@ import * as Rx from '@reactivex/rxjs';
 import { DPayload, ICommand } from './interfaces';
 const discord = require('discord.js');
 import { Message, User } from 'discord.js';
-import { TwitchBot, UserType } from './twitch.bot';
+import { UserType } from './twitch.bot';
+import botUtils from './common/bot.utils';
 export enum channels {
   moderators = 84824396887240704,
   bot_testing = 425148457855221760,
@@ -82,7 +83,7 @@ export class DiscordBot {
       command.lastExe = Date.now();
       return true;
     } catch (e) {
-      TwitchBot.sysLog('error', 'Problem executing command doCommand()', '~', {
+      botUtils.sysLog('error', 'Problem executing command doCommand()', '~', {
         payload,
         error: e,
         platform: 'discord',
@@ -113,7 +114,7 @@ export class DiscordBot {
     return {
       user,
       ch: input.channel.id,
-      command: TwitchBot.normalizeMessage(input.content),
+      command: botUtils.normalizeMessage(input.content),
       channel: input.channel,
       args: this.getArgumentsFromMsg(input.content),
       start: Date.now(),
@@ -159,20 +160,9 @@ export class DiscordBot {
     } catch (e) { return []; }
   }
 
-  /**
-   * @method normalizeCommand
-   * @description Used to trim and lowercase incoming messages
-   *              before attempting to call them in list of commands.
-   * @param {string} inputMsg - message that needs to be converted.
-   * @return {string} - return command.
-   */
-  private static normalizeMessage(inputMsg: string) {
-    return TwitchBot.normalizeMessage(inputMsg);
-  }
-
   private checkPermissions(input: Message): boolean {
     try {
-      const string = DiscordBot.normalizeMessage(input.content).substr(1);
+      const string = botUtils.normalizeMessage(input.content).substr(1);
       const roles = input.member.roles;
       switch (this.commands[string].reqRights) {
         case UserType.Normal:     return true;

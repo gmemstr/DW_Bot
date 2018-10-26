@@ -1,7 +1,7 @@
 import { TwitchBot } from '../twitch.bot';
-import { signUp } from '../services/game.service';
 import { DPayload, IPayload } from '../interfaces';
 import { channels, DiscordBot } from '../discord.bot';
+import botUtils from '../common/bot.utils';
 
 export class ApplyPlugin {
   private applyForGame: number = -1;
@@ -18,7 +18,7 @@ export class ApplyPlugin {
         return twitch
           .say(`You can now play for game ${game}! Use !apply command`);
       } catch (e) {
-        TwitchBot.sysLog
+        botUtils.sysLog
         ('error', 'Something went wrong with !applyFor', 'apply', {
           error: e,
         });
